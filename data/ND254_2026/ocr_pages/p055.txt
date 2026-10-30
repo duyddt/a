@@ -1,0 +1,9 @@
+PRINTED_PAGE: 8
+
+tính; số lượng; đơn giá; phần tên hàng hóa, dịch vụ ghi cung cấp hàng hóa, dịch vụ theo hợp đồng ký kết giữa các bên;
+
+l) Đối với hóa đơn điện tử hoạt động kinh doanh casino, trò chơi điện tử có thưởng không nhất thiết phải có tên, địa chỉ, số định danh cá nhân của người mua, chữ ký số của người mua;
+
+m) Đối với hóa đơn điện tử ủy nhiệm thì trên hóa đơn không nhất thiết phải có chữ ký của người bán, bên nhận ủy nhiệm có trách nhiệm ký số trên hóa đơn điện tử được ủy nhiệm lập;
+
+n) Đối với hóa đơn thương mại điện tử trên hóa đơn không nhất thiết phải có số định danh cá nhân, chữ ký số của người mua.

@@ -1,0 +1,37 @@
+PRINTED_PAGE: 33
+
+a) Tên chứng từ khấu trừ thuế; ký hiệu mẫu chứng từ khấu trừ thuế, ký hiệu chứng từ khấu trừ thuế, số thứ tự chứng từ khấu trừ thuế;
+
+b) Tên, địa chỉ, mã số thuế của tổ chức, cá nhân chi trả thu nhập;
+
+c) Tên, địa chỉ, số điện thoại, mã số thuế của cá nhân nhận thu nhập (nếu cá nhân đã có mã số thuế), hoặc số định danh cá nhân;
+
+d) Quốc tịch (nếu người nộp thuế không thuộc quốc tịch Việt Nam);
+
+đ) Khoản thu nhập, thời điểm trả thu nhập, tổng thu nhập chịu thuế, khoản đóng bảo hiểm bắt buộc; khoản từ thiện, nhân đạo, khuyến học; số thuế đã khấu trừ;
+
+e) Ngày, tháng, năm lập chứng từ khấu trừ thuế;
+
+g) Họ tên, chữ ký của người trả thu nhập.
+
+Trường hợp sử dụng chứng từ khấu trừ thuế thu nhập cá nhân điện tử thì chữ ký trên chứng từ điện tử là chữ ký số.
+
+2. Đối với biên lai
+
+a) Tên biên lai;
+
+b) Ký hiệu mẫu biên lai và ký hiệu biên lai thực hiện theo quy định của Bộ trưởng Bộ Tài chính;
+
+c) Số biên lai là số thứ tự được thể hiện trên biên lai thu thuế, phí, lệ phí. Số biên lai được ghi bằng chữ số Ả-rập có tối đa 8 chữ số. Đối với biên lai điện tử thì số biên lai điện tử bắt đầu từ số 1 vào ngày 01 tháng 01 hoặc ngày bắt đầu sử dụng biên lai điện tử và kết thúc vào ngày 31 tháng 12 hàng năm.
+
+d) Tên, mã số thuế của tổ chức thu thuế, phí, lệ phí;
+
+đ) Tên loại các khoản thu thuế, phí, lệ phí và số tiền thể hiện bằng số và bằng chữ;
+
+e) Ngày, tháng, năm lập biên lai;
+
+g) Chữ ký số của tổ chức thu thuế, phí, lệ phí;
+
+Nội dung trên biên lai phải đúng với nội dung nghiệp vụ kinh tế phát sinh.
+
+h) Biên lai được thể hiện là tiếng Việt. Trường hợp cần thêm tiếng nước ngoài thì phần tiếng nước ngoài được đặt bên phải trong ngoặc đơn "( )" hoặc đặt ngay dưới dòng nội dung bằng tiếng Việt với cỡ chữ nhỏ hơn chữ tiếng Việt.

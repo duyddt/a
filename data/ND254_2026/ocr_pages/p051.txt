@@ -1,0 +1,17 @@
+PRINTED_PAGE: 4
+
+dịch vụ đặc thù như điện, nước, và các loại dịch vụ viễn thông, dịch vụ công nghệ thông tin, dịch vụ truyền hình, dịch vụ bưu chính và chuyển phát, ngân hàng, chứng khoán, tài sản mã hóa, bảo hiểm, dịch vụ khám bệnh, chữa bệnh và các trường hợp khác theo quy định tại điểm a, điểm b khoản 4 Điều 9 được lập hóa đơn kèm bảng kê; bảng kê được lưu giữ cùng hóa đơn để phục vụ việc kiểm tra, đối chiếu các cơ quan có thẩm quyền.
+
+Đối với hàng hóa, dịch vụ khuyến mại theo quy định của pháp luật về thương mại; hàng hóa, dịch vụ cho, biếu, tặng phù hợp với quy định của pháp luật, doanh nghiệp được lập hóa đơn tổng hợp cho các giao dịch phát sinh trong tháng, quý phù hợp với kỳ khai thuế giá trị gia tăng của tổ chức, cá nhân bán hàng hóa. Tổ chức, cá nhân bán hàng hóa có trách nhiệm bảo đảm việc lập hóa đơn tổng hợp phản ánh đầy đủ, chính xác các giao dịch phát sinh; lưu giữ danh sách chi tiết hàng hóa, dịch vụ khuyến mại, cho, biếu, tặng và hồ sơ có liên quan; cung cấp thông tin, tài liệu phục vụ quản lý thuế khi cơ quan có thẩm quyền yêu cầu. Trường hợp khách hàng yêu cầu lập hóa đơn theo từng giao dịch thì người bán phải lập hóa đơn giao cho khách hàng theo quy định.
+
+Hóa đơn phải ghi rõ "kèm theo bảng kê số..., ngày... tháng... năm". Bảng kê phải có tên, mã số thuế và địa chỉ của người bán, tên hàng hóa, dịch vụ, số lượng, đơn giá, thành tiền hàng hóa, dịch vụ bán ra, ngày lập, tên và chữ ký người lập bảng kê. Trường hợp người bán nộp thuế giá trị gia tăng theo phương pháp khấu trừ thì bảng kê phải có tiêu thức "thuế suất thuế giá trị gia tăng" và "tiền thuế giá trị gia tăng". Tổng cộng tiền thanh toán đúng với số tiền ghi trên hóa đơn giá trị gia tăng. Hàng hóa, dịch vụ bán ra ghi trên bảng kê theo thứ tự bán hàng trong ngày. Bảng kê phải ghi rõ "kèm theo hóa đơn số...ngày... tháng... năm";
+
+a.4) Đơn giá hàng hóa, dịch vụ: Người bán ghi đơn giá hàng hóa, dịch vụ theo đơn vị tính nêu trên. Trường hợp các hàng hóa, dịch vụ sử dụng bảng kê để liệt kê các hàng hóa, dịch vụ đã bán kèm theo hóa đơn thì trên hóa đơn không nhất thiết phải có đơn giá.
+
+b) Thuế suất thuế giá trị gia tăng: Thuế suất thuế giá trị gia tăng thể hiện trên hóa đơn là thuế suất thuế giá trị gia tăng tương ứng với từng loại hàng hóa, dịch vụ theo quy định của pháp luật về thuế giá trị gia tăng;
+
+c) Thành tiền chưa có thuế giá trị gia tăng, tổng số tiền thuế giá trị gia tăng theo từng loại thuế suất, tổng cộng tiền thuế giá trị gia tăng, tổng tiền thanh toán đã có thuế giá trị gia tăng được thể hiện bằng đồng Việt Nam theo chữ số Ả-rập, trừ trường hợp bán hàng thu ngoại tệ không phải chuyển đổi ra đồng Việt Nam thì thể hiện theo nguyên tệ;
+
+d) Tổng số tiền thanh toán trên hóa đơn được thể hiện bằng đồng Việt Nam theo chữ số Ả-rập và bằng chữ tiếng Việt, trừ trường hợp bán hàng thu ngoại tệ không phải chuyển đổi ra đồng Việt Nam thì tổng số tiền thanh toán thể hiện bằng nguyên tệ và bằng chữ tiếng nước ngoài;
+
+đ) Trường hợp cơ sở kinh doanh áp dụng hình thức chiết khấu thương mại

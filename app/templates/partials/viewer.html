@@ -1,0 +1,30 @@
+<div id="viewer" class="viewer"{% if oob %} hx-swap-oob="true"{% endif %}>
+  <div class="toolbar">
+    <button type="button" {% if v.prev_url %}hx-get="{{ v.prev_url }}" hx-target="#viewer" hx-swap="outerHTML"{% else %}disabled{% endif %}>&larr; Trang trước</button>
+    <form class="goto" hx-get="{{ v.base }}" hx-target="#viewer" hx-swap="outerHTML">
+      <label for="goto-page">Trang</label>
+      <input id="goto-page" type="number" name="page" min="1" max="{{ v.page_count }}" value="{{ v.page }}">
+      <span>/ {{ v.page_count }}</span>
+      <input type="hidden" name="zoom" value="{{ v.zoom }}">
+      {% if v.unit_id %}<input type="hidden" name="unit" value="{{ v.unit_id }}">{% endif %}
+      <button type="submit">Đi</button>
+    </form>
+    <button type="button" {% if v.next_url %}hx-get="{{ v.next_url }}" hx-target="#viewer" hx-swap="outerHTML"{% else %}disabled{% endif %}>Trang sau &rarr;</button>
+    <span class="spacer"></span>
+    <button type="button" aria-label="Thu nhỏ" {% if v.zoom_out_url %}hx-get="{{ v.zoom_out_url }}" hx-target="#viewer" hx-swap="outerHTML"{% else %}disabled{% endif %}>&minus;</button>
+    <span class="zoom-level">{{ v.zoom }}%</span>
+    <button type="button" aria-label="Phóng to" {% if v.zoom_in_url %}hx-get="{{ v.zoom_in_url }}" hx-target="#viewer" hx-swap="outerHTML"{% else %}disabled{% endif %}>+</button>
+    <button type="button" hx-get="{{ v.fit_url }}" hx-target="#viewer" hx-swap="outerHTML">Vừa chiều rộng</button>
+  </div>
+  {% if v.chips %}
+  <div class="chips">
+    <span>Đơn vị đang chọn nằm ở trang:</span>
+    {% for chip in v.chips %}
+    <button type="button" class="chip{% if chip.current %} current{% endif %}" hx-get="{{ chip.url }}" hx-target="#viewer" hx-swap="outerHTML">{{ chip.page }}</button>
+    {% endfor %}
+  </div>
+  {% endif %}
+  <div class="page-scroll">
+    <img src="{{ v.image_url }}" alt="Trang {{ v.page }} của {{ v.page_count }}" style="width: {{ v.zoom }}%">
+  </div>
+</div>

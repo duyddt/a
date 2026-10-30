@@ -1,0 +1,19 @@
+PRINTED_PAGE: 5
+
+b) Tiêu hủy hóa đơn do cơ quan thuế đặt in, tiêu hủy chứng từ đặt in, tự in là việc sử dụng biện pháp đốt cháy, cắt, xé nhỏ hoặc hình thức tiêu hủy khác, đảm bảo hóa đơn, chứng từ đã tiêu hủy sẽ không thể sử dụng lại các thông tin, số liệu trên đó.
+
+Hóa đơn, chứng từ được phép tiêu hủy là hóa đơn, chứng từ đã hết thời hạn lưu trữ theo quy định tại Điều 5 Nghị định này.
+
+9. Tổ chức cung cấp dịch vụ hóa đơn điện tử, chứng từ điện tử là tổ chức cung cấp giải pháp lập, truyền, lưu trữ, hóa đơn điện tử, chứng từ điện tử. Tổ chức cung cấp dịch vụ hóa đơn điện tử, chứng từ điện tử bao gồm: Tổ chức cung cấp giải pháp lập hóa đơn điện tử, chứng từ điện tử cho người bán và người mua; tổ chức truyền, lưu trữ dữ liệu hóa đơn điện tử, chứng từ điện tử với cơ quan thuế.
+
+10. Cơ sở dữ liệu hóa đơn điện tử, chứng từ điện tử là tập hợp các dữ liệu thông tin về hóa đơn, chứng từ điện tử của các tổ chức, tổ chức kinh tế, cá nhân khi bán hàng hóa, cung cấp dịch vụ và thông tin về chứng từ điện tử của các tổ chức, tổ chức kinh tế, cá nhân sử dụng.
+
+11. Các từ ngữ được quy định tại Nghị định này có nghĩa như quy định tại Luật Quản lý thuế.
+
+Điều 4. Nguyên tắc lập, quản lý, sử dụng hóa đơn, chứng từ điện tử
+
+1. Khi bán hàng hóa, cung cấp dịch vụ, người bán phải lập hóa đơn điện tử để giao cho người mua (bao gồm cả các trường hợp hàng hóa, dịch vụ dùng để khuyến mại, quảng cáo, hàng mẫu; hàng hóa, dịch vụ dùng để cho, biếu, tặng, trao đổi, trả thay lương cho người lao động và tiêu dùng nội bộ; xuất hàng hóa dưới các hình thức cho vay, cho mượn) và các trường hợp lập hóa đơn theo quy định của Bộ trưởng Bộ Tài chính, trừ các trường hợp không phải sử dụng hóa đơn điện tử theo quy định tại Điều 7 Nghị định này.
+
+Hóa đơn điện tử phải theo định dạng chuẩn dữ liệu và phải ghi đầy đủ nội dung theo quy định của pháp luật về thuế, pháp luật về kế toán và quy định tại Điều 10 Nghị định này, bảo đảm phản ánh đầy đủ, trung thực nội dung nghiệp vụ kinh tế phát sinh. Người bán chịu trách nhiệm trước pháp luật về tính chính xác của hóa đơn đã lập.
+
+2. Khi khấu trừ thuế thu nhập cá nhân, khi thu thuế, phí, lệ phí, tổ chức, cá nhân khấu trừ thuế, tổ chức thu thuế, phí, lệ phí phải lập chứng từ khấu trừ thuế điện tử, biên lai thu thuế, phí, lệ phí điện tử giao cho người có thu nhập bị khấu trừ thuế, người nộp thuế, nộp phí, lệ phí và phải ghi đầy đủ các nội dung theo quy định tại Điều 23 Nghị định này và theo định dạng chuẩn dữ liệu.

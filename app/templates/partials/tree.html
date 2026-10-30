@@ -1,0 +1,11 @@
+<div id="tree" class="tree"{% if oob %} hx-swap-oob="true"{% endif %}>
+  {% for r in rows %}
+  <button type="button" class="row{% if r.selected %} selected{% endif %}"{% if r.selected %} aria-current="true"{% endif %}
+          style="padding-left: {{ 12 + r.depth * 24 }}px"
+          hx-get="{{ r.url }}" hx-target="#detail" hx-swap="innerHTML">
+    <span class="label">{{ r.label }}</span>
+    <span class="snippet">{{ r.snippet }}</span>
+    {% if not r.confident %}<span class="tag warn">Không chắc</span>{% endif %}
+  </button>
+  {% endfor %}
+</div>

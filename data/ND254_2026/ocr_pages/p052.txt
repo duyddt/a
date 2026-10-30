@@ -1,0 +1,21 @@
+PRINTED_PAGE: 5
+
+dành cho khách hàng hoặc khuyến mại theo quy định của pháp luật thì phải thể hiện rõ khoản chiết khấu thương mại, khuyến mại trên hóa đơn. Việc xác định giá tính thuế giá trị gia tăng (thành tiền chưa có thuế giá trị gia tăng) trong trường hợp áp dụng chiết khấu thương mại dành cho khách hàng hoặc khuyến mại thực hiện theo quy định của pháp luật thuế giá trị gia tăng;
+
+e) Trường hợp doanh nghiệp vận tải hàng không sử dụng hệ thống xuất vé được lập theo thông lệ quốc tế thì các khoản phí dịch vụ thu trên chứng từ vận tải hàng không (phí quản trị hệ thống, phí đổi chứng từ vận tải và các khoản phí khác) và các khoản thu hộ phí dịch vụ sân bay của các doanh nghiệp vận tải hàng không (như phí phục vụ hành khách, phí soi chiếu an ninh và các loại phí khác) ghi trên hóa đơn là giá thanh toán đã có thuế giá trị gia tăng. Doanh nghiệp vận tải hàng không được làm tròn số đến hàng nghìn đối với các khoản thu trên chứng từ vận tải theo quy định của Hiệp hội hàng không quốc tế (IATA).
+
+6. Chữ ký của người bán, chữ ký của người mua, cụ thể:
+
+Trường hợp người bán là doanh nghiệp, tổ chức thì chữ ký số của người bán trên hóa đơn là chữ ký số của doanh nghiệp, tổ chức; trường hợp người bán là cá nhân thì sử dụng chữ ký số của cá nhân hoặc người được ủy quyền.
+
+Trường hợp là nhà cung cấp ở nước ngoài là chữ ký điện tử theo quy định của pháp luật về giao dịch điện tử.
+
+Trường hợp hóa đơn điện tử không nhất thiết phải có chữ ký số của người bán và người mua thực hiện theo quy định tại điểm 9 Phụ lục này.
+
+7. Thời điểm ký số trên hóa đơn điện tử là thời điểm người bán, người mua sử dụng chữ ký số để ký trên hóa đơn điện tử được hiển thị theo định dạng ngày, tháng, năm của năm dương lịch. Trường hợp hóa đơn điện tử đã lập có thời điểm ký số trên hóa đơn khác thời điểm lập hóa đơn thì thời điểm ký số và thời điểm gửi cơ quan thuế cấp mã đối với hóa đơn có mã của cơ quan thuế hoặc thời điểm chuyển dữ liệu hóa đơn điện tử đến cơ quan thuế đối với hóa đơn điện tử không có mã của cơ quan thuế chậm nhất là ngày làm việc tiếp theo kể từ thời điểm lập hóa đơn (trừ trường hợp gửi dữ liệu theo Bảng tổng hợp, Bảng thông tin chi tiết giao dịch quy định tại Điều 16 Nghị định này). Người bán khai thuế theo thời điểm lập hóa đơn; thời điểm khai thuế đối với người mua là thời điểm nhận hóa đơn đảm bảo đúng, đầy đủ về hình thức và nội dung theo quy định tại Điều 10 Nghị định này.
+
+8. Chữ viết, chữ số và đồng tiền thể hiện trên hóa đơn
+
+a) Chữ viết hiển thị trên hóa đơn là tiếng Việt. Trường hợp cần ghi thêm chữ nước ngoài thì chữ nước ngoài được đặt bên phải trong ngoặc đơn "( )" hoặc đặt ngay dưới dòng tiếng Việt và có cỡ chữ nhỏ hơn chữ tiếng Việt. Trường hợp chữ trên hóa đơn là chữ tiếng Việt không dấu thì các chữ viết không dấu trên hóa đơn phải đảm bảo không dẫn tới cách hiểu sai lệch nội dung của hóa đơn;
+
+b) Chữ số hiển thị trên hóa đơn là chữ số Ả-rập: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9.

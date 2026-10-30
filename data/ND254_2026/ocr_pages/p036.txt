@@ -1,0 +1,29 @@
+PRINTED_PAGE: 36
+
+2. Chứng từ được lập theo đúng quy định tại Điều 23 là chứng từ hợp pháp để thanh toán, hạch toán và quyết toán tài chính.
+
+Trường hợp không đúng quy định tại Điều 23 thì không có giá trị thanh toán và không được hạch toán, quyết toán tài chính.
+
+3. Việc lập chứng từ điện tử phải bảo đảm phản ánh đầy đủ, trung thực giao dịch phát sinh; tuân thủ quy định của pháp luật về giao dịch điện tử, pháp luật về kế toán và pháp luật về thuế, phí và lệ phí.
+
+Điều 27. Kết nối, truyền dữ liệu chứng từ điện tử
+
+1. Tổ chức thu thuế, phí, lệ phí, tổ chức có trách nhiệm khấu trừ thuế, tổ chức được ủy nhiệm lập biên lai, tổ chức cung cấp dịch vụ về chứng từ điện tử có trách nhiệm thực hiện kết nối, truyền và tiếp nhận dữ liệu chứng từ điện tử với cơ quan quản lý thuế qua hệ thống thông tin quản lý thuế hoặc hệ thống trung gian theo quy định.
+
+2. Việc kết nối, truyền và tiếp nhận dữ liệu chứng từ điện tử phải bảo đảm:
+
+a) An toàn thông tin, bảo mật dữ liệu theo quy định của pháp luật;
+
+b) Tính toàn vẹn, đầy đủ, chính xác của dữ liệu trong quá trình truyền, nhận và lưu trữ;
+
+c) Khả năng truy xuất, đối chiếu dữ liệu khi cơ quan quản lý thuế yêu cầu.
+
+3. Trường hợp hệ thống thông tin điện tử gặp sự cố kỹ thuật dẫn đến việc không thể kết nối, truyền dữ liệu đúng thời hạn, tổ chức, cá nhân có liên quan phải thông báo kịp thời cho cơ quan quản lý thuế và thực hiện truyền dữ liệu trong vòng 03 ngày làm việc sau khi sự cố được khắc phục.
+
+Điều 28. Trường hợp sử dụng được miễn phí dịch vụ về chứng từ điện tử
+
+1. Trường hợp sử dụng được miễn phí dịch vụ về chứng từ điện tử bao gồm:
+
+a) Hộ kinh doanh, cá nhân kinh doanh có sử dụng dưới 10 người lao động và không thuộc trường hợp sử dụng hóa đơn điện tử; hộ kinh doanh, cá nhân kinh doanh thuộc trường hợp sử dụng hóa đơn điện tử được miễn phí dịch vụ theo quy định tại Điều 11 Nghị định này;
+
+b) Trường hợp tổ chức, cá nhân trả thu nhập không thuộc đối tượng áp dụng hóa đơn điện tử; tổ chức, cá nhân trả thu nhập sử dụng hóa đơn điện tử được miễn phí dịch vụ theo quy định tại Điều 11 Nghị định này thì được sử dụng chứng từ khấu trừ thuế thu nhập cá nhân điện tử miễn phí dịch vụ thông

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Lỗi nhập văn bản{% endblock %}
+{% block body %}
+<header class="topbar">
+  <a href="/">&larr; Danh sách văn bản</a>
+  <h1>Không nhập được: {{ problem.document_id }}</h1>
+</header>
+<main class="narrow">
+  <p>Sửa các lỗi dưới đây trong <code>document.json</code> rồi tải lại trang.</p>
+  <ul class="problems">
+  {% for line in problem.problems %}
+    <li>{{ line }}</li>
+  {% endfor %}
+  </ul>
+  {% if problem.truncated %}<p class="muted">Chỉ hiển thị 50 lỗi đầu tiên.</p>{% endif %}
+</main>
+{% endblock %}

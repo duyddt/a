@@ -1,0 +1,29 @@
+PRINTED_PAGE: 43
+
+3. Cục Thuế, Thuế tỉnh, thành phố thực hiện cấp tối đa 02 tài khoản khai thác sử dụng thông tin hóa đơn điện tử cho người sử dụng của cơ quan, tổ chức quản lý đồng cấp theo văn bản giữa các bên.
+
+4. Bộ trưởng Bộ Tài chính hướng dẫn việc cung cấp, tra cứu thông tin hóa đơn điện tử; đăng ký mới, bổ sung thông tin đăng ký, thu hồi tài khoản truy cập Hệ thống thông tin quản lý thuế; chấm dứt sử dụng các hình thức cung cấp, sử dụng thông tin hóa đơn điện tử.
+
+Điều 38. Trách nhiệm của cơ quan thuế
+
+1. Xây dựng, triển khai, quản lý vận hành Hệ thống thông tin quản lý thuế, cụ thể:
+
+a) Bảo đảm cho tổ chức, cá nhân truy cập thuận tiện; có công cụ tìm kiếm thông tin, dữ liệu dễ sử dụng và cho kết quả đúng nội dung cần tìm kiếm;
+
+b) Bảo đảm khuôn dạng thông tin, dữ liệu theo tiêu chuẩn, quy chuẩn kỹ thuật, quy định để dễ dàng tải xuống, hiển thị nhanh chóng và in ấn bằng các phương tiện điện tử phổ biến;
+
+c) Đảm bảo hệ thống hoạt động liên tục, ổn định, đảm bảo an toàn thông tin;
+
+d) Chủ trì thực hiện việc hướng dẫn sử dụng, hỗ trợ vận hành hệ thống.
+
+2. Quản lý việc đăng ký sử dụng thông tin hóa đơn điện tử, chứng từ điện tử của bên sử dụng thông tin.
+
+3. Trường hợp tạm ngừng cung cấp thông tin hóa đơn điện tử, chứng từ điện tử, Cục Thuế thực hiện thông báo trên Trang thông tin điện tử của Cục Thuế về hóa đơn điện tử với các bên sử dụng thông tin. Nội dung thông báo phải nêu rõ khoảng thời gian dự kiến phục hồi các hoạt động cung cấp thông tin.
+
+Điều 39. Trách nhiệm của bên sử dụng thông tin
+
+1. Sử dụng thông tin hóa đơn điện tử đúng mục đích, phục vụ cho hoạt động nghiệp vụ theo chức năng, nhiệm vụ của bên sử dụng thông tin, đúng quy định của pháp luật về bảo vệ bí mật nhà nước. Các thông tin thu thập từ cơ quan thuế, bên sử dụng thông tin không cung cấp thông tin cho bên thứ ba khi chưa có sự đồng ý của cơ quan thuế cung cấp thông tin hoặc tài khoản.
+
+2. Trang bị đầy đủ phương tiện, trang thiết bị kỹ thuật để bảo đảm thực hiện việc tra cứu, kết nối, sử dụng thông tin hóa đơn điện tử.
+
+3. Thực hiện đăng ký để được cấp quyền truy cập, khai thác, sử dụng thông tin hóa đơn điện tử.

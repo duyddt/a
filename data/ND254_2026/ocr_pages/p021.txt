@@ -1,0 +1,31 @@
+PRINTED_PAGE: 21
+
+quản lý chi tiết từng giao dịch, có dữ liệu thu tiền được lưu trữ trên hệ thống theo từng giao dịch thì cơ sở dữ liệu thông tin chi tiết giao dịch phát sinh của doanh nghiệp được chuyển đến cơ quan thuế theo quy định tại điểm a.2 khoản 3 Điều 16 Nghị định này. Người bán chịu trách nhiệm về tính chính xác của thông tin giao dịch, lưu trữ đầy đủ dữ liệu chi tiết của từng giao dịch, bảo đảm khả năng truy xuất, đối chiếu và cung cấp dữ liệu, chứng từ liên quan theo yêu cầu của cơ quan thuế hoặc cơ quan nhà nước có thẩm quyền.
+
+5. Trường hợp người bán không có phần mềm lập hóa đơn tự động có phát sinh giao dịch bán hàng hóa, cung cấp dịch vụ trong giờ làm việc ban đêm theo quy định của Bộ luật Lao động, thời điểm lập hóa đơn chậm nhất là ngày làm việc tiếp theo.
+
+Điều 10. Nội dung của hóa đơn
+
+1. Hóa đơn phải có các nội dung sau:
+
+a) Tên hóa đơn, ký hiệu hóa đơn, ký hiệu mẫu số hóa đơn;
+
+b) Số hóa đơn;
+
+c) Tên, địa chỉ, mã số thuế của người bán;
+
+d) Tên, địa chỉ, mã số thuế hoặc mã số đơn vị có quan hệ với ngân sách hoặc số định danh cá nhân của người mua;
+
+đ) Tên, đơn vị tính, số lượng, đơn giá hàng hóa, dịch vụ; thành tiền chưa có thuế giá trị gia tăng, thuế suất thuế giá trị gia tăng, tổng số tiền thuế giá trị gia tăng theo từng loại thuế suất, tổng cộng tiền thuế giá trị gia tăng, tổng tiền thanh toán đã có thuế giá trị gia tăng;
+
+e) Chữ ký của người bán, chữ ký của người mua: Trên hóa đơn điện tử không nhất thiết phải có chữ ký số của người mua (trừ trường hợp người mua, người bán có thỏa thuận);
+
+g) Thời điểm lập hóa đơn thực hiện theo hướng dẫn tại Điều 9 Nghị định này và được hiển thị theo định dạng ngày, tháng, năm của năm dương lịch;
+
+h) Thời điểm ký số trên hóa đơn điện tử;
+
+i) Mã của cơ quan thuế đối với hóa đơn điện tử có mã của cơ quan thuế;
+
+k) Phí, lệ phí thuộc ngân sách nhà nước, chiết khấu thương mại, khuyến mại (nếu có) và các nội dung khác liên quan (nếu có).
+
+2. Chữ viết, chữ số và đồng tiền thể hiện trên hóa đơn.

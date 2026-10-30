@@ -1,0 +1,29 @@
+PRINTED_PAGE: 3
+
+3. Tổ chức thu thuế, phí và lệ phí.
+
+4. Người nộp thuế, phí và lệ phí.
+
+5. Tổ chức, cá nhân có trách nhiệm khấu trừ thuế theo quy định của pháp luật thuế; tổ chức, cá nhân khai thay, nộp thuế thay theo quy định của pháp luật về thuế và pháp luật về quản lý thuế.
+
+6. Tổ chức cung cấp dịch vụ hóa đơn điện tử, chứng từ điện tử.
+
+7. Cơ quan quản lý thuế.
+
+8. Các tổ chức, cá nhân có liên quan đến việc quản lý, sử dụng hóa đơn và chứng từ.
+
+Điều 3. Giải thích từ ngữ
+
+Trong Nghị định này, các từ ngữ dưới đây được hiểu như sau:
+
+1. Hóa đơn điện tử có mã của cơ quan thuế là hóa đơn điện tử được cơ quan thuế cấp mã trước khi người bán gửi cho người mua.
+
+Mã của cơ quan thuế trên hóa đơn điện tử bao gồm số giao dịch là một dãy số duy nhất do hệ thống của cơ quan thuế tạo ra và một chuỗi ký tự được cơ quan thuế mã hóa dựa trên thông tin của người bán lập trên hóa đơn điện tử.
+
+2. Hóa đơn điện tử không có mã của cơ quan thuế là hóa đơn điện tử do tổ chức bán hàng hóa, cung cấp dịch vụ gửi cho người mua không có mã của cơ quan thuế.
+
+3. Hóa đơn điện tử khởi tạo từ máy tính tiền có kết nối dữ liệu điện tử với cơ quan thuế (sau đây gọi là hóa đơn điện tử từ máy tính tiền) là hóa đơn điện tử có mã của cơ quan thuế hoặc hoá đơn không có mã của cơ quan thuế hoặc dữ liệu điện tử để người mua có thể truy xuất, kê khai thông tin hóa đơn điện tử khởi tạo từ máy tính tiền do tổ chức, cá nhân bán hàng hóa, cung cấp dịch vụ lập từ hệ thống tính tiền, dữ liệu được chuyển đến cơ quan thuế theo định dạng chuẩn dữ liệu.
+
+4. Máy tính tiền là hệ thống tính tiền bao gồm một thiết bị điện tử đồng bộ hoặc một hệ thống gồm nhiều thiết bị điện tử được kết hợp với nhau bằng giải pháp công nghệ thông tin có chức năng chung như: tính tiền, lưu trữ các giao dịch bán hàng, số liệu bán hàng.
+
+5. Hóa đơn, chứng từ hợp pháp là hóa đơn, chứng từ đảm bảo đúng về hình thức và nội dung theo quy định tại Nghị định này.

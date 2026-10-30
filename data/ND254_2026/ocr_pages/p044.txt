@@ -1,0 +1,21 @@
+PRINTED_PAGE: 44
+
+4. Quản lý, bảo mật thông tin tài khoản truy cập Hệ thống thông tin quản lý thuế.
+
+Điều 40. Trách nhiệm chia sẻ, kết nối thông tin, dữ liệu hóa đơn điện tử
+
+1. Các tổ chức kinh tế sản xuất, kinh doanh ở các lĩnh vực: điện lực; xăng dầu; bưu chính, viễn thông; vận tải hàng không, đường bộ, đường sắt, đường biển, đường thủy; nước sạch; tài chính ngân hàng; bảo hiểm; y tế; kinh doanh thương mại điện tử; kinh doanh siêu thị; thương mại thực hiện hóa đơn điện tử và cung cấp dữ liệu hóa đơn điện tử theo định dạng chuẩn dữ liệu.
+
+2. Các tổ chức tín dụng, tổ chức cung ứng dịch vụ thanh toán cung cấp dữ liệu điện tử về giao dịch thanh toán qua tài khoản của các tổ chức, cá nhân khi có yêu cầu bằng văn bản của cơ quan thuế việc cung cấp thông tin khách hàng thực hiện theo quy định của pháp luật về ngân hàng.
+
+3. Tổ chức, cá nhân sản xuất, nhập khẩu những sản phẩm chịu thuế tiêu thụ đặc biệt thuộc đối tượng sử dụng tem theo quy định của pháp luật thực hiện quét mã QR cho sản phẩm sản xuất tại Việt Nam khi tiêu thụ trong nước hoặc sản phẩm sản xuất ở nước ngoài khi nhập khẩu để đảm bảo kết nối thông tin về in và sử dụng tem, tem điện tử giữa tổ chức sản xuất, nhập khẩu với cơ quan quản lý thuế. Thông tin về in, sử dụng tem điện tử là cơ sở để lập, quản lý và xây dựng cơ sở dữ liệu hóa đơn điện tử. Các đối tượng sử dụng tem có trách nhiệm chi trả chi phí in và sử dụng tem theo quy định của Bộ trưởng Bộ Tài chính.
+
+4. Các tổ chức, đơn vị: Cơ quan quản lý thị trường, Cục Quản lý đất đai, Cục Địa chất và Khoáng sản Việt Nam, cơ quan công an, giao thông, y tế và các cơ quan khác có liên quan kết nối chia sẻ thông tin, dữ liệu liên quan cần thiết trong lĩnh vực quản lý của đơn vị với Cục Thuế để xây dựng cơ sở dữ liệu hóa đơn điện tử.
+
+Điều 41. Khen thưởng người tiêu dùng tố giác người bán không lập và giao hóa đơn điện tử
+
+1. Người tiêu dùng tố giác người bán không lập và giao hóa đơn điện tử khi bán hàng hóa, cung cấp dịch vụ được xem xét khen thưởng khi đáp ứng các điều kiện sau:
+
+a) Cung cấp thông tin trung thực, chính xác, kịp thời; có căn cứ xác định thời gian, địa điểm và người thực hiện hành vi vi phạm;
+
+b) Nội dung thông tin phản ánh đúng thực tế phát sinh, đủ cơ sở để cơ quan thuế xác định tính chất, mức độ vi phạm và thực hiện kiểm tra, xác minh;

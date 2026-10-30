@@ -1,0 +1,23 @@
+PRINTED_PAGE: 10
+
+b.1.3) Bị cơ quan thuế cưỡng chế bằng biện pháp ngừng sử dụng hóa đơn;
+
+b.1.4) Doanh nghiệp đang làm thủ tục phá sản nhưng vẫn có hoạt động kinh doanh dưới sự giám sát của Tòa án;
+
+b.1.5) Tổ chức kinh tế, tổ chức khác trong thời gian giải trình hoặc bổ sung tài liệu theo quy định của Bộ trưởng Bộ Tài chính;
+
+b.2) Tổ chức, cơ quan nhà nước không thuộc đối tượng nộp thuế giá trị gia tăng theo phương pháp khấu trừ có bán đấu giá tài sản (trừ trường hợp bán tài sản công nêu tại khoản 4 Điều 8 Nghị định này), trường hợp giá trúng đấu giá là giá bán đã có thuế giá trị gia tăng được công bố rõ trong hồ sơ bán đấu giá do cơ quan có thẩm quyền phê duyệt thì được cấp hóa đơn giá trị gia tăng để giao cho người mua;
+
+c) Cấp hóa đơn bán tài sản công có mã của cơ quan thuế theo từng lần phát sinh trong trường hợp cơ quan được giao nhiệm vụ tổ chức xử lý tài sản công là người nộp thuế giá trị gia tăng bị cưỡng chế bằng biện pháp ngừng sử dụng hóa đơn;
+
+d) Trình tự, thủ tục cấp hóa đơn điện tử theo từng lần phát sinh tại khoản này theo quy định của Bộ trưởng Bộ Tài chính.
+
+3. Quy định về áp dụng hóa đơn điện tử, đối với một số trường hợp cụ thể theo yêu cầu quản lý như sau:
+
+a) Trường hợp nhận nhập khẩu hàng hóa ủy thác, nếu cơ sở kinh doanh nhận nhập khẩu ủy thác đã nộp thuế giá trị gia tăng ở khâu nhập khẩu thì sử dụng hóa đơn điện tử khi trả hàng cho cơ sở kinh doanh ủy thác nhập khẩu. Nếu chưa nộp thuế giá trị gia tăng ở khâu nhập khẩu, khi xuất trả hàng nhập khẩu ủy thác, cơ sở nhận ủy thác lập phiếu xuất kho kiêm vận chuyển nội bộ theo quy định làm chứng từ lưu thông hàng hóa trên thị trường.
+
+b) Trường hợp ủy thác xuất khẩu hàng hóa:
+
+b.1) Khi xuất hàng giao cho cơ sở nhận ủy thác, cơ sở có hàng hóa ủy thác xuất khẩu sử dụng phiếu xuất kho kiêm vận chuyển nội bộ;
+
+b.2) Cơ sở nhận ủy thác xuất khẩu làm thủ tục xuất khẩu theo quy định của pháp luật hải quan. Khi hàng hóa đã thực xuất khẩu có xác nhận của cơ quan hải quan, căn cứ vào các chứng từ đối chiếu, xác nhận về số lượng, giá trị hàng hóa thực tế xuất khẩu của cơ sở nhận ủy thác xuất khẩu, cơ sở có hàng hóa ủy thác xuất khẩu lập hóa đơn giá trị gia tăng điện tử hoặc hóa đơn bán hàng điện tử cho cơ sở nhận ủy thác xuất khẩu. Cơ sở nhận ủy thác xuất khẩu lập hóa đơn giá trị gia tăng điện tử hoặc hóa đơn bán hàng điện tử để thu phí ủy thác của cơ sở có hàng hóa ủy thác.

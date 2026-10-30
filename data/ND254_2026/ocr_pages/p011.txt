@@ -1,0 +1,19 @@
+PRINTED_PAGE: 11
+
+c) Cơ sở kinh doanh có hàng hóa, dịch vụ xuất khẩu (kể cả cơ sở gia công hàng hóa xuất khẩu) khi xuất khẩu hàng hóa, dịch vụ sử dụng hóa đơn điện tử: hóa đơn thương mại điện tử hoặc hóa đơn giá trị gia tăng điện tử hoặc hóa đơn bán hàng điện tử. Thời điểm lập hóa đơn thực hiện theo quy định tại khoản 1 Điều 9 Nghị định này.
+
+Khi xuất hàng hóa để vận chuyển đến cửa khẩu hay đến nơi làm thủ tục xuất khẩu, cơ sở sử dụng phiếu xuất kho kiêm vận chuyển nội bộ hoặc hóa đơn thương mại điện tử hoặc hóa đơn điện tử theo quy định làm chứng từ lưu thông hàng hóa trên thị trường.
+
+d) Tổ chức kinh doanh kê khai, nộp thuế giá trị gia tăng theo phương pháp khấu trừ xuất điều chuyển hàng hóa cho các cơ sở hạch toán phụ thuộc như các chi nhánh, cửa hàng ở khác địa phương (tỉnh, thành phố trực thuộc trung ương) để bán hoặc xuất điều chuyển giữa các chi nhánh, đơn vị phụ thuộc với nhau; xuất hàng hóa cho cơ sở nhận làm đại lý bán đúng giá, hưởng hoa hồng, căn cứ vào phương thức tổ chức kinh doanh và hạch toán kế toán, cơ sở có thể lựa chọn một trong hai cách sử dụng hóa đơn, chứng từ như sau:
+
+d.1) Sử dụng hóa đơn giá trị gia tăng điện tử để làm căn cứ thanh toán và kê khai nộp thuế giá trị gia tăng ở từng đơn vị và từng khâu độc lập với nhau;
+
+d.2) Sử dụng phiếu xuất kho kiêm vận chuyển nội bộ; sử dụng phiếu xuất kho hàng gửi bán đại lý theo quy định đối với hàng hóa xuất cho cơ sở làm đại lý.
+
+Cơ sở hạch toán phụ thuộc, chi nhánh, cửa hàng, cơ sở nhận làm đại lý bán hàng khi bán hàng phải lập hóa đơn theo quy định giao cho người mua, đồng thời lập bảng kê hàng hóa bán ra gửi về cơ sở có hàng hóa điều chuyển hoặc cơ sở có hàng hoá gửi bán (gọi chung là cơ sở giao hàng) để cơ sở giao hàng lập hóa đơn giá trị gia tăng cho hàng hóa thực tế tiêu thụ giao cho cơ sở hạch toán phụ thuộc, chi nhánh, cửa hàng, cơ sở nhận làm đại lý bán hàng.
+
+Trường hợp cơ sở có số lượng và doanh số hàng hoá bán ra lớn, bảng kê có thể lập cho 05 ngày hay 10 ngày một lần. Trường hợp hàng hoá bán ra có thuế suất thuế giá trị gia tăng khác nhau phải lập bảng kê riêng cho hàng hoá bán ra theo từng nhóm thuế suất.
+
+Cơ sở hạch toán phụ thuộc, chi nhánh, cửa hàng, cơ sở nhận làm đại lý bán hàng thực hiện kê khai nộp thuế giá trị gia tăng đối với số hàng xuất bán cho người mua và được kê khai, khấu trừ thuế giá trị gia tăng đầu vào theo hóa đơn giá trị gia tăng của cơ sở giao hàng xuất cho.
+
+đ) Tổ chức, cá nhân xuất hàng hóa bán lưu động sử dụng phiếu xuất kho kiêm vận chuyển nội bộ theo quy định, khi bán hàng lập hóa đơn điện tử theo quy định.

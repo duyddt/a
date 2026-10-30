@@ -1,0 +1,12 @@
+{% if unit %}
+<div class="detail-head">
+  <strong>{% if unit.point is not none %}Điểm {{ unit.point }}, {% endif %}{% if unit.clause is not none %}Khoản {{ unit.clause }}, {% endif %}{% if unit.article is not none %}Điều {{ unit.article }}{% else %}{{ unit.unit_id }}{% endif %}</strong>
+  <span class="muted">Trang {{ unit.source_pages|join(", ") }}</span>
+</div>
+{% if unit.title %}<div class="muted">{{ unit.title }}</div>{% endif %}
+{% if not unit.is_confident %}<p class="tag warn">Parser đánh dấu không chắc chắn</p>{% endif %}
+<pre class="content">{{ unit.content }}</pre>
+<div class="muted small">{{ unit.unit_id }}</div>
+{% else %}
+<p class="muted">Văn bản chưa có đơn vị nào.</p>
+{% endif %}

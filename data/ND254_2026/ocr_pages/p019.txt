@@ -1,0 +1,15 @@
+PRINTED_PAGE: 19
+
+h) Đối với trường hợp bán xăng, dầu tại các cửa hàng bán lẻ cho khách hàng, thời điểm lập hóa đơn là thời điểm kết thúc việc bán xăng, dầu theo từng lần bán;
+
+i) Đối với trường hợp cung cấp dịch vụ vận tải hàng không (bao gồm cả trường hợp đại lý bán đúng giá hưởng hoa hồng của hãng hàng không), dịch vụ bảo hiểm qua đại lý, thời điểm lập hóa đơn là thời điểm hoàn thành việc đối soát dữ liệu giữa các bên nhưng chậm nhất không quá ngày 10 của tháng sau tháng phát sinh;
+
+k) Đối với hoạt động cho vay của tổ chức tín dụng, thời điểm lập hóa đơn được xác định theo kỳ hạn thu lãi tại thỏa thuận cho vay giữa tổ chức tín dụng và khách hàng đi vay, trừ trường hợp đến kỳ hạn thu lãi không thu được thì thời điểm lập hóa đơn là thời điểm thu được tiền lãi vay của khách hàng. Trường hợp trả lãi trước hạn theo thỏa thuận cho vay, thời điểm lập hóa đơn là thời điểm thu lãi trước hạn;
+
+l) Đối với kinh doanh vận tải hành khách bằng xe taxi có sử dụng phần mềm tính tiền theo quy định của pháp luật: tại thời điểm kết thúc chuyến đi, doanh nghiệp, hợp tác xã kinh doanh vận tải hành khách bằng xe taxi có sử dụng phần mềm tính tiền thực hiện lập hóa đơn điện tử cho khách hàng đồng thời chuyển dữ liệu hóa đơn đến cơ quan thuế theo quy định;
+
+m) Đối với cơ sở khám bệnh, chữa bệnh có sử dụng phần mềm quản lý khám bệnh, chữa bệnh và quản lý viện phí, từng giao dịch khám bệnh, chữa bệnh và thực hiện các dịch vụ chụp, chiếu, xét nghiệm có in phiếu thu tiền (thu viện phí hoặc tiền khám, chụp, chiếu, xét nghiệm) và có lưu trên hệ thống công nghệ thông tin, nếu khách hàng (người đến khám, chữa bệnh) không có nhu cầu lấy hóa đơn thì cuối ngày cơ sở khám bệnh, chữa bệnh căn cứ thông tin khám, chữa bệnh và thông tin từ phiếu thu tiền để tổng hợp lập hóa đơn điện tử cho các dịch vụ y tế thực hiện trong ngày, trường hợp khách hàng yêu cầu lập hóa đơn điện tử thì cơ sở khám bệnh, chữa bệnh lập hóa đơn điện tử giao cho khách hàng.
+
+Cơ sở khám bệnh, chữa bệnh lập hóa đơn cho cơ quan bảo hiểm xã hội tại thời điểm được cơ quan bảo hiểm xã hội thanh, quyết toán chi phí khám bệnh, chữa bệnh cho người có thẻ bảo hiểm y tế;
+
+n) Đối với hoạt động thu phí dịch vụ sử dụng đường bộ theo hình thức điện tử không dừng, ngày lập hóa đơn điện tử là ngày xe lưu thông qua trạm thu phí. Trường hợp khách hàng sử dụng dịch vụ thu phí đường bộ theo hình thức điện tử không dừng có một hoặc nhiều phương tiện cùng sử dụng dịch vụ nhiều lần trong tháng, đơn vị cung cấp dịch vụ có thể lập hóa đơn điện tử theo định kỳ, ngày lập hóa đơn điện tử chậm nhất là ngày cuối cùng của tháng phát sinh dịch vụ thu phí. Nội dung hóa đơn liệt kê chi tiết từng lượt xe lưu thông qua các trạm thu phí (bao gồm: thời gian xe qua trạm, giá phí sử dụng đường

@@ -1,0 +1,19 @@
+PRINTED_PAGE: 7
+
+giá thì không nhất thiết phải có tiêu thức đơn vị tính, số lượng, đơn giá;
+
+đ) Đối với chứng từ điện tử dịch vụ vận tải hàng không xuất qua website và hệ thống thương mại điện tử được lập theo thông lệ quốc tế cho người mua là cá nhân không kinh doanh được xác định là hóa đơn điện tử thì trên hóa đơn không nhất thiết phải có ký hiệu hóa đơn, ký hiệu mẫu hóa đơn, số thứ tự hóa đơn, thuế suất thuế giá trị gia tăng, mã số thuế, địa chỉ người mua, chữ ký số của người bán.
+
+Trường hợp tổ chức kinh doanh hoặc tổ chức không kinh doanh mua dịch vụ vận tải hàng không thì chứng từ dịch vụ vận tải hàng không xuất qua website và hệ thống thương mại điện tử được lập theo thông lệ quốc tế cho các cá nhân của tổ chức kinh doanh, cá nhân của tổ chức không kinh doanh thì không được xác định là hóa đơn điện tử. Doanh nghiệp kinh doanh dịch vụ vận tải hàng không phải lập hóa đơn điện tử có đầy đủ các nội dung theo quy định giao cho tổ chức có cá nhân sử dụng dịch vụ vận tải hàng không;
+
+e) Đối với hóa đơn của hoạt động xây dựng, lắp đặt; hoạt động xây nhà để bán có thu tiền theo tiến độ theo hợp đồng thì trên hóa đơn không nhất thiết phải có đơn vị tính, số lượng, đơn giá;
+
+g) Đối với phiếu xuất kho kiêm vận chuyển nội bộ thì trên phiếu xuất kho kiêm vận chuyển nội bộ thể hiện các thông tin liên quan lệnh điều động nội bộ, người nhận hàng, người xuất hàng, địa điểm kho xuất, địa điểm nhận hàng, phương tiện vận chuyển. Cụ thể: tên người mua thể hiện người nhận hàng, địa chỉ người mua thể hiện địa điểm kho nhận hàng; tên người bán thể hiện người xuất hàng, địa chỉ người bán thể hiện địa điểm kho xuất hàng và phương tiện vận chuyển; không thể hiện tiền thuế, thuế suất, tổng số tiền thanh toán.
+
+Đối với phiếu xuất kho hàng gửi bán đại lý thì trên phiếu xuất kho hàng gửi bán đại lý thể hiện các thông tin như hợp đồng kinh tế, người vận chuyển, phương tiện vận chuyển, địa điểm kho xuất, địa điểm kho nhận, tên sản phẩm hàng hóa, đơn vị tính, số lượng, đơn giá, thành tiền. Cụ thể: ghi số, ngày tháng năm hợp đồng kinh tế ký giữa tổ chức, cá nhân; họ tên người vận chuyển, hợp đồng vận chuyển (nếu có), địa chỉ người bán thể hiện địa điểm kho xuất hàng;
+
+h) Hóa đơn sử dụng cho thanh toán Interline giữa các hãng hàng không được lập theo quy định của Hiệp hội vận tải hàng không quốc tế thì trên hóa đơn không nhất thiết phải có các chỉ tiêu: ký hiệu hóa đơn, ký hiệu mẫu hóa đơn, tên địa chỉ, mã số thuế của người mua, chữ ký số của người mua, đơn vị tính, số lượng, đơn giá;
+
+i) Hóa đơn doanh nghiệp vận tải hàng không xuất cho đại lý là hóa đơn xuất ra theo báo cáo đã đối chiếu giữa hai bên và theo bảng kê tổng hợp thì trên hóa đơn không nhất thiết phải có đơn giá;
+
+k) Đối với hoạt động xây dựng, lắp đặt, sản xuất, cung cấp sản phẩm, dịch vụ của doanh nghiệp quốc phòng an ninh phục vụ hoạt động quốc phòng an ninh theo quy định của Chính phủ thì trên hóa đơn không nhất thiết phải có đơn vị

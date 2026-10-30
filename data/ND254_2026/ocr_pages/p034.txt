@@ -1,0 +1,21 @@
+PRINTED_PAGE: 34
+
+Chữ số trên biên lai là các chữ số tự nhiên 0, 1, 2, 3, 4, 5, 6, 7, 8, 9.
+
+Đồng tiền trên biên lai là đồng Việt Nam. Trường hợp các khoản phải thu phí, lệ phí được pháp luật quy định có mức thu bằng ngoại tệ thì được thu bằng ngoại tệ hoặc thu bằng đồng Việt Nam trên cơ sở quy đổi từ ngoại tệ ra đồng Việt Nam theo tỷ giá quy định tại Nghị định số 362/2025/NĐ-CP của Chính phủ quy định chi tiết một số điều và biện pháp để tổ chức, hướng dẫn thi hành Luật Phí và lệ phí.
+
+Ngoài các thông tin bắt buộc theo quy định tại khoản này, tổ chức thu thuế, phí, lệ phí có thể tạo thêm các thông tin khác, kể cả tạo lo-go, hình ảnh trang trí hoặc quảng cáo phù hợp với quy định của pháp luật và không che khuất, làm mờ các nội dung bắt buộc thể hiện trên biên lai. Cỡ chữ của các thông tin tạo thêm không được lớn hơn cỡ chữ của các nội dung bắt buộc thể hiện trên biên lai.
+
+3. Mẫu hiển thị chứng từ điện tử theo hướng dẫn tại Nghị định số 347/2025/NĐ-CP của Chính phủ quy định về thủ tục hành chính thuộc lĩnh vực Kho bạc Nhà nước và các văn bản hướng dẫn thi hành.
+
+Điều 24. Thời điểm lập chứng từ
+
+1. Tại thời điểm khấu trừ thuế thu nhập cá nhân, thời điểm thu thuế, phí, lệ phí, tổ chức khấu trừ thuế thu nhập cá nhân, tổ chức thu thuế, phí, lệ phí, phải lập chứng từ, biên lai giao cho người nộp thuế, phí, lệ phí trừ các trường hợp quy định tại khoản 2, khoản 3 và khoản 4 Điều này.
+
+2. Trường hợp cá nhân ủy quyền quyết toán thuế thì tổ chức khấu trừ thuế thu nhập cá nhân không phải lập chứng từ khấu trừ thuế thu nhập cá nhân.
+
+3. Đối với cá nhân không ký hợp đồng lao động hoặc ký hợp đồng lao động dưới 03 tháng thì tổ chức, cá nhân trả thu nhập lập chứng từ khấu trừ thuế cho mỗi lần khấu trừ thuế hoặc lập một chứng từ khấu trừ thuế cho nhiều lần khấu trừ thuế trong một năm tính thuế khi cá nhân yêu cầu. Đối với cá nhân ký hợp đồng lao động từ 03 tháng trở lên, tổ chức, cá nhân trả thu nhập chỉ lập một chứng từ khấu trừ thuế trong một năm tính thuế.
+
+4. Đối với thu nhập của nhà đầu tư cá nhân phát sinh từ hoạt động chuyển nhượng chứng khoán, đầu tư vốn, chuyển nhượng tài sản mã hóa, chuyển nhượng vàng miếng, thu nhập từ bản quyền, nhượng quyền thương mại, thu nhập từ trúng thưởng, thừa kế, quà tặng trong trường hợp khoản thu nhập này đã được tổ chức chi trả hoặc tổ chức khấu trừ thuế thực hiện khấu trừ, nộp thuế thu nhập cá nhân tại nguồn thì tổ chức chi trả hoặc tổ chức khấu trừ thuế không phải lập chứng từ khấu trừ thuế thu nhập cá nhân.
+
+5. Thời điểm ký số trên chứng từ là thời điểm tổ chức, cá nhân khấu trừ

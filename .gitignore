@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+# ảnh trang PDF do app tự render
+data/*/pages/

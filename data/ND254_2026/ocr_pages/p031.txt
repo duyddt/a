@@ -1,0 +1,31 @@
+PRINTED_PAGE: 31
+
+b.4) Thực hiện trách nhiệm khác theo thỏa thuận với người sử dụng dịch vụ.
+
+2. Nghĩa vụ và trách nhiệm của tổ chức truyền, lưu trữ dữ liệu hóa đơn điện tử, chứng từ điện tử với cơ quan thuế:
+
+a) Nghĩa vụ:
+
+a.1) Cung cấp dịch vụ truyền, lưu trữ dữ liệu hóa đơn điện tử, chứng từ điện tử với Cục Thuế sau khi nhận được từ người sử dụng dịch vụ (bao gồm cả tổ chức cung cấp giải pháp lập hóa đơn điện tử, chứng từ điện tử chưa thực hiện kết nối với Cục Thuế);
+
+a.2) Thực hiện cấp mã của cơ quan thuế trong trường hợp cơ quan thuế thông báo ủy quyền; thực hiện cung cấp hóa đơn điện tử có mã của cơ quan thuế, chứng từ điện tử cho các đối tượng được miễn phí dịch vụ do cơ quan thuế ủy thác;
+
+b) Trách nhiệm:
+
+b.1) Thiết lập kênh kết nối chuyển dữ liệu đến Cục Thuế đảm bảo liên tục, an ninh, an toàn;
+
+b.2) Công khai, thông báo phương thức hoạt động, chất lượng dịch vụ trên Trang thông tin điện tử giới thiệu dịch vụ của tổ chức;
+
+b.3) Bảo mật thông tin hóa đơn điện tử, chứng từ điện tử;
+
+b.4) Thông báo kịp thời cho Cục Thuế về các vấn đề ảnh hưởng đến việc cung cấp dịch vụ truyền, lưu trữ dữ liệu hóa đơn điện tử, chứng từ điện tử với cơ quan thuế; phối hợp với Cục Thuế xử lý vướng mắc phát sinh trong quá trình thực hiện;
+
+b.5) Thông báo cho Cục Thuế và người sử dụng dịch vụ kế hoạch ngừng hoặc tạm ngừng cung cấp dịch vụ và biện pháp xử lý ít nhất trước 30 ngày để phối hợp thực hiện và đảm bảo quyền lợi của người sử dụng dịch vụ;
+
+b.6) Thực hiện trách nhiệm khác theo thỏa thuận với Cục Thuế và người sử dụng dịch vụ.
+
+Điều 21. Trách nhiệm của cơ quan thuế trong quản lý hóa đơn, chứng từ
+
+1. Cục Thuế có trách nhiệm:
+
+a) Xây dựng cơ sở dữ liệu về hóa đơn điện tử, chứng từ điện tử để phục
