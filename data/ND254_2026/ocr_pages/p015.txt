@@ -1,0 +1,27 @@
+PRINTED_PAGE: 15
+
+trị gia tăng theo phương pháp trực tiếp sử dụng cho các hoạt động:
+
+a.1) Bán hàng hoá, cung cấp dịch vụ trong nội địa;
+
+a.2) Hoạt động vận tải quốc tế;
+
+a.3) Xuất vào khu phi thuế quan và các trường hợp được coi như xuất khẩu;
+
+a.4) Xuất khẩu hàng hóa, cung cấp dịch vụ ra nước ngoài.
+
+b) Tổ chức kinh tế, cá nhân trong khu phi thuế quan khi bán hàng hóa, cung cấp dịch vụ vào nội địa và khi bán hàng hóa, cung cấp dịch vụ giữa các tổ chức kinh tế, cá nhân trong khu phi thuế quan với nhau, xuất khẩu hàng hóa, cung cấp dịch vụ ra nước ngoài, trên hóa đơn ghi rõ “Dành cho tổ chức, cá nhân trong khu phi thuế quan”.
+
+Doanh nghiệp chế xuất có hoạt động kinh doanh khác (ngoài hoạt động chế xuất theo quy định pháp luật về khu công nghiệp, khu chế xuất) khai thuế giá trị gia tăng theo phương pháp trực tiếp thì sử dụng hóa đơn theo điểm a khoản này. Doanh nghiệp chế xuất khai thuế giá trị gia tăng theo phương pháp khấu trừ thì sử dụng hóa đơn theo quy định tại khoản 1 Điều này.
+
+3. Hóa đơn thương mại điện tử là hóa đơn áp dụng đối với các tổ chức kinh tế, hộ kinh doanh, cá nhân kinh doanh (người xuất khẩu) có hoạt động xuất khẩu hàng hóa, cung cấp dịch vụ ra nước ngoài mà người xuất khẩu đáp ứng điều kiện chuyển dữ liệu hóa đơn thương mại bằng phương thức điện tử đến cơ quan thuế. Hóa đơn thương mại điện tử đáp ứng quy định về nội dung theo quy định tại Điều 10 Nghị định này và theo định dạng chuẩn dữ liệu.
+
+Trường hợp người xuất khẩu không đáp ứng điều kiện chuyển dữ liệu hóa đơn thương mại bằng phương thức điện tử đến cơ quan thuế thì lựa chọn lập hóa đơn giá trị gia tăng điện tử hoặc hóa đơn bán hàng điện tử.
+
+4. Hóa đơn điện tử bán tài sản công được sử dụng khi bán, chuyển nhượng các tài sản công thực hiện theo quy định của pháp luật về quản lý, sử dụng tài sản công.
+
+5. Hóa đơn điện tử bán hàng dự trữ quốc gia được sử dụng khi các cơ quan, đơn vị thuộc hệ thống cơ quan dự trữ nhà nước bán hàng dự trữ quốc gia theo quy định của pháp luật.
+
+6. Các loại hóa đơn khác, gồm:
+
+a) Tem, vé, thẻ theo định dạng chuẩn dữ liệu và nội dung theo quy định tại Nghị định này;

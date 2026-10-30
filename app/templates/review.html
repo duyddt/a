@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}{{ doc.document_no }}{% endblock %}
+{% block body %}
+<header class="topbar">
+  <a href="/">&larr; Danh sách văn bản</a>
+  <h1>{{ doc.title }} <span class="muted">· {{ doc.document_no }}</span></h1>
+</header>
+<div class="split">
+  <section class="pane left" aria-label="Trang PDF gốc">
+    {% include "partials/viewer.html" %}
+  </section>
+  <section class="pane right">
+    <h2 class="pane-title">Cấu trúc: Điều &rarr; Khoản &rarr; Điểm</h2>
+    {% include "partials/tree.html" %}
+    <div id="detail" class="detail" aria-live="polite">
+      {% include "partials/detail.html" %}
+    </div>
+  </section>
+</div>
+{% endblock %}

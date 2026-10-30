@@ -1,0 +1,23 @@
+PRINTED_PAGE: 42
+
+a) Các tổ chức kinh tế, tổ chức khác, hộ kinh doanh, cá nhân kinh doanh là người bán hàng hóa, cung cấp dịch vụ, bên nhận ủy nhiệm lập hóa đơn, các tổ chức, cá nhân là người mua hàng hóa, dịch vụ;
+
+b) Các cơ quan quản lý nhà nước sử dụng thông tin hóa đơn điện tử để thực hiện các thủ tục hành chính theo quy định của pháp luật; kiểm tra tính hợp pháp của hàng hóa lưu thông trên thị trường; phục vụ hoạt động tố tụng, thanh tra, kiểm tra, kiểm toán;
+
+c) Các tổ chức tín dụng sử dụng thông tin hóa đơn điện tử để thực hiện các thủ tục về thuế, thủ tục thanh toán qua ngân hàng;
+
+d) Các tổ chức cung cấp dịch vụ hóa đơn điện tử;
+
+đ) Các tổ chức sử dụng thông tin chứng từ điện tử khấu trừ thuế thu nhập cá nhân;
+
+e) Cơ quan quản lý thuế nước ngoài phù hợp với điều ước quốc tế về thuế mà nước Cộng hòa xã hội chủ nghĩa Việt Nam là thành viên;
+
+g) Các tổ chức được ủy quyền của tổ chức kinh tế, hộ kinh doanh, cá nhân kinh doanh là người bán hàng hóa, cung cấp dịch vụ theo quy định của pháp luật dân sự.
+
+Điều 37. Hình thức khai thác, sử dụng thông tin hóa đơn điện tử trên Hệ thống thông tin quản lý thuế
+
+1. Bên sử dụng thông tin là các tổ chức kinh tế, hộ kinh doanh, cá nhân kinh doanh là người bán hàng hóa, cung cấp dịch vụ, bên nhận ủy nhiệm lập hóa đơn; các tổ chức, cá nhân là người mua hàng hóa, dịch vụ khai thác thông tin từ hóa đơn điện tử theo các nội dung thông tin từ Hệ thống thông tin quản lý thuế.
+
+2. Bên sử dụng thông tin là các cơ quan quản lý nhà nước, các tổ chức tín dụng, tổ chức cung cấp dịch vụ hóa đơn điện tử, các tổ chức được ủy quyền của tổ chức kinh tế, hộ kinh doanh, cá nhân kinh doanh là người bán hàng hóa, cung cấp dịch vụ theo quy định của pháp luật dân sự: tra cứu, sử dụng thông tin hóa đơn điện tử, chứng từ điện tử theo phạm vi, thời gian, trách nhiệm và quyền truy cập Hệ thống thông tin quản lý thuế được quy định cụ thể tại văn bản thống nhất giữa hai bên hoặc theo hình thức cung cấp dịch vụ truy vấn trực tiếp với Hệ thống thông tin quản lý thuế.
+
+Bên sử dụng thông tin có trách nhiệm phân công đầu mối đăng ký sử dụng thông tin hóa đơn điện tử (sau đây gọi tắt là đầu mối đăng ký) và thông báo cho Cục Thuế bằng văn bản hoặc văn bản điện tử. Trường hợp sử dụng thông tin theo hình thức cung cấp dịch vụ truy vấn trực tiếp với Hệ thống thông tin quản lý thuế phải đảm bảo các tiêu chí như đối với tổ chức cung cấp dịch vụ nhận, truyền, lưu trữ dữ liệu hóa đơn điện tử.

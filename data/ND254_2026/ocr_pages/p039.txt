@@ -1,0 +1,29 @@
+PRINTED_PAGE: 39
+
+kỹ thuật về công nghệ thông tin.
+
+2. Cơ sở dữ liệu hóa đơn, chứng từ phải bảo đảm phục vụ kịp thời cho công tác quản lý thuế, quản lý khác của nhà nước; đáp ứng yêu cầu phát triển kinh tế - xã hội; bảo đảm tính an toàn, bảo mật và an ninh quốc gia.
+
+3. Các thông tin, dữ liệu về hóa đơn, chứng từ được thu thập, cập nhật, duy trì, đảm bảo tính chính xác, trung thực và khách quan.
+
+4. Việc xây dựng, quản lý, khai thác sử dụng, cập nhật cơ sở dữ liệu về hóa đơn, chứng từ phải đảm bảo tính chính xác, khoa học, khách quan, kịp thời.
+
+5. Cơ sở dữ liệu hóa đơn, chứng từ được xây dựng và kết nối, chia sẻ trên môi trường điện tử phục vụ quản lý, khai thác, cung cấp, sử dụng thông tin, dữ liệu thuận tiện, hiệu quả.
+
+6. Việc khai thác, sử dụng thông tin, dữ liệu hóa đơn, chứng từ phải đảm bảo đúng mục đích, tuân theo các quy định của pháp luật.
+
+7. Cơ sở dữ liệu về hóa đơn, chứng từ được kết nối, trao đổi với hệ thống thông tin, cơ sở dữ liệu của các bộ, ngành, địa phương có liên quan.
+
+Điều 32. Xây dựng hạ tầng kỹ thuật công nghệ thông tin, hệ thống phần mềm phục vụ quản lý, vận hành, khai thác hệ thống thông tin hóa đơn điện tử, chứng từ điện tử
+
+1. Hạ tầng kỹ thuật công nghệ thông tin hóa đơn điện tử, chứng từ điện tử bao gồm tập hợp thiết bị tính toán (máy chủ, máy trạm), hệ thống đường truyền, thiết bị kết nối mạng, thiết bị (hoặc phần mềm) an ninh an toàn mạng và cơ sở dữ liệu, thiết bị lưu trữ, thiết bị ngoại vi và thiết bị phụ trợ, mạng nội bộ.
+
+2. Hệ thống phần mềm để quản lý, vận hành, khai thác hệ thống thông tin hóa đơn điện tử, chứng từ điện tử gồm: hệ điều hành, hệ quản trị cơ sở dữ liệu và phần mềm ứng dụng.
+
+Điều 33. Xây dựng, thu thập, xử lý và quản lý hệ thống thông tin về hóa đơn điện tử, chứng từ điện tử
+
+1. Xây dựng hệ thống thông tin về hóa đơn, chứng từ
+
+a) Cơ sở dữ liệu hóa đơn, chứng từ là tập hợp các dữ liệu thông tin hóa đơn, chứng từ được sắp xếp, tổ chức để truy cập, khai thác, quản lý và cập nhật thông qua phương tiện điện tử;
+
+b) Cơ sở dữ liệu hóa đơn, chứng từ do cơ quan thuế quản lý được Cục Thuế, Kho bạc Nhà nước phối hợp với các đơn vị có liên quan xây dựng phù hợp với khung kiến trúc Chính phủ điện tử Việt Nam và bao gồm các thành phần nội dung: đăng ký sử dụng thông tin; thông báo hủy hóa đơn, chứng từ; thông tin về hóa đơn điện tử người bán có trách nhiệm gửi cho cơ quan thuế,

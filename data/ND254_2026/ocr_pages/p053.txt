@@ -1,0 +1,23 @@
+PRINTED_PAGE: 6
+
+Người bán được lựa chọn: sau chữ số hàng nghìn, triệu, tỷ, nghìn tỷ, triệu tỷ, tỷ tỷ đặt dấu chấm (.), nếu có ghi chữ số sau chữ số hàng đơn vị đặt dấu phẩy (,) sau chữ số hàng đơn vị hoặc sử dụng dấu phân cách số tự nhiên là dấu phẩy (,) sau chữ số hàng nghìn, triệu, tỷ, nghìn tỷ, triệu tỷ, tỷ tỷ và sử dụng dấu chấm (.) sau chữ số hàng đơn vị trên chứng từ kế toán;
+
+c) Đồng tiền ghi trên hóa đơn là đồng Việt Nam, ký hiệu quốc gia là "đ".
+
+c.1) Trường hợp nghiệp vụ kinh tế, tài chính phát sinh bằng ngoại tệ theo quy định của pháp luật về ngoại hối thì đơn giá, thành tiền, tổng số tiền thuế giá trị gia tăng theo từng loại thuế suất, tổng cộng tiền thuế giá trị gia tăng, tổng số tiền thanh toán được ghi bằng ngoại tệ, đơn vị tiền tệ ghi tên ngoại tệ. Người bán đồng thời thể hiện trên hóa đơn tỷ giá ngoại tệ với đồng Việt Nam theo tỷ giá theo quy định của Luật Quản lý thuế và các văn bản hướng dẫn thi hành;
+
+c.2) Mã ký hiệu ngoại tệ theo tiêu chuẩn quốc tế (ví dụ: 13.800,25 USD - Mười ba nghìn tám trăm đô la Mỹ và hai mươi nhăm xu, ví dụ: 5.000,50 EUR- Năm nghìn ơ-rô và năm mươi xu);
+
+c.3) Trường hợp bán hàng hóa phát sinh bằng ngoại tệ theo quy định của pháp luật về ngoại hối và được nộp thuế bằng ngoại tệ thì tổng số tiền thanh toán thể hiện trên hóa đơn theo ngoại tệ, không phải quy đổi ra đồng Việt Nam.
+
+9. Một số trường hợp hóa đơn điện tử không nhất thiết có đầy đủ các nội dung
+
+a) Trên hóa đơn điện tử không nhất thiết phải có chữ ký số của người mua (bao gồm cả trường hợp lập hóa đơn điện tử khi bán hàng hóa, cung cấp dịch vụ cho khách hàng ở nước ngoài). Trường hợp người mua là cơ sở kinh doanh và người mua, người bán có thỏa thuận về việc người mua đáp ứng các điều kiện kỹ thuật để ký số, ký điện tử trên hóa đơn điện tử do người bán lập thì hóa đơn điện tử có chữ ký số, ký điện tử của người bán và người mua theo thỏa thuận giữa hai bên;
+
+b) Đối với hóa đơn điện tử của cơ quan thuế cấp theo từng lần phát sinh không nhất thiết phải có chữ ký số của người bán, người mua;
+
+c) Đối với hóa đơn điện tử bán hàng tại siêu thị, trung tâm thương mại, rạp chiếu phim mà người mua là cá nhân không cung cấp tên, địa chỉ, số định danh cá nhân của người mua thì trên hóa đơn không nhất thiết phải có tên, địa chỉ, số định danh cá nhân của người mua, chữ ký số của người mua.
+
+Đối với hóa đơn điện tử bán xăng dầu cho khách hàng là cá nhân không cung cấp tên, địa chỉ, số định danh cá nhân của người mua thì không nhất thiết phải có các chỉ tiêu: Tên, địa chỉ, số định danh cá nhân của người mua, chữ ký số của người mua;
+
+d) Đối với hóa đơn điện tử là tem, vé, thẻ thì trên hóa đơn không nhất thiết phải có chữ ký số của người bán (trừ trường hợp tem, vé, thẻ là hóa đơn điện tử do cơ quan thuế cấp mã), tiêu thức người mua (tên, địa chỉ, mã số thuế), tiền thuế, thuế suất thuế giá trị gia tăng. Trường hợp tem, vé, thẻ điện tử có sẵn mệnh

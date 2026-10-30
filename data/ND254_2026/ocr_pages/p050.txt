@@ -1,0 +1,19 @@
+PRINTED_PAGE: 3
+
+a) Tên, đơn vị tính, số lượng, đơn giá hàng hóa, dịch vụ
+
+a.1) Tên hàng hóa, dịch vụ: Trên hóa đơn phải thể hiện tên hàng hóa, dịch vụ được giao dịch bằng tiếng Việt phù hợp với quy định pháp luật. Trường hợp bán hàng hóa có nhiều chủng loại khác nhau thì tên hàng hóa thể hiện chi tiết đến từng chủng loại (ví dụ: Điện thoại Samsung; mặt hàng ăn, uống (trừ trường hợp tính tiền theo suất, theo phần;...)).
+
+Trường hợp pháp luật có quy định về định danh hàng hóa, dịch vụ thì người bán thể hiện tên hàng hóa, dịch vụ trên hóa đơn theo quy định pháp luật về định danh hàng hóa, dịch vụ.
+
+a.1.1) Trường hợp hàng hóa phải đăng ký quyền sử dụng, quyền sở hữu thì trên hóa đơn phải thể hiện các số hiệu, ký hiệu đặc trưng của hàng hóa mà khi đăng ký pháp luật có yêu cầu (ví dụ: địa chỉ, cấp nhà, chiều dài, chiều rộng, số tầng của một ngôi nhà).
+
+Trường hợp người bán ô tô, xe máy lập hóa đơn điện tử có đủ các thông tin sau: Họ và tên người mua; số định danh cá nhân hoặc mã số thuế (đối với tổ chức); nhãn hiệu, loại xe, năm sản xuất; số khung, số máy; số Giấy chứng nhận chất lượng an toàn kỹ thuật và bảo vệ môi trường (đối với xe nhập khẩu) hoặc số Phiếu kiểm tra chất lượng xuất xưởng (đối với xe sản xuất, lắp ráp trong nước) là căn cứ để cơ quan thuế xác định và thông báo số tiền lệ phí trước bạ phải nộp;
+
+a.1.2) Trường hợp kinh doanh dịch vụ vận tải đường bộ trong nước thì trên hoá đơn phải thể hiện biển số phương tiện vận tải, hành trình (điểm đi - điểm đến). Đối với doanh nghiệp kinh doanh vận tải cung cấp dịch vụ vận tải hàng hóa trên nền tảng số, hoạt động thương mại điện tử thì phải thể hiện tên hàng hóa vận chuyển, thông tin tên, địa chỉ, mã số thuế hoặc số định danh cá nhân của người gửi hàng. Đối với doanh nghiệp cung cấp dịch vụ vận tải, cho thuê xe có ký hợp đồng với đối tác theo tuyến cố định thì trên hóa đơn không cần thể hiện biển số phương tiện vận tải, hành trình (điểm đi - điểm đến).
+
+Trường hợp cần ghi thêm chữ nước ngoài thì chữ nước ngoài được đặt bên phải trong ngoặc đơn "( )" hoặc đặt ngay dưới dòng tiếng Việt và có cỡ chữ nhỏ hơn chữ tiếng Việt. Trường hợp hàng hóa, dịch vụ được giao dịch có quy định về mã hàng hóa, dịch vụ thì trên hóa đơn phải ghi cả tên và mã hàng hóa, dịch vụ;
+
+a.2) Đơn vị tính: Người bán căn cứ vào tính chất, đặc điểm của hàng hóa để xác định tên đơn vị tính của hàng hóa thể hiện trên hóa đơn theo đơn vị tính là đơn vị đo lường theo quy định pháp luật về đo lường (ví dụ như: tấn, tạ, yến, kg, g, mg hoặc lượng, lạng, cái, con, chiếc, hộp, can, thùng, bao, gói, tuýp, m3, m2, m). Đối với dịch vụ thì trên hóa đơn không nhất thiết phải có tiêu thức "đơn vị tính" mà đơn vị tính xác định theo từng lần cung cấp dịch vụ và nội dung dịch vụ cung cấp;
+
+a.3) Số lượng hàng hóa, dịch vụ: Người bán ghi số lượng bằng chữ số Ả-rập căn cứ theo đơn vị tính nêu trên. Trường hợp cung cấp các loại hàng hóa

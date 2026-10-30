@@ -1,0 +1,86 @@
+{
+  "document_id": "ND254_2026",
+  "document_no": "254/2026/NĐ-CP",
+  "document_type": "Nghị định",
+  "title": "Văn bản mẫu để thử giao diện (dữ liệu minh họa, không phải nguyên văn pháp luật)",
+  "issuer": "Chính phủ",
+  "issued_date": "2026-06-15",
+  "effective_from": "2026-07-01",
+  "effective_to": null,
+  "status": "active",
+  "amended_by": [],
+  "replaced_by": null,
+  "legal_units": [
+    {
+      "unit_id": "ND254_2026_D9",
+      "chapter": "II",
+      "article": 9,
+      "title": "[Tên Điều 9 mẫu]",
+      "content": "1. [Nguyên văn Khoản 1, chỗ giữ chỗ]\na) [Nguyên văn Điểm a, chỗ giữ chỗ]\nb) [Nguyên văn Điểm b, chỗ giữ chỗ]\n2. [Nguyên văn Khoản 2, chỗ giữ chỗ]",
+      "effective_from": "2026-07-01",
+      "source_pages": [1, 2]
+    },
+    {
+      "unit_id": "ND254_2026_D9_K1",
+      "chapter": "II",
+      "article": 9,
+      "clause": 1,
+      "title": "[Tên Điều 9 mẫu]",
+      "content": "[Nguyên văn Khoản 1, chỗ giữ chỗ]\na) [Nguyên văn Điểm a, chỗ giữ chỗ]\nb) [Nguyên văn Điểm b, chỗ giữ chỗ]",
+      "effective_from": "2026-07-01",
+      "source_pages": [1, 2]
+    },
+    {
+      "unit_id": "ND254_2026_D9_K1_a",
+      "chapter": "II",
+      "article": 9,
+      "clause": 1,
+      "point": "a",
+      "title": "[Tên Điều 9 mẫu]",
+      "content": "[Nguyên văn Điểm a, chỗ giữ chỗ]",
+      "effective_from": "2026-07-01",
+      "is_confident": false,
+      "source_pages": [1]
+    },
+    {
+      "unit_id": "ND254_2026_D9_K1_b",
+      "chapter": "II",
+      "article": 9,
+      "clause": 1,
+      "point": "b",
+      "title": "[Tên Điều 9 mẫu]",
+      "content": "[Nguyên văn Điểm b, chỗ giữ chỗ]",
+      "effective_from": "2026-07-01",
+      "source_pages": [2]
+    },
+    {
+      "unit_id": "ND254_2026_D9_K2",
+      "chapter": "II",
+      "article": 9,
+      "clause": 2,
+      "title": "[Tên Điều 9 mẫu]",
+      "content": "[Nguyên văn Khoản 2, chỗ giữ chỗ]",
+      "effective_from": "2026-07-01",
+      "source_pages": [2]
+    },
+    {
+      "unit_id": "ND254_2026_D10",
+      "chapter": "II",
+      "article": 10,
+      "title": "[Tên Điều 10 mẫu]",
+      "content": "1. [Nguyên văn Khoản 1 của Điều 10, chỗ giữ chỗ]",
+      "effective_from": "2026-07-01",
+      "source_pages": [3]
+    },
+    {
+      "unit_id": "ND254_2026_D10_K1",
+      "chapter": "II",
+      "article": 10,
+      "clause": 1,
+      "title": "[Tên Điều 10 mẫu]",
+      "content": "[Nguyên văn Khoản 1 của Điều 10, chỗ giữ chỗ]",
+      "effective_from": "2026-07-01",
+      "source_pages": [3]
+    }
+  ]
+}

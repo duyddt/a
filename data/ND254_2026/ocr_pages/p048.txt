@@ -1,0 +1,27 @@
+PRINTED_PAGE: none
+
+Phụ lục
+
+NỘI DUNG CỦA HÓA ĐƠN
+
+(Kèm theo Nghị định số 254/2026/NĐ-CP ngày 30[?] tháng 6[?] năm 2026 của Chính phủ)
+
+1. Tên hóa đơn, ký hiệu hóa đơn, ký hiệu mẫu số hóa đơn.
+
+a) Tên hóa đơn là tên của từng loại hóa đơn quy định tại Điều 8 Nghị định này được thể hiện trên mỗi hóa đơn, như: HÓA ĐƠN GIÁ TRỊ GIA TĂNG, HÓA ĐƠN GIÁ TRỊ GIA TĂNG KIÊM TỜ KHAI HOÀN THUẾ, HÓA ĐƠN GIÁ TRỊ GIA TĂNG KIÊM PHIẾU THU, HÓA ĐƠN BÁN HÀNG, HÓA ĐƠN BÁN TÀI SẢN CÔNG, TEM, VÉ, THẺ, HÓA ĐƠN BÁN HÀNG DỰ TRỮ QUỐC GIA;
+
+b) Ký hiệu mẫu số hóa đơn, ký hiệu hóa đơn thực hiện theo quy định của Bộ trưởng Bộ Tài chính.
+
+2. Số hóa đơn
+
+a) Số hóa đơn là số thứ tự được thể hiện trên hóa đơn khi người bán lập hóa đơn. Số hóa đơn được ghi bằng chữ số Ả-rập có tối đa 8 chữ số, bắt đầu từ số 1 vào ngày 01/01 hoặc ngày bắt đầu sử dụng hóa đơn và kết thúc vào ngày 31/12 hàng năm có tối đa đến số 99 999 999. Hóa đơn được lập theo thứ tự liên tục từ số nhỏ đến số lớn trong cùng một ký hiệu hóa đơn và ký hiệu mẫu số hóa đơn.
+
+Trường hợp tổ chức kinh doanh có nhiều cơ sở bán hàng hoặc nhiều cơ sở được đồng thời cùng sử dụng một loại hóa đơn điện tử có cùng ký hiệu theo phương thức truy xuất ngẫu nhiên từ một hệ thống lập hóa đơn điện tử thì hóa đơn được lập theo thứ tự liên tục từ số nhỏ đến số lớn theo thời điểm người bán ký số, ký điện tử trên hóa đơn;
+
+b) Trường hợp số hóa đơn không được lập theo nguyên tắc nêu trên thì hệ thống lập hóa đơn điện tử phải đảm bảo nguyên tắc tăng theo thời gian, mỗi số hóa đơn đảm bảo chỉ được lập, sử dụng một lần duy nhất và tối đa 8 chữ số.
+
+3. Tên, địa chỉ, mã số thuế của người bán
+
+Trên hóa đơn phải thể hiện tên, địa chỉ, mã số thuế của người bán theo đúng tên, địa chỉ, mã số thuế ghi tại giấy chứng nhận đăng ký doanh nghiệp, giấy chứng nhận đăng ký hoạt động chi nhánh, giấy chứng nhận đăng ký hộ kinh doanh, giấy chứng nhận đăng ký thuế, thông báo mã số thuế, giấy chứng nhận đăng ký đầu tư, giấy chứng nhận đăng ký hợp tác xã.
+
+Trường hợp hộ kinh doanh, cá nhân kinh doanh thuộc đối tượng sử dụng hóa đơn điện tử và sử dụng mã số thuế của hộ kinh doanh, cá nhân kinh doanh cho tất cả các cửa hàng thì phải thể hiện rõ tên, mã, địa chỉ địa điểm kinh doanh trên hóa đơn; Trường hợp doanh nghiệp kinh doanh xăng dầu thì phải thể hiện rõ mã, địa chỉ địa điểm kinh doanh do cơ quan có thẩm quyền cấp của từng địa điểm kinh doanh trên hóa đơn.

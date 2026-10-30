@@ -1,0 +1,27 @@
+PRINTED_PAGE: 30
+
+đ) Không được sử dụng dữ liệu hóa đơn vào mục đích khác ngoài phạm vi ủy nhiệm, trừ trường hợp pháp luật có quy định khác;
+
+e) Phối hợp với bên ủy quyền trong việc điều chỉnh, thay thế, hủy hóa đơn khi phát hiện sai sót;
+
+g) Cung cấp đầy đủ, kịp thời thông tin, dữ liệu liên quan đến hóa đơn theo yêu cầu của cơ quan nhà nước có thẩm quyền.
+
+2. Chủ quản nền tảng thương mại điện tử, nền tảng số có trách nhiệm cung cấp thông tin người mua, thông tin liên quan đến giao dịch, thời điểm giao hàng và xác nhận trạng trái hoàn tất đơn hàng trên hệ thống để người bán lập hóa đơn điện tử theo quy định đối với trường hợp bán hàng hóa, cung cấp dịch vụ qua nền tảng thương mại điện tử, nền tảng số.
+
+Điều 20. Nghĩa vụ và trách nhiệm của tổ chức cung cấp dịch vụ hoá đơn điện tử, chứng từ điện tử
+
+1. Nghĩa vụ và trách nhiệm của tổ chức cung cấp giải pháp lập hóa đơn điện tử, chứng từ điện tử:
+
+a) Nghĩa vụ:
+
+a.1) Cung cấp giải pháp trong việc lập, truyền, lưu trữ, xử lý dữ liệu hóa đơn điện tử, hóa đơn điện tử có mã của cơ quan thuế khởi tạo từ máy tính tiền, chứng từ điện tử; truyền dữ liệu hóa đơn điện tử, chứng từ điện tử đến cơ quan thuế. Trường hợp tổ chức cung cấp dịch vụ hóa đơn điện tử, chứng từ điện tử chưa phải là tổ chức truyền, lưu trữ dữ liệu hoá đơn điện tử, chứng từ điện tử với cơ quan thuế thì thực hiện truyền dữ liệu hóa đơn điện tử, chứng từ điện tử đến cơ quan thuế thông qua việc sử dụng dịch vụ của tổ chức truyền, lưu trữ dữ liệu hoá đơn điện tử, chứng từ điện tử với cơ quan thuế;
+
+a.2) Thực hiện truyền, nhận đúng hạn, toàn vẹn hóa đơn điện tử, chứng từ điện tử và lưu trữ kết quả truyền nhận giữa các bên tham gia giao dịch;
+
+b) Trách nhiệm:
+
+b.1) Công khai thông báo phương thức hoạt động, chất lượng dịch vụ trên Trang thông tin điện tử giới thiệu dịch vụ của tổ chức;
+
+b.2) Bảo mật thông tin hóa đơn điện tử, chứng từ điện tử;
+
+b.3) Thông báo cho người mua dịch vụ kế hoạch ngừng hoặc tạm ngừng cung cấp dịch vụ và biện pháp xử lý ít nhất trước 30 ngày để bảo đảm quyền lợi của người sử dụng dịch vụ;

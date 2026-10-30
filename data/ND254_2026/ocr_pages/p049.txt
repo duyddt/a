@@ -1,0 +1,17 @@
+PRINTED_PAGE: 2
+
+Trường hợp hóa đơn điện tử ủy nhiệm thì thể hiện tên, địa chỉ, mã số thuế của bên ủy nhiệm và tên, địa chỉ, mã số thuế của bên nhận ủy nhiệm.
+
+Trường hợp bán đấu giá tài sản để thi hành án thì hóa đơn phải thể hiện tên, địa chỉ, mã số thuế của cơ quan được giao bán đấu giá tài sản và tên, địa chỉ, mã số thuế của người bán.
+
+4. Tên, địa chỉ, mã số thuế hoặc mã số đơn vị có quan hệ với ngân sách hoặc số định danh cá nhân của người mua
+
+a) Trường hợp người mua là cơ sở kinh doanh (tổ chức kinh tế, hộ kinh doanh, cá nhân kinh doanh) có mã số thuế thì tên, địa chỉ, mã số thuế của người mua thể hiện trên hóa đơn phải ghi theo đúng tại giấy chứng nhận đăng ký doanh nghiệp, giấy chứng nhận đăng ký hoạt động chi nhánh, giấy chứng nhận đăng ký hộ kinh doanh, giấy chứng nhận đăng ký thuế, thông báo mã số thuế, giấy chứng nhận đăng ký đầu tư, giấy chứng nhận đăng ký hợp tác xã; trường hợp người mua cung cấp mã số đơn vị có quan hệ ngân sách thì tên, địa chỉ, mã số đơn vị có quan hệ ngân sách thể hiện trên hóa đơn là mã số đơn vị có quan hệ với ngân sách được cấp.
+
+Trường hợp tên, địa chỉ người mua quá dài, trên hóa đơn người bán được viết ngắn gọn một số danh từ thông dụng như: "Phường" thành "P" , "Thành phố" thành "TP", "Việt Nam" thành "VN" hoặc "Cổ phần" là "CP", "Trách nhiệm hữu hạn" thành "TNHH", "khu công nghiệp" thành "KCN", "sản xuất" thành "SX", "Chi nhánh" thành "CN"... nhưng phải đảm bảo đầy đủ số nhà, tên đường phố, phường, xã, đặc khu, tỉnh, thành phố xác định được chính xác tên, địa chỉ doanh nghiệp và phù hợp với đăng ký kinh doanh, đăng ký thuế của doanh nghiệp;
+
+b) Trường hợp người mua là người tiêu dùng cung cấp tên, địa chỉ, số định danh cá nhân thì trên hóa đơn phải thể hiện tên, địa chỉ, số định danh cá nhân (đối với người mua là người nước ngoài cung cấp thông tin để lập hóa đơn thì thông tin về địa chỉ, số định danh cá nhân có thể được thay thế bằng thông tin về số hộ chiếu hoặc giấy tờ xuất nhập cảnh và quốc tịch của khách hàng); trường hợp người mua không cung cấp tên, địa chỉ, số định danh cá nhân thì trên hóa đơn thể hiện rõ "Bán cho người tiêu dùng". Một số trường hợp bán hàng hóa, cung cấp dịch vụ đặc thù cho người tiêu dùng là cá nhân quy định tại điểm 9 Phụ lục này thì trên hóa đơn không phải thể hiện tên, địa chỉ, số định danh cá nhân của người mua.
+
+Hóa đơn không có thông tin người mua hoặc hóa đơn xuất cho người tiêu dùng thì không có giá trị để tổ chức kinh tế, cơ quan, tổ chức khác, hộ kinh doanh, cá nhân kinh doanh sử dụng vào mục đích hạch toán chi phí hoặc quyết toán thuế theo quy định pháp luật về thuế.
+
+5. Tên, đơn vị tính, số lượng, đơn giá hàng hóa, dịch vụ; thành tiền chưa có thuế giá trị gia tăng, thuế suất thuế giá trị gia tăng, tổng số tiền thuế giá trị gia tăng theo từng loại thuế suất, tổng cộng tiền thuế giá trị gia tăng, tổng tiền thanh toán đã có thuế giá trị gia tăng.

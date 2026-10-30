@@ -1,0 +1,31 @@
+PRINTED_PAGE: 24
+
+thuế cấp mã.
+
+2. Cấp mã hóa đơn
+
+a) Hóa đơn được cơ quan thuế cấp mã phải đảm bảo:
+
+a.1) Đầy đủ nội dung về hóa đơn điện tử theo quy định tại Điều 10 Nghị định này;
+
+a.2) Đúng định dạng về hóa đơn điện tử theo quy định của Bộ trưởng Bộ Tài chính;
+
+a.3) Đúng thông tin đăng ký theo quy định của Bộ trưởng Bộ Tài chính;
+
+a.4) Không thuộc trường hợp ngừng sử dụng hóa đơn điện tử có mã của cơ quan thuế theo quy định của Bộ trưởng Bộ Tài chính.
+
+b) Hệ thống cấp mã hóa đơn của Cục Thuế tự động thực hiện cấp mã hóa đơn và gửi trả kết quả cấp mã hóa đơn cho người gửi.
+
+3. Tổ chức kinh tế, tổ chức khác, hộ kinh doanh, cá nhân kinh doanh bán hàng hóa, cung cấp dịch vụ có trách nhiệm gửi hóa đơn điện tử đã được cấp mã của cơ quan thuế cho người mua. Phương thức gửi và nhận hóa đơn được thực hiện theo thỏa thuận giữa người bán và người mua, đảm bảo phù hợp với quy định của pháp luật về giao dịch điện tử.
+
+Điều 13. Lập hóa đơn điện tử không có mã của cơ quan thuế
+
+Doanh nghiệp sử dụng phần mềm để lập hóa đơn điện tử khi bán hàng hóa, cung cấp dịch vụ, ký số trên hóa đơn điện tử và gửi cho người mua bằng phương thức điện tử theo thỏa thuận giữa người bán và người mua, đảm bảo phù hợp với quy định của pháp luật về giao dịch điện tử.
+
+Điều 14. Xử lý sự cố
+
+1. Trường hợp người bán hàng hóa, cung cấp dịch vụ sử dụng hóa đơn điện tử có mã của cơ quan thuế nhưng gặp sự cố dẫn đến không sử dụng được hóa đơn điện tử có mã của cơ quan thuế thì liên hệ với cơ quan thuế hoặc tổ chức cung cấp dịch vụ để hỗ trợ xử lý sự cố. Trong thời gian xử lý sự cố, người bán hàng hóa, cung cấp dịch vụ có yêu cầu sử dụng hóa đơn điện tử có mã của cơ quan thuế thì đến cơ quan thuế để sử dụng hóa đơn điện tử có mã của cơ quan thuế.
+
+2. Trường hợp sự cố từ hệ thống cấp mã của cơ quan thuế
+
+Trường hợp hệ thống cấp mã hóa đơn điện tử của cơ quan thuế gặp sự cố kỹ thuật dẫn đến gián đoạn việc cấp mã, Cục Thuế có trách nhiệm: kích hoạt hệ thống dự phòng để bảo đảm hoạt động cấp mã; thông báo công khai trên Trang thông tin điện tử của Cục Thuế về phạm vi ảnh hưởng, thời điểm bắt đầu

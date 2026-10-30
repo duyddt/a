@@ -1,0 +1,19 @@
+PRINTED_PAGE: 8
+
+Chương II
+
+QUY ĐỊNH ĐỐI VỚI HÓA ĐƠN ĐIỆN TỬ
+
+Điều 6. Đối tượng sử dụng hóa đơn điện tử
+
+1. Đối tượng sử dụng hóa đơn điện tử gồm:
+
+a) Tổ chức kinh tế, tổ chức khác, hộ kinh doanh, cá nhân kinh doanh và các trường hợp rủi ro cao về thuế theo quy định của Bộ trưởng Bộ Tài chính sử dụng hóa đơn điện tử có mã của cơ quan thuế khi bán hàng hóa, cung cấp dịch vụ, trừ trường hợp quy định tại điểm b, điểm c khoản này;
+
+b) Doanh nghiệp kinh doanh ở lĩnh vực điện lực, xăng dầu, bưu chính, viễn thông, nước sạch, tài chính ngân hàng, chứng khoán, tài sản mã hóa, dịch vụ hỗ trợ giao dịch trên sàn giao dịch các-bon, bảo hiểm, y tế, kinh doanh thương mại điện tử, kinh doanh siêu thị, thương mại, vận tải hàng không, đường bộ, đường sắt, đường biển, đường thủy và tổ chức kinh tế đã hoặc sẽ thực hiện giao dịch với cơ quan thuế bằng phương tiện điện tử, xây dựng hạ tầng công nghệ thông tin, có hệ thống phần mềm kế toán, phần mềm lập hóa đơn điện tử đáp ứng lập, tra cứu hóa đơn điện tử, lưu trữ dữ liệu hóa đơn điện tử theo quy định, bảo đảm việc truyền dữ liệu hóa đơn điện tử đến người mua và đến cơ quan thuế thì được sử dụng hóa đơn điện tử không có mã của cơ quan thuế khi bán hàng hóa, cung cấp dịch vụ trừ trường hợp rủi ro cao về thuế theo quy định của Bộ trưởng Bộ Tài chính và trường hợp đăng ký sử dụng hóa đơn điện tử có mã của cơ quan thuế;
+
+c) Tổ chức kinh tế, hộ kinh doanh, cá nhân kinh doanh có hoạt động bán hàng hóa, cung cấp dịch vụ, trong đó có bán hàng hóa, cung cấp dịch vụ trực tiếp đến người tiêu dùng (trung tâm thương mại; siêu thị; bán lẻ (trừ ô tô, mô tô, xe máy và xe có động cơ khác); ăn uống; nhà hàng; khách sạn; dịch vụ vận tải hành khách, dịch vụ hỗ trợ trực tiếp cho vận tải đường bộ, dịch vụ nghệ thuật, vui chơi, giải trí, hoạt động chiếu phim, dịch vụ phục vụ cá nhân khác theo quy định về Hệ thống ngành kinh tế Việt Nam) sử dụng hóa đơn điện tử từ máy tính tiền.
+
+Trường hợp tổ chức kinh tế, hộ kinh doanh, cá nhân kinh doanh có hoạt động bán hàng hóa, cung cấp dịch vụ trực tiếp đến người tiêu dùng đã đăng ký sử dụng hóa đơn điện tử theo quy định tại điểm a, điểm b khoản này thì không bắt buộc đăng ký sử dụng hóa đơn điện tử từ máy tính tiền;
+
+d) Hộ kinh doanh, cá nhân kinh doanh có doanh thu năm trên 01 tỷ đồng hoặc hộ kinh doanh, cá nhân kinh doanh bán tài sản phải đăng ký quyền sở hữu, quyền sử dụng thì phải áp dụng hóa đơn điện tử có mã của cơ quan thuế, hóa đơn điện tử khởi tạo từ máy tính tiền có kết nối dữ liệu với cơ quan thuế.

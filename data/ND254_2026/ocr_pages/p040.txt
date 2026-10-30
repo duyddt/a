@@ -1,0 +1,33 @@
+PRINTED_PAGE: 40
+
+thông tin về chứng từ gửi cơ quan thuế; thông tin khai thuế liên quan đến hóa đơn, chứng từ.
+
+2. Thu thập, cập nhật thông tin về hóa đơn, chứng từ
+
+Thông tin về hóa đơn, chứng từ được thu thập dựa trên các thông tin mà người bán, người sử dụng có trách nhiệm gửi cho cơ quan thuế, thông tin từ các cơ quan khác gửi đến có liên quan đến hóa đơn điện tử, chứng từ điện tử, thông tin thu được từ công tác quản lý thuế của cơ quan thuế.
+
+3. Xử lý thông tin về hóa đơn, chứng từ
+
+Cục Thuế có trách nhiệm xử lý thông tin, dữ liệu trước khi được tích hợp và lưu trữ vào cơ sở dữ liệu quốc gia để đảm bảo tính hợp lý, thống nhất. Nội dung xử lý thông tin, dữ liệu gồm:
+
+a) Kiểm tra, đánh giá việc tuân thủ quy định, quy trình trong việc thu thập thông tin, dữ liệu;
+
+b) Kiểm tra, đánh giá về cơ sở pháp lý, mức độ tin cậy của thông tin, dữ liệu;
+
+c) Tổng hợp, sắp xếp, phân loại thông tin, dữ liệu phù hợp với nội dung quy định;
+
+d) Đối với các thông tin, dữ liệu được cập nhật từ cơ sở dữ liệu chuyên ngành thì cơ quan quản lý cơ sở dữ liệu chuyên ngành đó có trách nhiệm đảm bảo về tính chính xác của thông tin, dữ liệu.
+
+4. Quản lý hệ thống thông tin về hóa đơn, chứng từ
+
+Cục Thuế có trách nhiệm quản lý hệ thống thông tin về hóa đơn, chứng từ theo quy định sau:
+
+a) Xây dựng, quản lý, vận hành và khai thác hệ thống thông tin hóa đơn, chứng từ và thực hiện dịch vụ công về hóa đơn điện tử, chứng từ điện tử nếu cần thiết;
+
+b) Tích hợp kết quả điều tra và các dữ liệu, thông tin có liên quan đến hóa đơn, chứng từ do các bộ, ngành, cơ quan có liên quan cung cấp;
+
+c) Hướng dẫn, kiểm tra, giám sát việc quản lý và khai thác hệ thống thông tin hóa đơn, chứng từ tại cơ quan thuế địa phương;
+
+d) Xây dựng và ban hành quy định về phân quyền truy cập vào hệ thống thông tin hóa đơn, chứng từ; quản lý việc kết nối, chia sẻ và cung cấp dữ liệu với cơ sở dữ liệu của các bộ, ngành, cơ quan trung ương và địa phương;
+
+đ) Chủ trì, phối hợp với các đơn vị có liên quan xây dựng các phần mềm trong hệ thống thông tin hóa đơn, chứng từ.

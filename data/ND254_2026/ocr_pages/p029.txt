@@ -1,0 +1,35 @@
+PRINTED_PAGE: 29
+
+b) Cung cấp chính xác thông tin cần thiết để người bán lập hóa đơn;
+
+c) Tra cứu, nhận file gốc hóa đơn điện tử của người bán;
+
+d) Sử dụng hóa đơn hợp pháp do người bán cung cấp để:
+
+d.1) Xác nhận giao dịch mua bán hàng hóa, cung ứng dịch vụ;
+
+d.2) Làm căn cứ chứng minh quyền sử dụng, quyền sở hữu hàng hóa, dịch vụ hoặc để nhận bồi thường thiệt hại theo quy định của pháp luật;
+
+d.3) Đăng ký quyền sử dụng, quyền sở hữu và để kê khai các loại thuế, thanh toán vốn ngân sách nhà nước theo các quy định của pháp luật;
+
+d.4) Tham gia các chương trình khuyến khích sử dụng hóa đơn do người bán là tổ chức kinh tế, cơ quan thuế tổ chức.
+
+2. Hóa đơn do người mua yêu cầu và nhận từ người bán là cơ sở để xác định nghĩa vụ thuế của người bán đối với ngân sách nhà nước góp phần nâng cao tính minh bạch của nền kinh tế và hiệu quả quản lý thuế.
+
+3. Người mua hàng hóa, dịch vụ có trách nhiệm:
+
+a) Sử dụng hóa đơn đúng mục đích;
+
+b) Cung cấp thông tin trên hóa đơn cho các cơ quan có thẩm quyền khi được yêu cầu.
+
+Điều 19. Trách nhiệm của tổ chức được ủy nhiệm lập hóa đơn điện tử
+
+1. Tổ chức, cá nhân được ủy nhiệm lập hóa đơn điện tử có trách nhiệm:
+
+a) Lập hóa đơn điện tử trong phạm vi được ủy nhiệm và bảo đảm phản ánh đúng bản chất nghiệp vụ kinh tế phát sinh giữa bên ủy quyền và người mua; hóa đơn điện tử do tổ chức được ủy nhiệm lập phải thể hiện đầy đủ thông tin của bên ủy quyền là người bán; hóa đơn điện tử phải đảm bảo các quy định của pháp luật về hóa đơn điện tử, bao gồm định dạng dữ liệu, chữ ký số, thời điểm lập hóa đơn và các nội dung trên hóa đơn;
+
+b) Gửi hóa đơn điện tử đến cơ quan thuế theo quy định;
+
+c) Lưu trữ, bảo quản hóa đơn điện tử quy định của pháp luật;
+
+d) Bảo đảm an toàn, bảo mật dữ liệu hóa đơn và thông tin của bên ủy quyền, người mua;

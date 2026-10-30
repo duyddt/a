@@ -1,0 +1,25 @@
+PRINTED_PAGE: 26
+
+hóa đơn điện tử khởi tạo từ máy tính tiền đến cơ quan thuế, trừ trường hợp cung cấp dịch vụ theo quy định tại điểm r khoản 4 Điều 9 Nghị định này thì phương thức và thời điểm chuyển dữ liệu điện tử thực hiện theo quy định tại điểm a.2 khoản 3 Điều 16 Nghị định này.
+
+Điều 16. Trách nhiệm của người bán hàng hóa, cung cấp dịch vụ sử dụng hóa đơn điện tử không có mã của cơ quan thuế
+
+1. Quản lý tên và mật khẩu của các tài khoản đã được cơ quan thuế cấp.
+
+2. Tạo lập hóa đơn điện tử để gửi đến người mua, cơ quan thuế, tổ chức cung cấp dịch vụ hóa đơn điện tử và chịu trách nhiệm trước pháp luật về tính hợp pháp, chính xác của hóa đơn điện tử đã lập.
+
+3. Chuyển dữ liệu điện tử đã lập đến cơ quan thuế qua Hệ thống thông tin quản lý thuế (chuyển trực tiếp hoặc gửi qua tổ chức cung cấp dịch vụ hóa đơn điện tử)
+
+a) Phương thức và thời điểm chuyển dữ liệu điện tử
+
+a.1) Phương thức chuyển dữ liệu hóa đơn điện tử theo Bảng tổng hợp dữ liệu hóa đơn điện tử theo quy định của Bộ trưởng Bộ Tài chính đối với các trường hợp sau:
+
+a.1.1) Cung cấp dịch vụ thuộc lĩnh vực: bưu chính, viễn thông, bảo hiểm, tài chính ngân hàng, vận tải hàng không, chứng khoán, tài sản mã hóa, giao dịch trên sàn giao dịch các-bon;
+
+a.1.2) Bán hàng hóa là điện, nước nếu có thông tin về mã khách hàng hoặc mã số thuế của khách hàng;
+
+a.1.3) Bán hàng hóa, cung cấp dịch vụ của tổ chức nước ngoài có hoạt động kinh doanh, cung cấp dịch vụ thông qua nền tảng thương mại điện tử, nền tảng số khác tại Việt Nam.
+
+a.2) Phương thức chuyển cơ sở dữ liệu thông tin chi tiết giao dịch phát sinh theo Bảng thông tin chi tiết giao dịch theo quy định của Bộ trưởng Bộ Tài chính áp dụng đối với dịch vụ quy định tại điểm r khoản 4 Điều 9 Nghị định này.
+
+Người bán lập Bảng tổng hợp dữ liệu hóa đơn điện tử bán hàng hóa, cung cấp dịch vụ, Bảng thông tin chi tiết giao dịch phát sinh trong tháng hoặc quý (tính từ ngày đầu của tháng hoặc quý đến ngày cuối cùng của tháng hoặc quý) theo mẫu do Bộ trưởng Bộ Tài chính quy định để gửi cơ quan thuế chậm nhất

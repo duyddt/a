@@ -1,0 +1,25 @@
+PRINTED_PAGE: 37
+
+qua Hệ thống thông tin quản lý thuế hoặc tổ chức cung cấp dịch vụ hóa đơn điện tử được Cục Thuế ủy thác cung cấp dịch vụ.
+
+Cục Thuế thực hiện hoặc ủy thác cho tổ chức cung cấp dịch vụ về chứng từ điện tử thực hiện cung cấp chứng từ điện tử được miễn phí dịch vụ cho đối tượng nêu trên.
+
+2. Tổ chức, cá nhân quy định tại khoản 1 Điều này được đăng ký, thay đổi thông tin đăng ký sử dụng chứng từ điện tử qua Hệ thống thông tin quản lý thuế theo quy định của Bộ trưởng Bộ Tài chính.
+
+3. Nhà nước bảo đảm kinh phí để cơ quan quản lý thuế tổ chức cung cấp miễn phí dịch vụ về chứng từ điện tử cho các đối tượng quy định tại khoản 1 Điều này theo quy định của pháp luật về ngân sách nhà nước.
+
+4. Trường hợp người nộp thuế sử dụng dịch vụ về chứng từ điện tử do tổ chức cung cấp dịch vụ ngoài Hệ thống thông tin quản lý thuế thì chi phí dịch vụ do các bên thỏa thuận theo quy định của pháp luật.
+
+Điều 29. Trách nhiệm của tổ chức, cá nhân khấu trừ thuế thu nhập cá nhân, tổ chức thu thuế, phí, lệ phí khi sử dụng chứng từ điện tử, tổ chức nhận ủy nhiệm lập biên lai
+
+1. Quản lý tên và mật khẩu của các tài khoản đã được cơ quan quản lý thuế cấp.
+
+2. Tạo lập chứng từ khấu trừ thuế thu nhập cá nhân điện tử, biên lai thu thuế, phí, lệ phí điện tử để gửi đến người bị khấu trừ thuế thu nhập cá nhân, người nộp các khoản thuế, phí, lệ phí và chịu trách nhiệm trước pháp luật về tính hợp pháp, chính xác của chứng từ điện tử đã lập.
+
+3. Chuyển dữ liệu chứng từ điện tử đến cơ quan quản lý thuế
+
+a) Chuyển dữ liệu chứng từ khấu trừ thuế thu nhập cá nhân điện tử
+
+Tổ chức, cá nhân khấu trừ thuế sau khi lập đầy đủ các nội dung trên chứng từ khấu trừ thuế thu nhập cá nhân điện tử gửi cho người bị khấu trừ thuế, đồng thời gửi cho cơ quan thuế ngay trong ngày lập chứng từ.
+
+Tổ chức, cá nhân khấu trừ thuế, thực hiện chuyển dữ liệu chứng từ khấu trừ thuế thu nhập cá nhân điện tử đến cơ quan thuế theo định dạng chuẩn dữ liệu qua tổ chức cung cấp dịch vụ hóa đơn điện tử; tổ chức khấu trừ thuế thu nhập cá nhân là tổ chức kết nối chuyển dữ liệu hóa đơn điện tử theo hình thức gửi trực tiếp đến cơ quan thuế thì chuyển dữ liệu chứng từ khấu trừ thuế thu nhập cá nhân qua Hệ thống thông tin quản lý thuế; tổ chức, cá nhân trả thu nhập không thuộc đối tượng áp dụng hóa đơn điện tử và tổ chức, cá nhân trả thu nhập sử dụng hóa đơn điện tử có mã của cơ quan thuế sử dụng miễn phí dịch vụ theo quy định tại Điều 11 Nghị định này thì được lựa chọn chuyển dữ liệu chứng từ

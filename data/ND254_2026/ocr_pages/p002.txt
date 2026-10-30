@@ -1,0 +1,27 @@
+PRINTED_PAGE: 2
+
+a) Nguyên tắc lập, quản lý, sử dụng hóa đơn điện tử, chứng từ điện tử; bảo quản, lưu trữ hóa đơn, chứng từ và chuyển đổi hóa đơn điện tử, chứng từ điện tử;
+
+b) Lập hóa đơn điện tử có mã của cơ quan thuế; lập hóa đơn điện tử không có mã của cơ quan thuế; xử lý sự cố; ủy nhiệm lập biên lai;
+
+c) Xây dựng thông tin hóa đơn điện tử, chứng từ điện tử gồm: nguyên tắc chung; xây dựng hạ tầng kỹ thuật công nghệ thông tin; hệ thống phần mềm phục vụ quản lý, vận hành, khai thác hệ thống thông tin hóa đơn điện tử, chứng từ điện tử; xây dựng, thu thập, xử lý và quản lý hệ thống thông tin về hóa đơn điện tử, chứng từ điện tử;
+
+d) Tra cứu, cung cấp, sử dụng thông tin hóa đơn điện tử gồm: nguyên tắc tra cứu, cung cấp, sử dụng thông tin hóa đơn điện tử; tra cứu thông tin hóa đơn điện tử phục vụ kiểm tra hàng hóa lưu thông trên thị trường; đối tượng cung cấp thông tin, sử dụng thông tin hóa đơn điện tử; hình thức khai thác, sử dụng thông tin hóa đơn điện tử trên Hệ thống thông tin quản lý thuế;
+
+đ) Trách nhiệm của cơ quan thuế; trách nhiệm của bên sử dụng thông tin; trách nhiệm chia sẻ, kết nối thông tin, dữ liệu hóa đơn điện tử; khen thưởng người tiêu dùng tố giác người bán không lập và giao hóa đơn điện tử và kinh phí thực hiện.
+
+Điều 2. Đối tượng áp dụng
+
+1. Tổ chức, cá nhân bán hàng hóa, cung cấp dịch vụ (sau đây gọi là người bán) bao gồm:
+
+a) Doanh nghiệp, hợp tác xã, liên hiệp hợp tác xã được thành lập và hoạt động theo pháp luật Việt Nam; chi nhánh, văn phòng đại diện của doanh nghiệp nước ngoài hoạt động tại Việt Nam (sau đây gọi là tổ chức kinh tế);
+
+b) Hộ kinh doanh, cá nhân kinh doanh, tổ hợp tác;
+
+c) Đơn vị sự nghiệp công lập có bán hàng hóa, cung cấp dịch vụ;
+
+d) Tổ chức không phải là doanh nghiệp nhưng có hoạt động kinh doanh;
+
+đ) Tổ chức nước ngoài (bao gồm cả chủ quản nền tảng thương mại điện tử, nền tảng số ở nước ngoài) có hoạt động kinh doanh trên nền tảng thương mại điện tử và các dịch vụ khác có phát sinh doanh thu tính thuế tại Việt Nam (sau đây gọi là nhà cung cấp nước ngoài) đăng ký tự nguyện sử dụng hóa đơn điện tử theo quy định tại Nghị định này.
+
+2. Tổ chức, cá nhân mua hàng hóa, dịch vụ.

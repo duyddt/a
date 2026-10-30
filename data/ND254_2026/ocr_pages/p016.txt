@@ -1,0 +1,25 @@
+PRINTED_PAGE: 16
+
+b) Phiếu thu tiền cước vận chuyển hàng không; chứng từ thu cước phí vận tải quốc tế; chứng từ thu phí dịch vụ ngân hàng trừ trường hợp quy định tại điểm a khoản này có hình thức và nội dung được lập theo thông lệ quốc tế và các quy định của pháp luật có liên quan.
+
+7. Các chứng từ được đăng ký, sử dụng và quản lý như hóa đơn gồm phiếu xuất kho kiêm vận chuyển nội bộ, phiếu xuất kho hàng gửi bán đại lý.
+
+8. Bộ Tài chính hướng dẫn mẫu hiển thị các loại hóa đơn để các đối tượng nêu tại Điều 2 Nghị định này tham khảo trong quá trình thực hiện.
+
+9. Hóa đơn điện tử khởi tạo từ máy tính tiền có kết nối dữ liệu với cơ quan thuế đảm bảo nguyên tắc sau:
+
+a) Nhận biết được hóa đơn in từ máy tính tiền kết nối dữ liệu điện tử với cơ quan thuế;
+
+b) Không bắt buộc có chữ ký số;
+
+c) Khoản chi mua hàng hóa, dịch vụ sử dụng hóa đơn (tra thông tin từ Hệ thống thông tin quản lý thuế) được khởi tạo từ máy tính tiền được xác định là khoản chi có đủ hóa đơn, chứng từ hợp pháp khi xác định nghĩa vụ thuế.
+
+Điều 9. Thời điểm lập hóa đơn
+
+1. Thời điểm lập hóa đơn đối với bán hàng hóa (bao gồm cả bán, chuyển nhượng tài sản công và bán hàng dự trữ quốc gia) là thời điểm chuyển giao quyền sở hữu hoặc quyền sử dụng hàng hóa cho người mua, không phân biệt đã thu được tiền hay chưa thu được tiền.
+
+Đối với xuất khẩu hàng hóa (bao gồm cả gia công xuất khẩu), thời điểm lập hóa đơn thương mại điện tử, hóa đơn giá trị gia tăng điện tử hoặc hóa đơn bán hàng điện tử do người bán tự xác định nhưng chậm nhất không quá ngày làm việc tiếp theo kể từ ngày hàng hóa được thông quan theo quy định pháp luật về hải quan.
+
+2. Thời điểm lập hóa đơn đối với cung cấp dịch vụ là thời điểm hoàn thành việc cung cấp dịch vụ (bao gồm cả cung cấp dịch vụ cho tổ chức, cá nhân nước ngoài) không phân biệt đã thu được tiền hay chưa thu được tiền. Trường hợp người cung cấp dịch vụ có thu tiền trước hoặc trong khi cung cấp dịch vụ thì thời điểm lập hóa đơn là thời điểm thu tiền (không bao gồm trường hợp thu tiền đặt cọc theo quy định Bộ luật Dân sự để đảm bảo thực hiện hợp đồng cung cấp dịch vụ).
+
+3. Trường hợp giao hàng nhiều lần hoặc bàn giao từng hạng mục, công đoạn dịch vụ thì mỗi lần giao hàng hoặc bàn giao đều phải lập hóa đơn cho khối lượng, giá trị hàng hóa, dịch vụ được giao tương ứng.

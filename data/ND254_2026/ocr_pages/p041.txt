@@ -1,0 +1,25 @@
+PRINTED_PAGE: 41
+
+Mục 2
+
+TRA CỨU, CUNG CẤP, SỬ DỤNG THÔNG TIN HÓA ĐƠN ĐIỆN TỬ
+
+Điều 34. Nguyên tắc tra cứu, cung cấp, sử dụng thông tin hóa đơn điện tử
+
+1. Việc tra cứu, cung cấp, sử dụng thông tin hóa đơn điện tử được áp dụng để thực hiện các thủ tục về thuế, thủ tục thanh toán qua ngân hàng và các thủ tục hành chính khác; chứng minh tính hợp pháp của hàng hóa lưu thông trên thị trường.
+
+2. Việc tra cứu, cung cấp thông tin hóa đơn điện tử phải đảm bảo đầy đủ, chính xác, kịp thời và đúng đối tượng.
+
+3. Việc sử dụng thông tin hóa đơn điện tử được cung cấp phải đảm bảo đúng mục đích, phục vụ cho hoạt động nghiệp vụ theo chức năng, nhiệm vụ của bên sử dụng thông tin; đồng thời phải đảm bảo đúng quy định của pháp luật về bảo vệ bí mật nhà nước.
+
+Điều 35. Tra cứu thông tin hóa đơn điện tử phục vụ kiểm tra hàng hóa lưu thông trên thị trường
+
+1. Khi kiểm tra hàng hóa lưu thông trên thị trường, đối với trường hợp sử dụng hóa đơn điện tử, cơ quan nhà nước, người có thẩm quyền truy cập Hệ thống thông tin quản lý thuế để tra cứu thông tin về hóa đơn điện tử phục vụ yêu cầu quản lý, không yêu cầu cung cấp hóa đơn giấy. Các cơ quan có liên quan có trách nhiệm sử dụng các thiết bị để truy cập tra cứu dữ liệu hóa đơn điện tử.
+
+2. Trường hợp bất khả kháng do sự cố, thiên tai gây ảnh hưởng đến việc truy cập mạng Internet dẫn đến không tra cứu được dữ liệu hóa đơn thì cơ quan nhà nước, người có thẩm quyền đang thực hiện kiểm tra thực hiện các biện pháp phù hợp để tra cứu thông tin hóa đơn điện tử.
+
+Điều 36. Đối tượng cung cấp thông tin, sử dụng thông tin hóa đơn điện tử
+
+1. Cục Thuế là đơn vị cung cấp thông tin hóa đơn điện tử đối với đề nghị của các cơ quan, tổ chức quản lý nhà nước cấp Trung ương. Thuế tỉnh, thành phố, Thuế cơ sở cung cấp thông tin đối với đề nghị của cơ quan, tổ chức quản lý đồng cấp.
+
+2. Các bên sử dụng thông tin hóa đơn điện tử bao gồm:

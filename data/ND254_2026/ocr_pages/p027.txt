@@ -1,0 +1,25 @@
+PRINTED_PAGE: 27
+
+là thời hạn gửi Tờ khai thuế giá trị gia tăng theo quy định pháp luật về quản lý thuế.
+
+Trường hợp phát sinh số lượng hóa đơn lớn thì Bảng tổng hợp dữ liệu hóa đơn điện tử, Bảng thông tin chi tiết giao dịch tách theo định dạng chuẩn dữ liệu của cơ quan thuế nhằm đảm bảo yêu cầu gửi, nhận dữ liệu trên đường truyền;
+
+a.3) Phương thức chuyển đầy đủ nội dung hóa đơn áp dụng đối với trường hợp bán hàng hóa, cung cấp dịch vụ không thuộc quy định tại điểm a.1 khoản này.
+
+Người bán sau khi lập đầy đủ các nội dung trên hóa đơn theo quy định gửi hóa đơn cho người mua và đồng thời gửi hóa đơn cho cơ quan thuế chậm nhất là ngày làm việc tiếp theo kể từ thời điểm lập hóa đơn.
+
+b) Tổ chức kinh tế thực hiện chuyển dữ liệu hóa đơn điện tử đến cơ quan thuế theo định dạng chuẩn dữ liệu bằng hình thức gửi trực tiếp (đối với trường hợp đáp ứng yêu cầu về chuẩn kết nối dữ liệu) hoặc gửi thông qua tổ chức cung cấp dịch vụ hóa đơn điện tử.
+
+b.1) Hình thức gửi trực tiếp
+
+Trường hợp người bán là tổ chức kinh tế đáp ứng tiêu chí dưới đây thì người bán thực hiện chuyển dữ liệu hóa đơn điện tử đến cơ quan thuế bằng hình thức gửi trực tiếp:
+
+b.1.1) Tổ chức kinh tế sử dụng hóa đơn bình quân từ 1.000.000 hóa đơn một tháng trở lên (tính theo số lượng hóa đơn bình quân năm trước liền kề), có hệ thống công nghệ thông tin đáp ứng yêu cầu về định dạng chuẩn dữ liệu, có nhu cầu chuyển dữ liệu hóa đơn điện tử theo hình thức gửi trực tiếp đến cơ quan thuế gửi văn bản kèm theo tài liệu đáp ứng điều kiện kỹ thuật đến Cục Thuế;
+
+b.1.2) Tổ chức kinh tế có tổ chức mô hình công ty mẹ - con, có xây dựng hệ thống quản lý dữ liệu hóa đơn tập trung tại công ty mẹ và có nhu cầu công ty mẹ chuyển toàn bộ dữ liệu hóa đơn điện tử bao gồm cả dữ liệu của các công ty con đến cơ quan thuế qua Hệ thống thông tin quản lý thuế thì gửi kèm theo danh sách công ty con đến Cục Thuế để thực hiện kết nối kỹ thuật;
+
+b.2) Hình thức gửi thông qua tổ chức cung cấp dịch vụ hóa đơn điện tử
+
+Các tổ chức kinh tế không thuộc trường hợp nêu tại điểm b.1 khoản này thực hiện ký hợp đồng với tổ chức cung cấp dịch vụ hóa đơn điện tử để tổ chức cung cấp dịch vụ hóa đơn điện tử làm dịch vụ chuyển dữ liệu hóa đơn điện tử đến cơ quan thuế.
+
+4. Lưu trữ và bảo đảm tính toàn vẹn của toàn bộ hóa đơn điện tử; thực hiện các quy định pháp luật về bảo đảm an toàn, an ninh hệ thống dữ liệu điện tử.

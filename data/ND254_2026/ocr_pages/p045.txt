@@ -1,0 +1,33 @@
+PRINTED_PAGE: 45
+
+c) Trên cơ sở thông tin phản ánh, cung cấp, cơ quan thuế đã ban hành quyết định xử phạt vi phạm hành chính về thuế, hóa đơn theo quy định của pháp luật về quản lý thuế.
+
+2. Thông tin tố giác bao gồm:
+
+a) Thông tin về người bán hàng hóa, cung cấp dịch vụ (tên, địa chỉ hoặc mã số thuế) và một trong các thông tin sau:
+
+a.1) Thông tin về giao dịch hàng hóa, dịch vụ;
+
+a.2) Thông tin về hành vi không lập hóa đơn và không giao hóa đơn;
+
+a.3) Tài liệu, chứng cứ có liên quan đến giao dịch phát sinh hành vi vi phạm của người bán (nếu có);
+
+b) Thông tin liên hệ của người tiêu dùng tố giác, gồm: tên, số điện thoại, số định danh cá nhân.
+
+3. Người tiêu dùng thực hiện tố giác hành vi không lập và giao hóa đơn điện tử của người bán thông qua một trong các hình thức sau:
+
+a) Qua hệ thống hóa đơn điện tử hoặc Hệ thống thông tin quản lý thuế (như eTax Mobile);
+
+b) Qua Cổng dịch vụ công quốc gia;
+
+c) Qua thư điện tử chính thức hoặc hệ thống tiếp nhận thông tin điện tử của cơ quan thuế;
+
+d) Gửi trực tiếp tại trụ sở cơ quan thuế hoặc bằng văn bản theo quy định.
+
+4. Nguyên tắc xác định khen thưởng
+
+a) Việc khen thưởng được thực hiện trên cơ sở kết quả xác minh, xử lý của cơ quan thuế và quyết định xử phạt vi phạm hành chính về thuế, hóa đơn theo quy định của pháp luật về quản lý thuế;
+
+b) Bảo đảm công khai, minh bạch, đúng đối tượng, đồng thời bảo mật thông tin người cung cấp theo quy định;
+
+c) Mỗi vụ việc chỉ được xem xét khen thưởng một lần. Trường hợp có nhiều người cùng cung cấp thông tin về một hành vi vi phạm thì việc khen thưởng được xem xét đối với người cung cấp thông tin đầu tiên hoặc người có thông tin đầy đủ, có giá trị nhất theo xác nhận của cơ quan thuế.

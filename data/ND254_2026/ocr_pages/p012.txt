@@ -1,0 +1,17 @@
+PRINTED_PAGE: 12
+
+e) Trường hợp tài sản điều chuyển giữa các đơn vị hạch toán độc lập hoặc giữa các đơn vị thành viên có tư cách pháp nhân đầy đủ trong cùng một tổ chức thì tổ chức có tài sản điều chuyển phải lập hóa đơn điện tử như bán hàng hóa.
+
+g) Tổ chức cho thuê tài chính cho thuê tài sản thuộc đối tượng chịu thuế giá trị gia tăng phải lập hoá đơn theo quy định
+
+g.1) Tổ chức cho thuê tài chính cho thuê tài sản thuộc đối tượng chịu thuế giá trị gia tăng phải có hoá đơn giá trị gia tăng mua vào (đối với tài sản mua trong nước) hoặc chứng từ nộp thuế giá trị gia tăng ở khâu nhập khẩu (đối với tài sản nhập khẩu); khi lập hóa đơn, tổng số tiền thuế giá trị gia tăng trên hoá đơn giá trị gia tăng đầu ra phải khớp với số tiền thuế giá trị gia tăng trên hoá đơn giá trị gia tăng đầu vào của tài sản cho thuê tài chính (hoặc chứng từ nộp thuế giá trị gia tăng khâu nhập khẩu), thuế suất thể hiện ký hiệu “CTTC”. Các trường hợp tài sản mua để cho thuê thuộc đối tượng không chịu thuế giá trị gia tăng hoặc không có hoá đơn giá trị gia tăng hoặc không có chứng từ nộp thuế giá trị gia tăng ở khâu nhập khẩu thì khi lập hóa đơn không được thể hiện thuế giá trị gia tăng trên hoá đơn;
+
+g.2) Việc lập hóa đơn đối với hoạt động cho thuê tài chính như sau:
+
+Trường hợp tổ chức cho thuê tài chính chuyển giao một lần toàn bộ số thuế giá trị gia tăng trên hóa đơn tài sản mua cho thuê tài chính cho bên đi thuê tài chính thì trên hóa đơn giá trị gia tăng thu tiền lần đầu của dịch vụ cho thuê tài chính, tổ chức cho thuê tài chính thể hiện rõ: thanh toán dịch vụ cho thuê tài chính và thuế giá trị gia tăng đầu vào của tài sản cho thuê tài chính hoặc thanh toán thuế giá trị gia tăng đầu vào của tài sản cho thuê tài chính, tiền hàng thể hiện giá trị dịch vụ cho thuê tài chính (không bao gồm thuế giá trị gia tăng của tài sản), thuế suất thể hiện ký hiệu “CTTC”, tiền thuế giá trị gia tăng thể hiện bằng tiền thuế giá trị gia tăng đầu vào của tài sản cho thuê tài chính.
+
+g.3) Xử lý lập hóa đơn khi hợp đồng cho thuê tài chính chấm dứt trước thời hạn:
+
+Thu hồi tài sản cho thuê tài chính: Trường hợp tổ chức cho thuê tài chính và bên đi thuê lựa chọn khấu trừ toàn bộ số thuế giá trị gia tăng của tài sản cho thuê, bên đi thuê điều chỉnh thuế giá trị gia tăng đã khấu trừ tính trên giá trị còn lại chưa có thuế giá trị gia tăng xác định theo biên bản thu hồi tài sản để chuyển giao cho tổ chức cho thuê tài chính. Trên hóa đơn giá trị gia tăng thể hiện rõ: số tiền thuế giá trị gia tăng xuất trả của tài sản thu hồi; thuế suất thể hiện ký hiệu “CTTC”; số thuế giá trị gia tăng tính trên giá trị còn lại chưa có thuế giá trị gia tăng xác định theo biên bản thu hồi tài sản.
+
+Bán tài sản thu hồi: Tổ chức cho thuê tài chính khi bán tài sản thu hồi phải lập hóa đơn giá trị gia tăng theo quy định giao cho khách hàng.

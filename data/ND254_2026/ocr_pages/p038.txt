@@ -1,0 +1,37 @@
+PRINTED_PAGE: 38
+
+khấu trừ thuế thu nhập cá nhân điện tử thông qua Hệ thống thông tin quản lý thuế hoặc tổ chức cung cấp dịch vụ hóa đơn điện tử được Cục Thuế ủy thác cung cấp dịch vụ chứng từ khấu trừ thuế thu nhập cá nhân điện tử;
+
+b) Tổ chức thu thuế, phí, lệ phí điện tử, tổ chức nhận ủy nhiệm lập biên lai sau khi lập đầy đủ các nội dung trên biên lai điện tử gửi cho người nộp các khoản thuế, phí, lệ phí gửi cho cơ quan thuế theo bảng tổng hợp dữ liệu biên lai điện tử theo mẫu quy định của Bộ trưởng Bộ Tài chính trong ngày lập biên lai (trừ phí hải quan; lệ phí hàng hoá, hành lý, phương tiện vận tải quá cảnh) theo quy định của pháp luật về quản lý thuế.
+
+4. Lưu trữ và bảo đảm tính toàn vẹn của toàn bộ chứng từ điện tử; thực hiện các quy định pháp luật về bảo đảm an toàn, an ninh hệ dữ liệu điện tử.
+
+5. Chấp hành sự kiểm tra, đối chiếu của cơ quan quản lý thuế và các cơ quan có thẩm quyền theo quy định của pháp luật.
+
+Điều 30. Trách nhiệm của cơ quan hải quan trong quản lý chứng từ điện tử
+
+1. Cục Hải quan có trách nhiệm:
+
+a) Xây dựng cơ sở dữ liệu về chứng từ điện tử để phục vụ công tác quản lý thuế, phục vụ công tác quản lý nhà nước của các cơ quan khác của nhà nước;
+
+b) Thông báo các loại chứng từ đã được phát hành, được báo mật, không còn giá trị sử dụng.
+
+2. Chi cục Hải quan khu vực có trách nhiệm:
+
+a) Quản lý hoạt động tạo, phát hành chứng từ của các tổ chức đã đăng ký tạo, phát hành chứng từ với cơ quan hải quan trên địa bàn quản lý;
+
+b) Kiểm tra hoạt động tạo, phát hành và sử dụng chứng từ trên địa bàn;
+
+c) Theo dõi, kiểm tra hoạt động hủy chứng từ theo quy định của Bộ Tài chính trên địa bàn.
+
+Chương IV
+
+XÂY DỰNG, TRA CỨU THÔNG TIN HÓA ĐƠN ĐIỆN TỬ, CHỨNG TỪ ĐIỆN TỬ
+
+Mục 1
+
+XÂY DỰNG THÔNG TIN HÓA ĐƠN ĐIỆN TỬ, CHỨNG TỪ ĐIỆN TỬ
+
+Điều 31. Nguyên tắc chung
+
+1. Hệ thống thông tin về hóa đơn, chứng từ phải được xây dựng và quản lý thống nhất từ trung ương đến địa phương; tuân thủ các tiêu chuẩn, quy chuẩn

@@ -1,0 +1,33 @@
+PRINTED_PAGE: 28
+
+5. Chấp hành sự thanh tra, kiểm tra, đối chiếu của cơ quan thuế và các cơ quan có thẩm quyền theo quy định của pháp luật.
+
+6. Cơ sở kinh doanh bán hàng hóa hoàn thuế giá trị gia tăng lập hóa đơn kiêm tờ khai hoàn thuế giá trị gia tăng theo định dạng chuẩn dữ liệu do Bộ trưởng Bộ Tài chính quy định và gửi đến Hệ thống thông tin quản lý thuế theo quy định.
+
+Điều 17. Quyền và nghĩa vụ của tổ chức, cá nhân bán hàng hóa, cung cấp dịch vụ
+
+1. Tổ chức, cá nhân bán hàng hóa, cung cấp dịch vụ có quyền:
+
+a) Sử dụng hóa đơn điện tử theo quy định tại Điều 6 Nghị định này;
+
+b) Sử dụng hóa đơn hợp pháp để phục vụ cho các hoạt động kinh doanh;
+
+c) Yêu cầu chủ quản nền tảng thương mại điện tử, nền tảng số cung cấp thông tin người mua, thông tin liên quan đến giao dịch, thời điểm giao hàng và xác nhận trạng trái hoàn tất đơn hàng trên hệ thống để người bán lập hóa đơn điện tử theo quy định đối với trường hợp bán hàng hóa, cung cấp dịch vụ qua nền tảng thương mại điện tử, nền tảng số;
+
+d) Khiếu kiện các tổ chức, cá nhân có hành vi xâm phạm các quyền tạo, phát hành và sử dụng hóa đơn hợp pháp.
+
+2. Tổ chức, cá nhân bán hàng hóa, cung cấp dịch vụ có nghĩa vụ:
+
+a) Lập và giao hóa đơn khi bán hàng hóa, cung cấp dịch vụ cho khách hàng;
+
+b) Quản lý các hoạt động tạo hóa đơn theo quy định tại Nghị định này;
+
+c) Đăng ký sử dụng hóa đơn điện tử theo quy định của Bộ trưởng Bộ Tài chính và chuyển dữ liệu hóa đơn điện tử đến cơ quan thuế trong trường hợp sử dụng hóa đơn điện tử không có mã của cơ quan thuế hoặc hóa đơn điện tử khởi tạo từ máy tính tiền theo quy định;
+
+d) Công khai cách thức tra cứu, nhận file gốc hóa đơn điện tử của người bán tới người mua hàng hóa, dịch vụ.
+
+Điều 18. Quyền và trách nhiệm của người mua hàng hóa, dịch vụ
+
+1. Người mua hàng hóa, dịch vụ có quyền:
+
+a) Yêu cầu người bán lập và giao hóa đơn hợp pháp khi mua hàng hóa, dịch vụ (trừ trường hợp không phải sử dụng hóa đơn điện tử);

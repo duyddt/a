@@ -1,0 +1,29 @@
+PRINTED_PAGE: 9
+
+Hộ kinh doanh, cá nhân kinh doanh không thuộc trường hợp sử dụng hóa đơn điện tử mà có nhu cầu sử dụng hóa đơn điện tử thì đăng ký sử dụng hóa đơn điện tử có mã của cơ quan thuế hoặc hóa đơn điện tử khởi tạo từ máy tính tiền có kết nối dữ liệu với cơ quan thuế.
+
+2. Đối tượng cơ quan thuế cấp hóa đơn điện tử có mã của cơ quan thuế theo từng lần phát sinh
+
+a) Cấp hóa đơn điện tử có mã của cơ quan thuế theo từng lần phát sinh là hóa đơn bán hàng trong các trường hợp:
+
+a.1) Tổ chức không kinh doanh nhưng có phát sinh giao dịch bán hàng hóa, cung cấp dịch vụ thuộc đối tượng chịu thuế theo quy định của pháp luật thuế giá trị gia tăng, thuế thu nhập doanh nghiệp và các loại thuế khác (nếu có);
+
+a.2) Tổ chức kinh tế, tổ chức khác, hộ kinh doanh, cá nhân kinh doanh thuộc diện nộp thuế giá trị gia tăng theo phương pháp trực tiếp thuộc các trường hợp sau:
+
+a.2.1) Ngừng hoạt động kinh doanh nhưng chưa hoàn thành thủ tục chấm dứt hiệu lực mã số thuế có phát sinh thanh lý tài sản, hàng hóa cần có hóa đơn để giao cho người mua;
+
+a.2.2) Tạm ngừng hoạt động kinh doanh nhưng cần có hóa đơn giao cho khách hàng để thực hiện các hợp đồng đã ký trước ngày cơ quan thuế thông báo tạm ngừng kinh doanh;
+
+a.2.3) Bị cơ quan thuế cưỡng chế bằng biện pháp ngừng sử dụng hóa đơn;
+
+a.2.4) Doanh nghiệp đang làm thủ tục phá sản nhưng vẫn có hoạt động kinh doanh dưới sự giám sát của Tòa án;
+
+a.2.5) Tổ chức kinh tế, tổ chức khác, hộ kinh doanh, cá nhân kinh doanh trong thời gian giải trình hoặc bổ sung tài liệu theo quy định của Bộ trưởng Bộ Tài chính;
+
+b) Cấp hóa đơn điện tử có mã của cơ quan thuế theo từng lần phát sinh là hóa đơn giá trị gia tăng trong các trường hợp:
+
+b.1) Tổ chức kinh tế, tổ chức khác thuộc diện nộp thuế giá trị gia tăng theo phương pháp khấu trừ thuộc các trường hợp sau:
+
+b.1.1) Ngừng hoạt động kinh doanh nhưng chưa hoàn thành thủ tục chấm dứt hiệu lực mã số thuế có phát sinh thanh lý tài sản, hàng hóa cần có hóa đơn để giao cho người mua;
+
+b.1.2) Tạm ngừng hoạt động kinh doanh cần có hóa đơn giao cho khách hàng để thực hiện các hợp đồng đã ký trước ngày cơ quan nhà nước có thẩm quyền thông báo tạm ngừng kinh doanh;
