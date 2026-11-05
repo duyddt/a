@@ -1,0 +1,33 @@
+PRINTED_PAGE: 46
+
++ Cột (3), (4) và (5): Người nộp thuế để trống không kê khai.
+
++ Cột (6): Ghi giá trị được xác định từ số liệu tại Báo cáo tài chính.
+
+- Các chỉ tiêu tại dòng (13), (14), (15), (15.1), (15.2), (15.3), (15.4), (15.5) và (16) xác định và tính toán theo quy định tại điểm a và điểm b khoản 3 Điều 16 Nghị định này.
+
+- Chỉ tiêu “Tỷ suất lợi nhuận sử dụng xác định giá giao dịch liên kết”.
+
++ Cột (2): Ghi các tỷ suất lợi nhuận thuần từ hoạt động sản xuất kinh doanh trong kỳ không bao gồm chênh lệch doanh thu và chi phí của hoạt động tài chính trên doanh thu thuần tại các dòng chỉ tiêu (17.1), (17.2), (17.3), (17...) theo quy định tại điểm c khoản 2 Điều 20 Nghị định này.
+
++ Cột (3), (4) và (5): Người nộp thuế để trống không kê khai.
+
++ Cột 6: Người nộp thuế kê khai giá trị Lợi nhuận thuần từ hoạt động sản xuất kinh doanh trong kỳ không bao gồm chênh lệch doanh thu và chi phí của hoạt động tài chính trên doanh thu thuần đối với lĩnh vực hoạt động theo quy định tại điểm c khoản 2 Điều 20 Nghị định này.
+
+Trường hợp người nộp thuế thực hiện kinh doanh nhiều hơn một lĩnh vực, theo dõi, hạch toán riêng doanh thu, chi phí của từng lĩnh vực hoặc theo dõi, hạch toán riêng được doanh thu nhưng không theo dõi, hạch toán riêng được chi phí phát sinh của từng lĩnh vực thực hiện kê khai riêng theo từng lĩnh vực.
+
+Trường hợp người nộp thuế thực hiện kinh doanh nhiều hơn một lĩnh vực không theo dõi, hạch toán riêng được doanh thu và chi phí của từng lĩnh vực thực hiện kê khai theo lĩnh vực có tỷ suất cao nhất.
+
+c) Trường hợp người nộp thuế không được miễn lập Hồ sơ xác định giá giao dịch liên kết theo quy định tại điểm a hoặc điểm c khoản 2 Điều 20 Nghị định này, kê khai như sau:
+
+- Chỉ tiêu “Doanh thu bán hàng và cung cấp dịch vụ”:
+
++ Cột (3) và (4): Ghi tổng giá trị của các giao dịch cung cấp hàng hóa, dịch vụ cho các bên liên kết xác định giá theo Hồ sơ xác định giá giao dịch liên kết tại Cột (3) và theo APA tại Cột (4).
+
++ Cột (5): Ghi tổng giá trị của các giao dịch cung cấp hàng hóa, dịch vụ cho các bên độc lập theo giá trị ghi tại sổ kế toán.
+
++ Cột (6): Ghi tổng giá trị được xác định theo công thức tính tại Phụ lục I ban hành kèm theo Nghị định này.
+
+Các chỉ tiêu “Doanh thu bán hàng hóa, dịch vụ xuất khẩu” và “Các khoản giảm trừ doanh thu”:
+
+Người nộp thuế kê khai tương ứng doanh thu bán hàng hóa và cung cấp dịch vụ và ghi theo hướng dẫn tương tự tại chỉ tiêu “Doanh thu bán hàng và cung cấp dịch vụ”.

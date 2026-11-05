@@ -1,0 +1,27 @@
+PRINTED_PAGE: 26
+
+Trường hợp người nộp thuế theo dõi, hạch toán riêng được doanh thu nhưng không theo dõi, hạch toán riêng được chi phí phát sinh của từng lĩnh vực trong hoạt động sản xuất, kinh doanh thì thực hiện phân bổ chi phí theo tỷ lệ doanh thu của từng lĩnh vực để áp dụng tỷ suất lợi nhuận thuần chưa trừ chi phí lãi vay và thuế thu nhập doanh nghiệp trên doanh thu thuần tương ứng với từng lĩnh vực.
+
+Trường hợp người nộp thuế không theo dõi, hạch toán riêng được doanh thu và chi phí của từng lĩnh vực hoạt động sản xuất, kinh doanh để xác định tỷ suất lợi nhuận thuần chưa trừ chi phí lãi vay và thuế thu nhập doanh nghiệp tương ứng với từng lĩnh vực thì áp dụng tỷ suất lợi nhuận thuần chưa trừ chi phí lãi vay và thuế thu nhập doanh nghiệp trên doanh thu thuần của lĩnh vực có tỷ suất cao nhất.
+
+Trường hợp người nộp thuế không áp dụng theo mức tỷ suất lợi nhuận thuần quy định tại điểm này thì phải lập Hồ sơ xác định giá giao dịch liên kết theo quy định.
+
+3. Người nộp thuế thuộc trường hợp được miễn kê khai, miễn lập Hồ sơ xác định giá giao dịch liên kết theo quy định tại khoản 1, khoản 2 Điều này, việc xác định tổng chi phí lãi vay được trừ khi xác định thu nhập chịu thuế thu nhập doanh nghiệp của doanh nghiệp có giao dịch liên kết được thực hiện theo quy định tại khoản 3 Điều 16 Nghị định này.
+
+Chương IV
+
+ĐIỀU KHOẢN THI HÀNH
+
+Điều 21. Trách nhiệm và quyền hạn của cơ quan thuế trong quản lý giá giao dịch liên kết
+
+1. Áp dụng quản lý rủi ro trong quản lý thuế đối với giá giao dịch liên kết theo quy định của pháp luật thuế.
+
+a) Quản lý, sử dụng thông tin của người nộp thuế có giao dịch liên kết phục vụ công tác quản lý rủi ro;
+
+b) Áp dụng quản lý rủi ro trong việc lập kế hoạch kiểm tra doanh nghiệp có quan hệ liên kết và giao dịch liên kết;
+
+c) Quản lý, sử dụng Báo cáo lợi nhuận liên quốc gia của người nộp thuế phục vụ công tác quản lý rủi ro, trao đổi thông tin theo quy định và cam kết của Việt Nam tại Thỏa thuận quốc tế về thuế, không sử dụng để điều chỉnh hoặc ấn định giá giao dịch liên kết.
+
+2. Cơ quan thuế căn cứ các nguyên tắc phân tích, so sánh, nguyên tắc và phương pháp xác định giá giao dịch liên kết được quy định tại Nghị định này và các thông tin kê khai nghĩa vụ thuế của doanh nghiệp có giao dịch liên kết để thực hiện ấn định thuế trong các trường hợp sau:
+
+a) Người nộp thuế vi phạm pháp luật về thuế nhưng thực hiện đầy đủ chế độ kế toán, hóa đơn, chứng từ: Việc ấn định doanh thu, chi phí hoặc thu nhập chịu thuế để xác định nghĩa vụ thuế được thực hiện theo các nguyên tắc phân tích, so sánh, nguyên tắc và phương pháp xác định giá

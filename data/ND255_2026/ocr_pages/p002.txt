@@ -1,0 +1,23 @@
+PRINTED_PAGE: 2
+
+Điều 3. Nguyên tắc áp dụng
+
+1. Người nộp thuế có giao dịch liên kết phải loại trừ các yếu tố làm giảm nghĩa vụ thuế do quan hệ liên kết chi phối, tác động để kê khai, xác định nghĩa vụ thuế đối với các giao dịch liên kết tương đương với các giao dịch độc lập có cùng điều kiện.
+
+2. Cơ quan thuế quản lý, kiểm tra đối với giá giao dịch liên kết của người nộp thuế theo nguyên tắc áp dụng trong quản lý thuế quy định tại khoản 4 Điều 6 và nguyên tắc kiểm tra thuế quy định tại khoản 1 Điều 22 Luật Quản lý thuế số 108/2025/QH15.
+
+Điều 4. Giải thích từ ngữ
+
+Các từ ngữ trong Nghị định này được hiểu như sau:
+
+1. Giao dịch liên kết là các giao dịch mua, bán, trao đổi, thuê, cho thuê, mượn, cho mượn, chuyển giao, chuyển nhượng hàng hóa, cung cấp dịch vụ; vay, cho vay, dịch vụ tài chính, đảm bảo tài chính và các công cụ tài chính khác; mua, bán, trao đổi, thuê, cho thuê, mượn, cho mượn, chuyển giao, chuyển nhượng tài sản hữu hình, tài sản vô hình và thỏa thuận mua, bán, sử dụng chung nguồn lực như tài sản, vốn, lao động, chia sẻ chi phí giữa các bên có quan hệ liên kết, trừ các giao dịch kinh doanh đối với hàng hóa, dịch vụ thuộc phạm vi điều chỉnh giá của Nhà nước thực hiện theo quy định của pháp luật về giá.
+
+2. Hiệp định thuế là hiệp định được quy định tại điểm 11 Phụ lục I ban hành kèm theo Nghị định số 236/2025/NĐ-CP quy định chi tiết một số điều của Nghị quyết số 107/2023/QH15 ngày 29 tháng 11 năm 2023 của Quốc hội về việc áp dụng thuế thu nhập doanh nghiệp bổ sung theo quy định chống xói mòn cơ sở thuế toàn cầu.
+
+3. Thỏa thuận của Nhà chức trách có thẩm quyền là thuật ngữ rút gọn của Thỏa thuận được ký kết giữa Nhà chức trách có thẩm quyền của Việt Nam và quốc gia, vùng lãnh thổ đối tác trên cơ sở điều ước quốc tế hoặc thỏa thuận quốc tế có quy định về trao đổi thông tin trong đó quy định cụ thể về việc trao đổi tự động Báo cáo lợi nhuận liên quốc gia.
+
+4. Công ty mẹ tối cao là công ty được quy định tại khoản 4 Điều 3 Nghị quyết số 107/2023/QH15 về việc áp dụng thuế thu nhập doanh nghiệp bổ sung theo quy định chống xói mòn cơ sở thuế toàn cầu.
+
+5. Cơ quan thuế đối tác là cơ quan thuế của nước, vùng lãnh thổ ký kết Hiệp định thuế với Việt Nam.
+
+6. Đối tượng so sánh độc lập là các giao dịch độc lập giữa các bên không có quan hệ liên kết hoặc doanh nghiệp thực hiện giao dịch độc lập được lựa chọn trên cơ sở phân tích, so sánh, xác định đối tượng so sánh tương đồng để xác định mức giá, tỷ suất lợi nhuận, tỷ lệ phân bổ lợi nhuận nhằm xác định nghĩa vụ thuế phải nộp ngân sách nhà nước của người nộp thuế, đảm bảo đúng quy định của Luật Quản lý thuế và Luật Thuế thu nhập doanh nghiệp.

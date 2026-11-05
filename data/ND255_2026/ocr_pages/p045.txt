@@ -1,0 +1,31 @@
+PRINTED_PAGE: 45
+
+- Cột (12): Ghi lần lượt tổng giá trị thu hộ, tổng giá trị chi hộ, tổng giá trị doanh thu phân bổ cho cơ sở thường trú, tổng giá trị chi phí phân bổ cho cơ sở thường trú phát sinh trong kỳ tính thuế.
+
+- Cột (13): Ghi theo hướng dẫn tại Phụ lục I ban hành kèm theo Nghị định này tương ứng với từng giao dịch thuộc phạm vi áp dụng APA và để trống các ô tương ứng với các dòng chỉ tiêu ghi số liệu tổng giá trị.
+
+E. Mục IV. Kết quả sản xuất kinh doanh sau khi xác định giá giao dịch liên kết:
+
+- Chỉ tiêu “Người nộp thuế đã ký thỏa thuận trước về phương pháp xác định giá tính thuế (APA)”:
+
+Người nộp thuế đánh dấu “x” vào “Có” nếu đã ký APA đơn phương, song phương hoặc đa phương với cơ quan thuế Việt Nam. Trường hợp người nộp thuế không ký APA với cơ quan thuế thì đánh dấu “x” vào “Không” và để trống không kê khai các chỉ tiêu tại Cột (4) bảng kết quả sản xuất kinh doanh tại mục này.
+
+- Người nộp thuế chỉ phát sinh các khoản thu hoặc doanh thu với các bên độc lập chỉ kê khai tại Cột (6) của bảng kết quả sản xuất kinh doanh phù hợp với từng loại hình doanh nghiệp đối với từng chỉ tiêu tương ứng được hướng dẫn tại Phụ lục này.
+
+1. Dành cho người nộp thuế thuộc các ngành sản xuất, thương mại, dịch vụ:
+
+a) Trường hợp người nộp thuế đã kê khai đánh dấu (x) vào Cột 3 tại dòng 2a miễn lập Hồ sơ xác định giá giao dịch liên kết của Mục II Phụ lục I kèm theo Nghị định này, thực hiện kê khai theo hướng dẫn như sau:
+
+- Các chỉ tiêu tại dòng (1), (2), (3), (4), (5), (6), (7), (8), (8.1), (9), (9.1), (9.1.a), (9.1.b), (10), (11) và (12):
+
++ Cột (3), (4) và (5): Người nộp thuế để trống không kê khai.
+
++ Cột (6): Ghi giá trị được xác định từ số liệu tại Báo cáo tài chính.
+
+- Các chỉ tiêu tại dòng (13), (14), (15), (15.1), (15.2), (15.3), (15.4), (15.5) và (16) xác định và tính toán theo quy định tại điểm a và điểm b khoản 3 Điều 16 Nghị định này.
+
+- Chỉ tiêu tại dòng (17): Người nộp thuế để trống không kê khai.
+
+b) Trường hợp người nộp thuế đã kê khai đánh dấu (x) vào Cột 3 tại dòng 2c miễn lập Hồ sơ xác định giá giao dịch liên kết của Mục II Phụ lục I kèm theo Nghị định này, thực hiện kê khai theo hướng dẫn như sau:
+
+- Các chỉ tiêu tại dòng (1), (2), (3), (4), (5), (6), (7), (8), (8.1), (9), (9.1), (9.1.a), (9.1.b), (10), (11) và (12):

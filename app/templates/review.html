@@ -2,15 +2,42 @@
 {% block title %}{{ doc.document_no }}{% endblock %}
 {% block body %}
 <header class="topbar">
-  <a href="/">&larr; Danh sách văn bản</a>
-  <h1>{{ doc.title }} <span class="muted">· {{ doc.document_no }}</span></h1>
+  <div class="topbar-left">
+    <a href="/">&larr; Danh sách văn bản</a>
+    <h1>{{ doc.title }} <span class="muted">· {{ doc.document_no }}</span></h1>
+  </div>
+  <div class="topbar-right">
+    <button type="button" class="btn-theme-toggle" onclick="toggleTheme()" title="Chuyển đổi giao diện sáng / tối">
+      <span class="theme-icon">🌓</span>
+      <span class="theme-text">Chế độ tối</span>
+    </button>
+    <div class="user-badge" title="Tài khoản thẩm định đang thao tác">
+      <span>👤 Người soát:</span>
+      <select onchange="window.location.href='/switch-user/' + this.value">
+        {% for u in users %}
+        <option value="{{ u.username }}" {% if current_user and current_user.username == u.username %}selected{% endif %}>
+          {{ u.full_name }}
+        </option>
+        {% endfor %}
+      </select>
+    </div>
+    <a href="/documents/{{ doc.document_id }}/export" class="btn btn-secondary btn-sm" title="Tải file ZIP gồm văn bản JSON đã soát và báo cáo lỗi">
+      📥 Xuất kết quả
+    </a>
+  </div>
 </header>
+
 <div class="split">
   <section class="pane left" aria-label="Trang PDF gốc">
     {% include "partials/viewer.html" %}
   </section>
   <section class="pane right">
-    <h2 class="pane-title">Cấu trúc: Điều &rarr; Khoản &rarr; Điểm</h2>
+    <div class="pane-title">
+      <span>Cấu trúc: Điều &rarr; Khoản &rarr; Điểm</span>
+      {% if progress %}
+      {% include "partials/progress.html" %}
+      {% endif %}
+    </div>
     {% include "partials/tree.html" %}
     <div id="detail" class="detail" aria-live="polite">
       {% include "partials/detail.html" %}

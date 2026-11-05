@@ -1,11 +1,25 @@
 <div id="tree" class="tree"{% if oob %} hx-swap-oob="true"{% endif %}>
   {% for r in rows %}
-  <button type="button" class="row{% if r.selected %} selected{% endif %}"{% if r.selected %} aria-current="true"{% endif %}
-          style="padding-left: {{ 12 + r.depth * 24 }}px"
+  <button type="button"
+          class="row{% if r.selected %} selected{% endif %}{% if r.decision %} status-{{ r.decision }}{% endif %}"
+          {% if r.selected %} aria-current="true"{% endif %}
+          style="padding-left: {{ 12 + r.depth * 20 }}px"
           hx-get="{{ r.url }}" hx-target="#detail" hx-swap="innerHTML">
     <span class="label">{{ r.label }}</span>
     <span class="snippet">{{ r.snippet }}</span>
-    {% if not r.confident %}<span class="tag warn">Không chắc</span>{% endif %}
+    {% if r.decision == "approved" %}
+      <span class="badge approved">✓ Duyệt</span>
+    {% elif r.decision == "flagged" %}
+      <span class="badge flagged" title="{{ r.note or '' }}">⚑ Cờ</span>
+    {% elif r.decision == "structural_error" %}
+      <span class="badge structural" title="{{ r.note or '' }}">⚠ Lỗi CT</span>
+    {% endif %}
+    {% if r.is_edited %}
+      <span class="badge edited">✎ Đã sửa</span>
+    {% endif %}
+    {% if not r.confident %}
+      <span class="badge warn">Không chắc</span>
+    {% endif %}
   </button>
   {% endfor %}
 </div>

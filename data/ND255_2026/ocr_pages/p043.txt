@@ -1,0 +1,35 @@
+PRINTED_PAGE: 43
+
+Đ.2. Người nộp thuế không thuộc trường hợp được miễn lập Hồ sơ xác định giá giao dịch liên kết tại điểm a hoặc điểm c khoản 2 Điều 20 Nghị định này kê khai như sau:
+
+- Chỉ tiêu “Tổng giá trị giao dịch phát sinh từ hoạt động kinh doanh”:
+
++ Cột (3): Ghi tổng giá trị doanh thu bán ra cho các bên liên kết và các bên độc lập, bao gồm:
+
+Doanh thu bán hàng và cung cấp dịch vụ, doanh thu hoạt động tài chính và thu nhập khác (không bao gồm các khoản thu hộ).
+
++ Cột (7): Ghi tổng giá trị chi phí phải trả cho các bên liên kết và các bên độc lập, bao gồm: Chi phí hàng hóa và dịch vụ mua vào, chi phí tài chính, chi phí bán hàng, chi phí quản lý doanh nghiệp và chi phí khác (không bao gồm các khoản chi hộ).
+
++ Cột (4), (5), (6), (8), (9), (10), (11), (12) và (13): Để trống không phải kê khai.
+
+- Chỉ tiêu “Tổng giá trị giao dịch phát sinh từ hoạt động liên kết”:
+
++ Cột (3), (4), (7) và (8): Ghi tổng giá trị tại các ô tương ứng với từng chỉ tiêu Hàng hóa cộng (+) Dịch vụ.
+
+- Chỉ tiêu “Hàng hóa”:
+
++ Cột (3), (4), (7) và (8): Ghi tổng giá trị tại các ô tương ứng với các chỉ tiêu Hàng hóa hình thành tài sản cố định cộng (+) Hàng hóa không hình thành tài sản cố định.
+
+- Chỉ tiêu “Hàng hóa hình thành tài sản cố định” và các dòng chi tiết “Bên liên kết A”, “Bên liên kết B”,...:
+
++ Cột (3) và (7): Ghi tổng giá trị phát sinh từ mua hoặc bán tài sản cố định của người nộp thuế với các bên liên kết theo giá trị tại sổ kế toán.
+
++ Cột (4) và (8): Ghi tổng giá trị phát sinh từ mua hoặc bán tài sản cố định với các bên liên kết được xác định theo phương pháp xác định giá giao dịch liên kết tương ứng tại Cột (6) và (10).
+
+- Chỉ tiêu “Hàng hóa không hình thành tài sản cố định” và các dòng chi tiết “Bên liên kết A”, “Bên liên kết B”,...:
+
++ Cột (3) và (7): Ghi tổng giá trị phát sinh từ mua hoặc bán hàng hóa không phải là tài sản cố định của người nộp thuế với các bên liên kết theo giá trị tại sổ kế toán.
+
++ Cột (4) và (8): Ghi tổng giá trị phát sinh từ mua hoặc bán hàng hóa không phải là tài sản cố định của người nộp thuế với các bên liên kết được xác định theo phương pháp xác định giá giao dịch liên kết tương ứng tại Cột (6) và (10).
+
+- Chỉ tiêu “Dịch vụ”:

@@ -1,0 +1,21 @@
+PRINTED_PAGE: 7
+
+chỉ có thông tin, dữ liệu làm cơ sở để loại trừ hầu hết các khác biệt trọng yếu của đối tượng so sánh độc lập.
+
+Điều 8. Điều chỉnh mức giá, tỷ suất lợi nhuận, tỷ lệ phân bổ lợi nhuận của người nộp thuế
+
+1. Trường hợp tìm kiếm được các đối tượng so sánh độc lập có mức độ so sánh tin cậy tương đương nhau, không có khác biệt hoặc có khác biệt nhưng có đủ thông tin, dữ liệu làm cơ sở để loại trừ tất cả các khác biệt trọng yếu:
+
+a) Nếu mức giá, tỷ suất lợi nhuận, tỷ lệ phân bổ lợi nhuận của người nộp thuế thuộc khoảng giá trị giao dịch độc lập của các đối tượng so sánh độc lập tương đồng thì người nộp thuế không phải thực hiện điều chỉnh mức giá, tỷ suất lợi nhuận, tỷ lệ phân bổ lợi nhuận để xác định giá giao dịch liên kết;
+
+b) Nếu mức giá, tỷ suất lợi nhuận, tỷ lệ phân bổ lợi nhuận của người nộp thuế không thuộc khoảng giá trị giao dịch độc lập của các đối tượng so sánh độc lập tương đồng thì người nộp thuế phải xác định giá trị thuộc khoảng giao dịch độc lập phản ánh mức độ tương đồng cao nhất với giao dịch liên kết để điều chỉnh mức giá, tỷ suất lợi nhuận, tỷ lệ phân bổ lợi nhuận của giao dịch liên kết nhưng không làm giảm thu nhập chịu thuế, không làm giảm nghĩa vụ thuế phải nộp ngân sách nhà nước của người nộp thuế.
+
+2. Trường hợp chỉ có thông tin dữ liệu làm cơ sở để loại trừ hầu hết các khác biệt trọng yếu của đối tượng so sánh độc lập, tối thiểu lựa chọn 05 đối tượng so sánh độc lập và áp dụng khoảng giá trị giao dịch độc lập chuẩn theo hướng dẫn tại Phụ lục V ban hành kèm theo Nghị định này. Việc lựa chọn giá trị thuộc khoảng giá trị giao dịch độc lập chuẩn để điều chỉnh, xác định lại mức giá, tỷ suất lợi nhuận hoặc tỷ lệ phân bổ lợi nhuận của người nộp thuế như sau:
+
+a) Nếu mức giá, tỷ suất lợi nhuận, tỷ lệ phân bổ lợi nhuận của người nộp thuế là giá trị thuộc khoảng giá trị giao dịch độc lập chuẩn của các đối tượng so sánh độc lập tương đồng, người nộp thuế không phải điều chỉnh mức giá, tỷ suất lợi nhuận, tỷ lệ phân bổ lợi nhuận để xác định giá giao dịch liên kết;
+
+b) Trường hợp mức giá, tỷ suất lợi nhuận, tỷ lệ phân bổ lợi nhuận của người nộp thuế không thuộc khoảng giá trị giao dịch độc lập chuẩn của các đối tượng so sánh độc lập tương đồng, người nộp thuế phải xác định giá trị thuộc khoảng giao dịch độc lập chuẩn phản ánh mức độ tương đồng cao nhất với giao dịch liên kết để điều chỉnh mức giá, tỷ suất lợi nhuận, tỷ lệ phân bổ lợi nhuận của giao dịch liên kết và xác định thu nhập chịu thuế, số thuế phải nộp nhưng không làm giảm thu nhập chịu thuế, không làm giảm nghĩa vụ thuế phải nộp ngân sách nhà nước;
+
+c) Trường hợp cơ quan thuế thực hiện điều chỉnh hoặc ấn định mức giá, tỷ suất lợi nhuận, tỷ lệ phân bổ lợi nhuận của người nộp thuế, giá trị điều chỉnh hoặc ấn định là giá trị trung vị của khoảng giá trị giao dịch độc lập chuẩn.
+
+3. Căn cứ phương pháp xác định giá giao dịch liên kết và các đối tượng so sánh độc lập được lựa chọn, thực hiện điều chỉnh mức giá; tỷ suất lợi nhuận hoặc tỷ lệ phân bổ lợi nhuận của người nộp

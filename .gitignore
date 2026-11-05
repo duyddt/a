@@ -4,3 +4,7 @@ __pycache__/
 .pytest_cache/
 # ảnh trang PDF do app tự render
 data/*/pages/
+# database file
+*.db
+data/*.db
+HeThongTroLyAIPhapLy-KeToan.pdf

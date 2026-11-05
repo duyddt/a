@@ -1,0 +1,23 @@
+PRINTED_PAGE: 13
+
+Nghị định này. Phương pháp xác định giá giao dịch liên kết được lựa chọn trong các phương pháp quy định tại Điều 13, Điều 14, Điều 15 Nghị định này, căn cứ vào đặc điểm của giao dịch liên kết và căn cứ vào thông tin dữ liệu sẵn có.
+
+Điều 13. Phương pháp so sánh giá giao dịch liên kết với giá giao dịch độc lập
+
+1. Các trường hợp áp dụng phương pháp so sánh giá giao dịch liên kết với giá giao dịch độc lập (sau đây viết tắt là phương pháp so sánh giá giao dịch độc lập) Người nộp thuế thực hiện giao dịch liên kết đối với từng chủng loại hàng hóa, tài sản hữu hình, loại hình dịch vụ có điều kiện giao dịch, lưu thông phổ biến trên thị trường hoặc có giá được công bố trên các sàn giao dịch hàng hóa, dịch vụ trong nước và quốc tế; giao dịch thanh toán phí bản quyền khi khai thác tài sản vô hình; thanh toán lãi vay trong hoạt động vay và cho vay; hoặc người nộp thuế thực hiện cả giao dịch độc lập và giao dịch liên kết đối với sản phẩm tương đồng về đặc tính sản phẩm và điều kiện hợp đồng.
+
+2. Nguyên tắc áp dụng:
+
+a) Phương pháp so sánh giá giao dịch độc lập được thực hiện trên nguyên tắc không có khác biệt về đặc tính sản phẩm và điều kiện hợp đồng khi so sánh giá giao dịch độc lập và giá giao dịch liên kết có ảnh hưởng trọng yếu đến giá sản phẩm. Trường hợp có các khác biệt ảnh hưởng trọng yếu đến giá sản phẩm, phải loại trừ các khác biệt trọng yếu này;
+
+b) Các yếu tố đặc tính sản phẩm và điều kiện hợp đồng có tác động trọng yếu đến giá sản phẩm, bao gồm: Đặc tính, chất lượng, thương hiệu, nhãn hiệu thương mại của sản phẩm và quy mô, khối lượng giao dịch; các điều kiện hợp đồng cung cấp, chuyển giao sản phẩm; khối lượng, thời hạn chuyển giao, thời hạn thanh toán và các điều kiện khác của hợp đồng; quyền phân phối, tiêu thụ hàng hóa, dịch vụ, tài sản có ảnh hưởng đến giá trị kinh tế và thị trường nơi diễn ra giao dịch và các yếu tố khác tác động đến giá sản phẩm như điều kiện kinh tế và chức năng hoạt động của người nộp thuế.
+
+3. Phương pháp xác định:
+
+a) Giá sản phẩm trong giao dịch liên kết được điều chỉnh theo giá sản phẩm trong giao dịch độc lập hoặc giá trị thuộc khoảng giá trị giao dịch độc lập chuẩn của các đối tượng so sánh độc lập theo quy định tại Nghị định này;
+
+b) Trường hợp giá sản phẩm được công bố trên các sàn giao dịch hàng hóa, dịch vụ trong nước và quốc tế, giá sản phẩm trong giao dịch liên kết được xác định theo giá sản phẩm được công bố có thời điểm và các điều kiện giao dịch tương đồng;
+
+c) Người nộp thuế mua máy móc, thiết bị từ bên liên kết ở nước ngoài phải có tài liệu, chứng từ chứng minh giá mua máy móc, thiết bị tuân theo nguyên tắc giao dịch độc lập tại thời điểm mua:
+
+Đối với máy móc, thiết bị mới, giá so sánh là giá hóa đơn bên liên kết mua máy móc, thiết bị đó từ bên độc lập; đối với máy móc, thiết bị đã qua sử dụng, phải có hóa đơn, chứng từ gốc tại thời

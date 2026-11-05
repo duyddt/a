@@ -1,0 +1,23 @@
+PRINTED_PAGE: 41
+
+13.2 Phần chi phí lãi vay không được trừ từ năm (n-2) chuyển sang kỳ tính thuế (n) 13.3 Phần chi phí lãi vay không được trừ từ năm (n-3) chuyển sang kỳ tính thuế (n) 13.4 Phần chi phí lãi vay không được trừ từ năm (n-4) chuyển sang kỳ tính thuế (n) 13.5 Phần chi phí lãi vay không được trừ từ năm (n-5) chuyển sang kỳ tính thuế (n) 14 Tỷ lệ chi phí lãi vay sau khi trừ lãi tiền gửi và lãi cho vay phát sinh được trừ trong kỳ cộng chi phí lãi vay của các kỳ trước chuyển sang kỳ tính thuế (n) trên tổng lợi nhuận thuần từ hoạt động kinh doanh cộng chi phí lãi vay thuần phát sinh trong kỳ cộng chi phí khấu hao phát sinh trong kỳ của người nộp thuế (14) = [(9)-(8)+(13)]/(11) 15 Tỷ suất lợi nhuận sử dụng xác định giá giao dịch liên kết 15.1 Tỷ suất ..................................................................................... 15.2 Tỷ suất ...................................................................................... …. ………………………………………………………………………..
+
+Tôi cam đoan số liệu khai trên là đúng và chịu trách nhiệm trước pháp luật về số liệu đã khai.
+
+NHÂN VIÊN ĐẠI LÝ THUẾ Họ và tên: …………………………..
+
+Chứng chỉ hành nghề số: ………… ........, ngày........tháng........năm......
+
+NGƯỜI NỘP THUẾ hoặc ĐẠI DIỆN HỢP PHÁP CỦA NGƯỜI NỘP THUẾ (Ký, ghi rõ họ tên; chức vụ và đóng dấu (nếu có)) HƯỚNG DẪN KÊ KHAI MỘT SỐ CHỈ TIÊU A. Kỳ tính thuế: Ghi thông tin tương ứng với kỳ tính thuế của Tờ khai quyết toán thuế thu nhập doanh nghiệp. Kỳ tính thuế xác định theo quy định tại Luật Thuế thu nhập doanh nghiệp.
+
+B. Thông tin chung của người nộp thuế: Từ chỉ tiêu [01] đến chỉ tiêu [09] ghi thông tin tương ứng với thông tin đã ghi tại Tờ khai quyết toán thuế thu nhập doanh nghiệp.
+
+C. Mục I. Thông tin về các bên liên kết:
+
+- Cột (2): Ghi đầy đủ tên của từng bên liên kết:
+
++ Trường hợp bên liên kết tại Việt Nam là tổ chức thì ghi theo thông tin tại giấy phép đăng ký doanh nghiệp; là cá nhân thì ghi theo thông tin tại thẻ căn cước công dân, hộ chiếu, giấy tờ định danh của cá nhân.
+
++ Trường hợp bên liên kết là tổ chức, cá nhân ngoài Việt Nam thì ghi theo thông tin tại văn bản xác định quan hệ liên kết như giấy phép đăng ký kinh doanh, hợp đồng, thỏa thuận giao dịch của người nộp thuế với bên liên kết.
+
+- Cột (3): Ghi tên quốc gia, vùng lãnh thổ nơi bên liên kết là đối tượng cư trú.

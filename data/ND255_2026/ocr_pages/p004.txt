@@ -1,0 +1,21 @@
+PRINTED_PAGE: 4
+
+c) Một doanh nghiệp là cổ đông lớn nhất về vốn góp của chủ sở hữu và nắm giữ trực tiếp hoặc gián tiếp ít nhất 10% tổng số cổ phần của doanh nghiệp kia;
+
+d) Một doanh nghiệp bảo lãnh hoặc cho một doanh nghiệp khác vay vốn dưới bất kỳ hình thức nào (bao gồm cả các khoản vay từ bên thứ ba được đảm bảo từ nguồn tài chính của bên liên kết và các giao dịch tài chính có bản chất tương tự) với điều kiện tổng dư nợ các khoản vốn vay của doanh nghiệp đi vay với doanh nghiệp cho vay hoặc bảo lãnh ít nhất bằng 25% vốn góp của chủ sở hữu của doanh nghiệp đi vay và chiếm trên 50% tổng dư nợ tất cả các khoản nợ trung và dài hạn của doanh nghiệp đi vay.
+
+Quy định tại điểm d khoản này không áp dụng với các trường hợp sau:
+
+d.1) Bên bảo lãnh hoặc cho vay là các tổ chức kinh tế hoạt động theo quy định của Luật Các tổ chức tín dụng số 32/2024/QH15 (được sửa đổi, bổ sung tại Luật số 96/2025/QH15) không tham gia trực tiếp, gián tiếp điều hành, kiểm soát, góp vốn, đầu tư vào doanh nghiệp đi vay hoặc doanh nghiệp được bảo lãnh theo quy định tại các điểm a, c, đ, e, g, h, k, l và điểm m khoản này.
+
+d.2) Bên bảo lãnh hoặc cho vay là các tổ chức kinh tế hoạt động theo quy định của Luật Các tổ chức tín dụng số 32/2024/QH15 (được sửa đổi, bổ sung tại Luật số 96/2025/QH15) và doanh nghiệp đi vay hoặc được bảo lãnh không trực tiếp, gián tiếp cùng chịu sự điều hành, kiểm soát, góp vốn, đầu tư của một bên khác theo quy định tại các điểm b, e và điểm i khoản này.
+
+d.3) Chủ nợ, bên bảo lãnh là tổ chức do Nhà nước sở hữu 100% vốn điều lệ có chức năng mua, bán, xử lý nợ không tham gia trực tiếp, gián tiếp điều hành, kiểm soát góp vốn, đầu tư vào doanh nghiệp bên nợ hoặc doanh nghiệp được bảo lãnh theo quy định tại điểm a và điểm c khoản này.
+
+đ) Một doanh nghiệp chỉ định thành viên ban lãnh đạo điều hành hoặc nắm quyền kiểm soát của một doanh nghiệp khác với điều kiện số lượng các thành viên được doanh nghiệp thứ nhất chỉ định chiếm trên 50% tổng số thành viên ban lãnh đạo điều hành hoặc nắm quyền kiểm soát của doanh nghiệp thứ hai; hoặc một thành viên được doanh nghiệp thứ nhất chỉ định có quyền quyết định các chính sách tài chính hoặc hoạt động kinh doanh của doanh nghiệp thứ hai;
+
+e) Hai doanh nghiệp cùng có trên 50% thành viên ban lãnh đạo hoặc cùng có một thành viên ban lãnh đạo có quyền quyết định các chính sách tài chính hoặc hoạt động kinh doanh được chỉ định bởi một bên thứ ba;
+
+g) Hai doanh nghiệp được điều hành hoặc chịu sự kiểm soát về nhân sự, tài chính và hoạt động kinh doanh bởi các cá nhân thuộc một trong các mối quan hệ vợ, chồng; cha mẹ đẻ, cha mẹ nuôi, cha dượng, mẹ kế, cha mẹ vợ, cha mẹ chồng; con đẻ, con nuôi, con riêng của vợ hoặc chồng, con dâu, con rể; anh, chị, em cùng cha mẹ, anh, chị em cùng cha khác mẹ, anh, chị, em cùng mẹ khác cha, anh rể, em rể, chị dâu, em dâu của người cùng cha mẹ hoặc cùng cha khác mẹ, cùng mẹ khác cha; ông bà nội, ông bà ngoại; cháu nội, cháu ngoại; cô, dì, chú, cậu, bác ruột và cháu ruột;
+
+h) Hai cơ sở kinh doanh có mối quan hệ trụ sở chính và cơ sở thường trú hoặc cùng là cơ sở thường trú của tổ chức, cá nhân nước ngoài;

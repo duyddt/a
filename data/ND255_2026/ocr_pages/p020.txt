@@ -1,0 +1,31 @@
+PRINTED_PAGE: 20
+
+c) Quy định tại điểm a khoản này không áp dụng với các khoản vay của người nộp thuế là tổ chức tín dụng theo Luật Các tổ chức tín dụng số 32/2024/QH15 (được sửa đổi, bổ sung tại Luật số 96/2025/QH15); tổ chức kinh doanh bảo hiểm theo Luật Kinh doanh bảo hiểm số 08/2022/QH15 (được sửa đổi bổ sung tại Luật số 139/2025/QH15); các khoản vay vốn hỗ trợ phát triển chính thức (ODA), vay ưu đãi của Chính phủ thực hiện theo phương thức Chính phủ đi vay nước ngoài cho các doanh nghiệp vay lại; các khoản vay thực hiện chương trình mục tiêu quốc gia (chương trình nông thôn mới và giảm nghèo bền vững); các khoản vay đầu tư chương trình, dự án thực hiện chính sách phúc lợi xã hội của Nhà nước (nhà ở tái định cư, nhà ở công nhân, sinh viên, nhà ở xã hội và dự án phúc lợi công cộng khác);
+
+d) Người nộp thuế kê khai tỷ lệ chi phí lãi vay trong kỳ tính thuế theo Phụ lục I ban hành kèm theo Nghị định này.
+
+Điều 17. Cơ sở dữ liệu sử dụng trong kê khai, xác định, quản lý giá giao dịch liên kết
+
+1. Cơ sở dữ liệu sử dụng trong kê khai, xác định giá giao dịch liên kết của người nộp thuế, bao gồm:
+
+a) Cơ sở dữ liệu thương mại quy định tại khoản 15 Điều 4 Luật Quản lý thuế số 108/2025/QH15 và các văn bản quy phạm pháp luật về quản lý thuế;
+
+b) Thông tin, dữ liệu của các doanh nghiệp được công bố công khai trên thị trường chứng khoán;
+
+c) Thông tin, dữ liệu công bố trên các sàn giao dịch hàng hóa, dịch vụ trong nước và quốc tế;
+
+d) Thông tin Cơ sở dữ liệu quốc gia; thông tin do các cơ quan bộ, ngành trong nước hoặc các nguồn chính thức khác được công bố công khai.
+
+2. Cơ sở dữ liệu sử dụng trong quản lý giá giao dịch liên kết của cơ quan thuế, bao gồm:
+
+a) Cơ sở dữ liệu quy định tại khoản 1 Điều này;
+
+b) Cơ sở dữ liệu quản lý thuế quy định tại khoản 2 Điều 35 Luật Quản lý thuế số 108/2025/QH15 và các văn bản quy phạm pháp luật về quản lý thuế.
+
+3. Cơ sở dữ liệu được sử dụng theo thứ tự ưu tiên như sau:
+
+a) Thông tin, dữ liệu của các doanh nghiệp được công bố công khai trên thị trường chứng khoán; thông tin, dữ liệu công bố trên các sàn giao dịch hàng hóa, dịch vụ trong nước và quốc tế; thông tin Cơ sở dữ liệu quốc gia; thông tin do các cơ quan bộ, ngành trong nước hoặc các nguồn chính thức khác được công bố công khai;
+
+b) Cơ sở dữ liệu thương mại;
+
+c) Cơ sở dữ liệu quản lý thuế.

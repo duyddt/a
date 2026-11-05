@@ -1,76 +1,116 @@
-# Web app thẩm định dữ liệu pháp lý: khung chạy được
+# Web app thẩm định dữ liệu pháp lý (Trợ lý AI Pháp lý Thuế – Kế toán)
 
-Khung cho buổi kiểm tra giữa chặng 30/10: nhập một văn bản (PDF + JSON), hiển thị màn hình hai khung (ảnh trang PDF bên trái, cây Điều/Khoản/Điểm bên phải), bấm một đơn vị thì khung trái nhảy tới trang chứa nó.
+Khung thẩm định văn bản quy phạm pháp luật đã tách thành Điều, Khoản, Điểm cho người thẩm định kiểm tra, chỉnh sửa và ghi nhận kết quả trước khi đưa vào hệ thống truy xuất (WP2).
 
-Công nghệ: FastAPI + Jinja2 + HTMX. Render trang PDF bằng `pypdfium2`.
+Hệ thống cung cấp màn hình hai khung:
+* **Khung trái:** Ảnh trang PDF gốc (render trang tự động bằng `pypdfium2`).
+* **Khung phải:** Cây Điều / Khoản / Điểm, thanh tiến độ, hướng dẫn 4 tiêu chí kiểm tra, thanh công cụ 4 thao tác thẩm định và lịch sử bản sửa.
 
-## Chạy (Windows PowerShell)
+---
+
+## 1. Chạy ứng dụng (Windows PowerShell)
 
 ```powershell
 py -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements-dev.txt
-pytest
+$env:PYTHONUTF8=1; pytest
 uvicorn app.main:app --reload
 ```
 
-Mở http://127.0.0.1:8000. Màn hình danh sách có Nghị định 254/2026/NĐ-CP (55 trang, 416 đơn vị). Bấm vào, rồi bấm các dòng trong cây: ví dụ Điều 20 nhảy sang trang 30, Điều 45 sang trang 47, Phụ lục sang trang 48.
+Mở trình duyệt tại [**http://127.0.0.1:8000**](http://127.0.0.1:8000).
 
-**Về dữ liệu `data/ND254_2026/`:** `document.json` là BẢN NHÁP, dựng bằng `scripts/build_legal_document.py` từ bản chép chữ từng trang (`ocr_pages/`). PDF là bản scan không có lớp chữ, nên chữ được đọc bằng mắt từ ảnh, chưa ai đối chiếu từng chữ. Số hiệu, ngày ban hành (30/6/2026) và ngày hiệu lực (01/7/2026, Điều 43) lấy từ chính văn bản, chưa đối chiếu nguồn chính thức. Đây chính là thứ người soát cần kiểm tra bằng app.
-
-Dựng lại `document.json` sau khi sửa bản chép: `python scripts/build_legal_document.py --pages-dir data/ND254_2026/ocr_pages --out data/ND254_2026/document.json`. Script báo mọi chỗ số thứ tự bất thường và đặt `is_confident=false` thay vì tự sửa.
-
-HTMX được nạp từ `unpkg.com`, nên máy chạy demo cần có mạng (hoặc tải `htmx.min.js` về `app/static/` và sửa `base.html`).
-
-## Thêm văn bản
-
-Mỗi văn bản một thư mục trong `data/` (đổi thư mục gốc bằng biến môi trường `DATA_DIR`):
-
-```
-data/<document_id>/
-  source.pdf
-  document.json     # theo LegalDocument/LegalUnit, mỗi đơn vị có source_pages
+Mặc định ứng dụng tự khởi tạo cơ sở dữ liệu SQLite tại `data/review.db`. Để dùng **PostgreSQL**, cấu hình biến môi trường:
+```powershell
+$env:DATABASE_URL="postgresql://user:password@localhost:5432/law_review"
 ```
 
-App render ảnh từng trang khi trang đó được mở lần đầu, lưu vào `data/<document_id>/pages/` (đã nằm trong `.gitignore`). Thay `source.pdf` bằng file khác thì ảnh cũ tự bị bỏ. Nếu `document.json` sai, trang sẽ hiện danh sách lỗi cụ thể (sai `unit_id`, thiếu `source_pages`, số trang ngoài PDF...) thay vì báo lỗi chung chung.
+---
 
-## Cấu trúc
+## 2. Tiêu chuẩn Thẩm định & 4 Thao tác trên Giao diện
+
+Người thẩm định kiểm tra mỗi đơn vị theo **4 tiêu chí**:
+1. **Đúng chữ:** Soát dấu tiếng Việt, con số, chính tả so với trang PDF gốc bên trái.
+2. **Đúng ranh giới:** Bắt đầu và kết thúc đúng chỗ, không nuốt đoạn của đơn vị khác.
+3. **Đúng cấp và số:** Xác định đúng là Điều, Khoản hay Điểm; số thứ tự liên tục.
+4. **Không sót:** Đối chiếu bản scan bên trái, đảm bảo không thiếu câu/đoạn nào.
+
+### 4 Thao tác Thẩm định:
+* **[✔ Duyệt]:** Xác nhận đơn vị đạt chuẩn. Dòng trên cây chuyển màu xanh lá (`✓ Duyệt`).
+* **[✎ Sửa chữ]:** Mở ô soạn thảo sửa trực tiếp nội dung tại chỗ. Sau khi lưu, dòng chuyển màu xanh dương (`✎ Đã sửa`), hiển thị nút *[👁 Đối chiếu bản gốc]* và *[📜 Lịch sử]*. Dữ liệu gốc tuyệt đối không bị ghi đè (lưu trữ dạng append-only).
+* **[⚑ Gắn cờ]:** Dành cho trường hợp chữ scan mờ hoặc chưa chắc chắn. Nhập ghi chú ngắn; dòng chuyển màu cam (`⚑ Cờ`).
+* **[⚠ Báo lỗi cấu trúc]:** Dành cho trường hợp sai cấp, sai số thứ tự, cần tách hoặc cần gộp đơn vị. Chọn loại lỗi và nhập ghi chú để chuyển cho nhóm kỹ thuật sửa parser. Dòng chuyển màu đỏ (`⚠ Lỗi CT`).
+
+---
+
+## 3. Quản lý Người dùng & Tính Độc lập Thẩm định
+
+* Người thẩm định có thể chuyển đổi tài khoản nhanh qua menu **👤 Người soát** trên góc phải màn hình (các tài khoản mẫu: `lead`, `duy.nguyen`, `dung.nguyen`, `phuong.tran`, `long.luu`).
+* **Chế độ Sáng / Tối (Dark / Light mode):** Nút chuyển đổi trực tiếp trên góc phải thanh điều hướng, tự động lưu cấu hình người dùng vào `localStorage`. Độ tương phản và màu sắc được tinh chỉnh chuyên sâu để mọi văn bản và chi tiết luôn rõ ràng, không bị chìm xuống nền.
+* Hai người soát hai văn bản khác nhau cùng lúc hoàn toàn độc lập, không ảnh hưởng nhau.
+* Mỗi thao tác duyệt hoặc sửa chữ đều ghi nhận chính xác danh tính người thực hiện và thời điểm.
+
+---
+
+## 4. Cách Xuất Kết quả Thẩm định (Export)
+
+### 4.1. Tải trực tiếp trên giao diện
+* Bấm nút **[📥 Xuất kết quả]** tại màn hình danh sách hoặc trong màn hình thẩm định.
+* Hệ thống trả về file ZIP `{document_id}_export.zip` gồm:
+  1. `{document_id}_verified.json`: Văn bản theo đúng schema `LegalDocument` chung, nội dung các đơn vị tự động lấy bản sửa mới nhất (nếu có). Có thể nạp lại trực tiếp bằng model Pydantic.
+  2. `{document_id}_parser_feedback.json`: Báo cáo danh sách toàn bộ các đơn vị bị gắn cờ hoặc báo lỗi cấu trúc kèm số trang, loại lỗi, ghi chú và người thực hiện để gửi nhóm parser khắc phục.
+
+### 4.2. Xuất qua đường dẫn trực tiếp
+* Tải file ZIP: `GET /documents/{document_id}/export`
+
+---
+
+## 5. Đặc tả REST API
+
+| Phương thức | Endpoint | Mô tả | Request Body mẫu |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/documents/{id}/units/{uid}/approve` | Duyệt đơn vị | Không cần body (lấy user từ cookie) |
+| `POST` | `/api/documents/{id}/units/{uid}/edit-text` | Sửa chữ (append-only) | `{"new_content": "Chữ mới..."}` |
+| `POST` | `/api/documents/{id}/units/{uid}/flag` | Gắn cờ không chắc | `{"note": "Chữ mờ ở dòng 3..."}` |
+| `POST` | `/api/documents/{id}/units/{uid}/structural-error` | Báo lỗi cấu trúc | `{"error_type": "need_split", "note": "Gộp 2 điểm"}` |
+| `GET` | `/api/documents/{id}/units/{uid}/history` | Xem toàn bộ lịch sử sửa và quyết định | Trả JSON chi tiết lịch sử |
+| `GET` | `/api/documents/{id}/progress` | Xem tiến độ văn bản | Trả số lượng duyệt/cờ/lỗi cấu trúc |
+
+---
+
+## 6. Cấu trúc Dự án
 
 ```
 app/
-  main.py               # các route (FastAPI)
-  contracts/            # model TỐI GIẢN, TẠM THỜI theo docs/contracts.md
+  contracts/            # Pydantic schemas (LegalDocument, LegalUnit)
+  db/                   # SQLAlchemy models, session, seed users
   services/
-    store.py            # nạp văn bản từ thư mục data/ (sau này đổi sang PostgreSQL ở đây)
-    render_pdf.py       # PDF -> ảnh từng trang
-    views.py            # dựng cây và khung xem trang cho template
-  templates/            # list, review, partials/{viewer,tree,detail}
-  static/style.css
-data/ND254_2026/        # văn bản thật (bản nháp): source.pdf, document.json, ocr_pages/
-scripts/
-  build_legal_document.py   # ocr_pages/*.txt -> document.json (tách Điều/Khoản/Điểm, gán source_pages)
-  make_sample_pdf.py        # tạo PDF mẫu 3 trang cho test
+    auth.py             # Quản lý reviewer và cookie
+    review_service.py   # Nghiệp vụ duyệt, sửa chữ append-only, cờ, lỗi cấu trúc, xuất dữ liệu
+    store.py            # Nạp văn bản gốc từ data/<id>/
+    render_pdf.py       # Render ảnh từng trang PDF bằng pypdfium2
+    views.py            # Dựng cây và khung xem trang cho template
+  templates/            # Giao diện Jinja2 + HTMX
+  static/style.css, htmx.min.js
+data/
+  ND254_2026/           # Nghị định 254/2026/NĐ-CP (55 trang, 416 đơn vị)
+  ND255_2026/           # Nghị định 255/2026/NĐ-CP (68 trang, 239 đơn vị)
 tests/
-  fixtures/data/ND254_2026/ # văn bản mẫu 3 trang, nội dung giữ chỗ, dùng cho test
+  test_contracts.py         # Kiểm tra quy tắc model contracts
+  test_nd254_document.py    # Kiểm tra cấu trúc ND254
+  test_nd255_document.py    # Kiểm tra cấu trúc ND255
+  test_review_operations.py # Kiểm tra 4 thao tác, append-only, concurrency, export
+  test_api_endpoints.py     # Kiểm tra toàn bộ REST API và luồng thao tác
+  test_routes.py            # Kiểm tra route FastAPI
+  test_services.py          # Kiểm tra render template và logic view
 ```
 
-Cách HTMX hoạt động ở đây: bấm một dòng trong cây gửi `GET /documents/<id>/units/<unit_id>`. Server trả một đoạn HTML gồm nội dung chi tiết (vào `#detail`) cùng khung trái và cây đã cập nhật (gắn `hx-swap-oob`, htmx tự thay đúng chỗ). Nút trang trước/sau và phóng to gọi `/documents/<id>/viewer?...` và thay `#viewer`. Không có JavaScript tự viết.
+---
 
-## Cần làm tiếp
+## 7. Kiểm thử Tự động
 
-1. **Thay `app/contracts/` bằng bản sao nguyên văn `backend/app/contracts/` của repo chính** (model hiện tại là bản tối giản tự viết theo `docs/contracts.md`, chưa đối chiếu với `test_contracts.py`). Trường `source_pages` là trường đề xuất thêm, cần PR riêng vào repo chính.
-2. **PostgreSQL.** Thẻ việc của Duy yêu cầu FastAPI và PostgreSQL. Khung này chưa có DB: `services/store.py` đọc thẳng file. Bước tiếp theo là lưu văn bản đã nhập vào PostgreSQL (bảng `document_version` bất biến) rồi thêm `review_event` cho phần lưu kết quả thẩm định (hạn 3/11).
-3. **Thao tác thẩm định:** Duyệt, Sửa chữ, Gắn cờ, Báo lỗi cấu trúc, thanh tiến độ ở màn hình danh sách (Dũng, nối với backend của Duy).
-4. Thử với D3 thật của Phương và Long khi có.
-
-## Giới hạn của bản nháp ND254
-
-- Phụ lục (trang 48 đến 55) là MỘT đơn vị `ND254_2026_PL1`, chưa tách cấu trúc, đánh dấu `is_confident=false`.
-- Điều 9 khoản 4: bản in có hai Điểm đều ghi `d)`, script ghi Điểm thứ hai là `đ` và đánh dấu `is_confident=false`.
-- Đoạn không có ký hiệu đứng sau một Điểm được gắn vào Điểm đó (và vào Khoản, Điều cha). Với văn bản có thể thuộc Khoản chứ không thuộc Điểm, người soát cần kiểm tra.
-- Các tầng a.1), a.2.1) nằm trong nội dung của Điểm cha, chưa tách thành đơn vị riêng vì schema chung chỉ có Điều, Khoản, Điểm.
-- `status = active` và `effective_from` là giá trị đọc từ văn bản, chưa xác minh tình trạng hiệu lực hiện tại. `amended_by` và `replaced_by` để trống vì chưa kiểm tra.
-
-## Đã kiểm tra gì
-
-`pytest` gồm test model (quy ước `unit_id`, trùng id, cha sau con, `document_no` lệch), test nạp dữ liệu và render trang, test dựng cây, và test template cho hành vi bấm đơn vị thì khung trái hiển thị đúng trang. `tests/test_routes.py` kiểm tra các route FastAPI bằng `TestClient`; file này tự bỏ qua nếu chưa cài `fastapi` và `httpx`.
+Toàn bộ **49 tests** tự động được chạy qua lệnh:
+```powershell
+$env:PYTHONUTF8=1; pytest
+```
+Bao gồm kiểm tra tính bất biến của dữ liệu gốc, tính append-only của bản sửa, tính đồng thời của 2 reviewer, và tính hợp lệ khi nạp lại JSON bằng Pydantic.

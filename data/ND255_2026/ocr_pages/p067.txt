@@ -1,0 +1,23 @@
+PRINTED_PAGE: 67
+
+- Di chuyển con trỏ đến một ô khác ngoài vùng dữ liệu và thực hiện lệnh Percentile để tìm các giá trị bách phân vị tương ứng, cụ thể:
+
+Percentile (Vùng dữ liệu, tham số).
+
+- Vùng dữ liệu: Là vùng chứa các giá trị về mức giá hoặc tỷ suất lợi nhuận hoặc tỷ lệ phân bổ lợi nhuận.
+
+- Tham số: Nhận các giá trị tương ứng 0,35 đến 0,75.
+
++ Bách phân vị thứ 35 là giá trị của hàm Percentile với tham số bằng 0,35.
+
++ Bách phân vị thứ 50 (số trung vị) là giá trị của hàm Percentile với tham số bằng 0,5.
+
++ Bách phân vị thứ 75 là giá trị của hàm Percentile với tham số bằng 0,75.
+
++ Khoảng giá trị giao dịch độc lập chuẩn là khoảng giá trị từ bách phân vị thứ 35 đến bách phân vị thứ 75.
+
+2. Ví dụ minh họa Trong năm 202x, doanh nghiệp A lựa chọn được các doanh nghiệp độc lập để so sánh có các số liệu về tỷ suất lợi nhuận thuần trên tài sản là: 1,0; 1,25; 1,25; 1,5; 1,5; 1,75; 2,0; 2,0; 2,15; 2,25; 2,5; 2,75; 3,0.
+
+Xác định các giá trị bách phân vị của Hàm Percentile trong Excel như sau:
+
+Giá trị tỷ suất tìm được Xác định phân vị thứ 35 đến phân vị thứ 75 Giá trị trả về 1.00 Bách phân vị thứ 35 “=Percentile(A5:A17,0.35)” 1.55 1.25 Trung vị “=Percentile(A5:A17,0.5)” 2 1.25 Bách phân vị thứ 75 “=Percentile(A5:A17,0.75)” 2.25 1.50 1.50 1.75 2.00 2.00 2.15 2.25 2.50 2.75

@@ -1,0 +1,29 @@
+PRINTED_PAGE: 52
+
+- Đối với các chỉ tiêu chi phí phát sinh trong hoạt động kinh doanh, người nộp thuế hạch toán, xác định riêng tương ứng với từng khoản thu có tính chất là doanh thu tại các cột (3), (4), (5) và ghi giá trị được hạch toán, xác định riêng. Trường hợp không xác định riêng được thì người nộp thuế lựa chọn tiêu thức phân bổ phù hợp nhất theo một hoặc một số yếu tố như doanh thu, chi phí, tài sản, nhân lực hoặc yếu tố khác phù hợp với bản chất hoạt động và ghi giá trị chi phí phân bổ vào các ô tương ứng (3), (4) và (5).
+
+- Chỉ tiêu “Tổng lợi nhuận trước thuế”: Phản ánh tổng số lợi nhuận thực hiện trước thuế của tổ chức ngân hàng, tín dụng trong kỳ tính thuế và được xác định như sau:
+
++ Cột (3), (4), (5) và (6): Ghi giá trị bằng (=) giá trị tương ứng theo từng cột tại chỉ tiêu “Thu nhập lãi thuần” cộng (+) chỉ tiêu “Lãi/lỗ thuần từ hoạt động dịch vụ” cộng (+) chỉ tiêu “Lãi/lỗ thuần từ hoạt động kinh doanh ngoại hối” cộng (+) chỉ tiêu “Lãi/lỗ thuần từ mua bán chứng khoán kinh doanh” cộng (+) chỉ tiêu “Lãi/lỗ thuần từ mua bán chứng khoán đầu tư” cộng (+) chỉ tiêu “Lãi/lỗ thuần từ hoạt động khác” cộng (+) chỉ tiêu “Thu nhập từ góp vốn, mua cổ phần” trừ (-) chỉ tiêu “Chi phí hoạt động” trừ (-) chỉ tiêu “Chi phí dự phòng rủi ro tín dụng”.
+
+- Chỉ tiêu: “Lợi nhuận thuần từ hoạt động sản xuất kinh doanh”:
+
++ Cột (3), (4), (5) và (6): Ghi giá trị bằng giá trị tương ứng theo từng cột tại chỉ tiêu “Tổng lợi nhuận trước thuế” trừ (-) chỉ tiêu “Lãi/lỗ thuần từ hoạt động khác”.
+
+- Chỉ tiêu “Tỷ suất lợi nhuận sử dụng xác định giá giao dịch liên kết”:
+
++ Cột (2): Ghi các tỷ suất lợi nhuận áp dụng để điều chỉnh, xác định giá giao dịch liên kết tại các dòng chỉ tiêu (18.1), (18.2), (18.3) ... tương ứng với phương pháp xác định giá giao dịch liên kết theo quy định tại Điều 13, Điều 14, Điều 15 Nghị định này.
+
++ Cột (3) và (4): Ghi giá trị tỷ suất lợi nhuận áp dụng xác định giá giao dịch liên kết theo Hồ sơ xác định giá giao dịch liên kết tại Cột (3) và theo APA tại Cột (4).
+
++ Cột (5) và (6): Người nộp thuế để trống không kê khai.
+
+3. Dành cho người nộp thuế là các công ty chứng khoán:
+
+a) Trường hợp người nộp thuế đã kê khai đánh dấu (x) vào Cột 3 tại dòng 2a Mục II Phụ lục I kèm theo Nghị định này, thực hiện kê khai theo hướng dẫn như sau:
+
+- Các chỉ tiêu tại dòng (1.1.a), (1.1.b), (1.1.c), (1.2), (1.3), (1.4), (1.5), (1.6), (1.7), (1.8), (1.9), (1.10), (1.11), (2.1.a), (2.1.b), (2.1.c), (2.2), (2.3), (2.4), (2.5), (2.6), (2.7), (2.8), (2.9), (2.10), (2.11), (2.12), (3.1), (3.2), (3.3), (3.4), (4.1), (4.2), (4.3), (4.4), (4.5), (5), (6), (7) và (10):
+
++ Cột (3), (4) và (5): Người nộp thuế để trống không kê khai.
+
++ Cột (6): Ghi giá trị được xác định từ số liệu tại Báo cáo tài chính.

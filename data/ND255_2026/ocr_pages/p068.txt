@@ -1,0 +1,3 @@
+PRINTED_PAGE: 68
+
+3.00 [1] Người nộp thuế đánh dấu “x” vào cột hình thức quan hệ liên kết kê khai theo quy định tại khoản 2 Điều 5 Nghị định này. Trường hợp bên liên kết thuộc nhiều hơn một hình thức quan hệ liên kết, người nộp thuế đánh dấu “x” vào các ô tương ứng. [2] Người nộp thuế đánh dấu “x” vào dòng trường hợp miễn trừ áp dụng tương ứng [3] Giá trị phân bổ cho cơ sở thường trú cần kê khai và chú thích rõ là phân bổ doanh thu hay chi phí cho cơ sở thường trú [4] Người nộp thuế kê khai “x” đối với giao dịch thuộc phạm vi áp dụng APA và “không” đối với giao dịch không thuộc phạm vi áp dụng APA

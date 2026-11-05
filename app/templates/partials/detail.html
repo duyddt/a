@@ -1,12 +1,167 @@
 {% if unit %}
 <div class="detail-head">
-  <strong>{% if unit.point is not none %}Điểm {{ unit.point }}, {% endif %}{% if unit.clause is not none %}Khoản {{ unit.clause }}, {% endif %}{% if unit.article is not none %}Điều {{ unit.article }}{% else %}{{ unit.unit_id }}{% endif %}</strong>
-  <span class="muted">Trang {{ unit.source_pages|join(", ") }}</span>
+  <div>
+    <span class="detail-title">{% if unit.point is not none %}Điểm {{ unit.point }}, {% endif %}{% if unit.clause is not none %}Khoản {{ unit.clause }}, {% endif %}{% if unit.article is not none %}Điều {{ unit.article }}{% else %}{{ unit.title or unit.unit_id }}{% endif %}</span>
+    <span class="muted small" style="margin-left: 8px;">({{ unit.unit_id }})</span>
+  </div>
+  <span class="muted">Trang PDF: <strong>{{ unit.source_pages|join(", ") }}</strong></span>
 </div>
-{% if unit.title %}<div class="muted">{{ unit.title }}</div>{% endif %}
-{% if not unit.is_confident %}<p class="tag warn">Parser đánh dấu không chắc chắn</p>{% endif %}
-<pre class="content">{{ unit.content }}</pre>
-<div class="muted small">{{ unit.unit_id }}</div>
+
+{% if unit.title and unit.article is not none %}
+  <div class="muted" style="margin-bottom: 8px;">{{ unit.title }}</div>
+{% endif %}
+
+<!-- Hướng dẫn ngắn nhắc 4 điều cần kiểm -->
+<div class="guide-box">
+  <div class="guide-heading">
+    <strong>📌 Tiêu chuẩn kiểm tra 4 điều:</strong>
+  </div>
+  <ul class="guide-list">
+    <li><strong>1. Đúng chữ:</strong> Kiểm tra dấu tiếng Việt, con số, chính tả so với trang PDF gốc bên trái.</li>
+    <li><strong>2. Đúng ranh giới:</strong> Đơn vị bắt đầu và kết thúc trọn vẹn, không bị mất đoạn hay nuốt đơn vị khác.</li>
+    <li><strong>3. Đúng cấp & số:</strong> Đúng là Điều, Khoản hay Điểm; số thứ tự liên tục, không bị nhảy cóc.</li>
+    <li><strong>4. Không sót:</strong> Đối chiếu với trang PDF gốc, đảm bảo không bỏ sót câu/đoạn nào.</li>
+  </ul>
+</div>
+
+<!-- Trạng thái quyết định hiện tại -->
+{% if status and status.decision %}
+  {% if status.decision == "approved" or status.decision.value == "approved" %}
+    <div class="status-notice approved">
+      <span>✔ <strong>Đã duyệt</strong> bởi <em>{{ status.reviewer_name or "Thẩm định viên" }}</em> lúc {{ status.decision_time.strftime("%H:%M %d/%m/%Y") if status.decision_time else "" }}</span>
+    </div>
+  {% elif status.decision == "flagged" or status.decision.value == "flagged" %}
+    <div class="status-notice flagged">
+      <span>⚑ <strong>Gắn cờ chưa chắc chắn:</strong> "{{ status.note }}" (bởi <em>{{ status.reviewer_name }}</em>)</span>
+    </div>
+  {% elif status.decision == "structural_error" or status.decision.value == "structural_error" %}
+    <div class="status-notice structural">
+      <span>⚠ <strong>Báo lỗi cấu trúc:</strong> 
+        {% if status.structural_error_type == 'wrong_level' or status.structural_error_type.value == 'wrong_level' %}
+          Sai cấp (Điều/Khoản/Điểm)
+        {% elif status.structural_error_type == 'wrong_number' or status.structural_error_type.value == 'wrong_number' %}
+          Sai số thứ tự
+        {% elif status.structural_error_type == 'need_split' or status.structural_error_type.value == 'need_split' %}
+          Cần tách đơn vị
+        {% elif status.structural_error_type == 'need_merge' or status.structural_error_type.value == 'need_merge' %}
+          Cần gộp đơn vị
+        {% else %}
+          {{ status.structural_error_type }}
+        {% endif %}
+        {% if status.note %} - "{{ status.note }}"{% endif %}
+      </span>
+    </div>
+  {% endif %}
+{% endif %}
+
+<!-- Cảnh báo nếu đã có bản sửa chữ -->
+{% if status and status.is_edited %}
+  <div class="status-notice edited">
+    <span>✎ Đã có <strong>{{ status.revision_count }} lần sửa chữ</strong>. Bản hiển thị dưới đây là bản sửa mới nhất.</span>
+    <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('original-box').classList.toggle('hidden')">
+      👁 Đối chiếu bản gốc
+    </button>
+  </div>
+  
+  <div id="original-box" class="hidden inline-form original-box">
+    <strong class="original-label">Bản gốc từ Parser:</strong>
+    <pre class="content original-content">{{ status.original_content }}</pre>
+  </div>
+{% endif %}
+
+<!-- Hiển thị nội dung đơn vị -->
+<pre class="content{% if status and status.is_edited %} content-edited{% endif %}">{{ status.current_content if status else unit.content }}</pre>
+
+<!-- Thanh thao tác 4 nút -->
+<div class="action-bar">
+  <!-- 1. Duyệt -->
+  <form hx-post="/documents/{{ doc.document_id }}/units/{{ unit.unit_id }}/approve"
+        hx-target="#detail" hx-swap="innerHTML" style="margin: 0;">
+    <input type="hidden" name="zoom" value="{{ v.zoom }}">
+    <button type="submit" class="btn btn-approve" title="Xác nhận đơn vị đạt đủ 4 tiêu chí">
+      ✔ Duyệt
+    </button>
+  </form>
+
+  <!-- 2. Nút mở form sửa chữ -->
+  <button type="button" class="btn btn-edit"
+          onclick="document.getElementById('edit-form-wrap').classList.toggle('hidden'); document.getElementById('flag-form-wrap').classList.add('hidden'); document.getElementById('struct-form-wrap').classList.add('hidden');">
+    ✎ Sửa chữ
+  </button>
+
+  <!-- 3. Nút mở form gắn cờ -->
+  <button type="button" class="btn btn-flag"
+          onclick="document.getElementById('flag-form-wrap').classList.toggle('hidden'); document.getElementById('edit-form-wrap').classList.add('hidden'); document.getElementById('struct-form-wrap').classList.add('hidden');">
+    ⚑ Gắn cờ
+  </button>
+
+  <!-- 4. Nút mở form báo lỗi cấu trúc -->
+  <button type="button" class="btn btn-structural"
+          onclick="document.getElementById('struct-form-wrap').classList.toggle('hidden'); document.getElementById('edit-form-wrap').classList.add('hidden'); document.getElementById('flag-form-wrap').classList.add('hidden');">
+    ⚠ Báo lỗi cấu trúc
+  </button>
+
+  <!-- Nút xem lịch sử -->
+  <button type="button" class="btn btn-secondary btn-sm" style="margin-left: auto;"
+          hx-get="/documents/{{ doc.document_id }}/units/{{ unit.unit_id }}/history"
+          hx-target="#history-container" hx-swap="innerHTML">
+    📜 Lịch sử
+  </button>
+</div>
+
+<!-- Form sửa chữ inline -->
+<div id="edit-form-wrap" class="inline-form hidden">
+  <form hx-post="/documents/{{ doc.document_id }}/units/{{ unit.unit_id }}/edit"
+        hx-target="#detail" hx-swap="innerHTML">
+    <input type="hidden" name="zoom" value="{{ v.zoom }}">
+    <label><strong>Sửa nội dung trực tiếp tại chỗ:</strong></label>
+    <div class="muted small" style="margin-bottom: 6px;">Bản sửa sẽ được lưu độc lập (append-only), bản gốc luôn được bảo toàn.</div>
+    <textarea name="new_content" required>{{ status.current_content if status else unit.content }}</textarea>
+    <div style="display: flex; gap: 8px;">
+      <button type="submit" class="btn btn-edit">Lưu bản sửa</button>
+      <button type="button" class="btn btn-secondary" onclick="document.getElementById('edit-form-wrap').classList.add('hidden')">Hủy</button>
+    </div>
+  </form>
+</div>
+
+<!-- Form gắn cờ inline -->
+<div id="flag-form-wrap" class="inline-form hidden">
+  <form hx-post="/documents/{{ doc.document_id }}/units/{{ unit.unit_id }}/flag"
+        hx-target="#detail" hx-swap="innerHTML">
+    <input type="hidden" name="zoom" value="{{ v.zoom }}">
+    <label><strong>Ghi chú lý do gắn cờ (chưa chắc chắn):</strong></label>
+    <input type="text" name="note" placeholder="Ví dụ: Chữ mờ chưa rõ là số 15 hay 25..." required>
+    <div style="display: flex; gap: 8px;">
+      <button type="submit" class="btn btn-flag">Xác nhận gắn cờ</button>
+      <button type="button" class="btn btn-secondary" onclick="document.getElementById('flag-form-wrap').classList.add('hidden')">Hủy</button>
+    </div>
+  </form>
+</div>
+
+<!-- Form báo lỗi cấu trúc inline -->
+<div id="struct-form-wrap" class="inline-form hidden">
+  <form hx-post="/documents/{{ doc.document_id }}/units/{{ unit.unit_id }}/structural-error"
+        hx-target="#detail" hx-swap="innerHTML">
+    <input type="hidden" name="zoom" value="{{ v.zoom }}">
+    <label><strong>Loại lỗi cấu trúc phát hiện:</strong></label>
+    <select name="error_type" required>
+      <option value="wrong_level">Sai cấp (ví dụ: Khoản nhầm thành Điểm)</option>
+      <option value="wrong_number">Sai số thứ tự (ví dụ: Điểm a nhảy cóc sang Điểm c)</option>
+      <option value="need_split">Cần tách đơn vị (hai đơn vị bị dính liền vào nhau)</option>
+      <option value="need_merge">Cần gộp đơn vị (đoạn ngắt trang bị tách làm hai)</option>
+    </select>
+    <label><strong>Ghi chú mô tả cụ thể cho nhóm parser:</strong></label>
+    <input type="text" name="note" placeholder="Mô tả cụ thể vị trí hoặc cách sửa..." required>
+    <div style="display: flex; gap: 8px;">
+      <button type="submit" class="btn btn-structural">Gửi báo lỗi cấu trúc</button>
+      <button type="button" class="btn btn-secondary" onclick="document.getElementById('struct-form-wrap').classList.add('hidden')">Hủy</button>
+    </div>
+  </form>
+</div>
+
+<!-- Container xem lịch sử -->
+<div id="history-container"></div>
+
 {% else %}
 <p class="muted">Văn bản chưa có đơn vị nào.</p>
 {% endif %}

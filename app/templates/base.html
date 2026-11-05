@@ -5,9 +5,47 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{% block title %}Thẩm định dữ liệu pháp lý{% endblock %}</title>
 <link rel="stylesheet" href="/static/style.css">
-<script src="https://unpkg.com/htmx.org@2.0.4"></script>
+<script>
+  /* Áp dụng theme tức thì ngay khi nạp để tránh chớp màn hình */
+  (function() {
+    var saved = localStorage.getItem('law_theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', saved);
+  })();
+</script>
+<script src="/static/htmx.min.js"></script>
 </head>
 <body>
 {% block body %}{% endblock %}
+
+<script>
+  function updateThemeUI() {
+    var theme = document.documentElement.getAttribute('data-theme') || 'light';
+    var btns = document.querySelectorAll('.btn-theme-toggle');
+    btns.forEach(function(btn) {
+      var icon = btn.querySelector('.theme-icon');
+      var text = btn.querySelector('.theme-text');
+      if (theme === 'dark') {
+        if (icon) icon.textContent = '☀️';
+        if (text) text.textContent = 'Giao diện sáng';
+        btn.setAttribute('title', 'Chuyển sang giao diện sáng');
+      } else {
+        if (icon) icon.textContent = '🌙';
+        if (text) text.textContent = 'Giao diện tối';
+        btn.setAttribute('title', 'Chuyển sang giao diện tối');
+      }
+    });
+  }
+
+  function toggleTheme() {
+    var current = document.documentElement.getAttribute('data-theme') || 'light';
+    var next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('law_theme', next);
+    updateThemeUI();
+  }
+
+  document.addEventListener('DOMContentLoaded', updateThemeUI);
+  document.addEventListener('htmx:afterSwap', updateThemeUI);
+</script>
 </body>
 </html>

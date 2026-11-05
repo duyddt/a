@@ -1,0 +1,25 @@
+PRINTED_PAGE: 16
+
+3. Phương pháp xác định:
+
+Phương pháp so sánh tỷ suất lợi nhuận sử dụng tỷ suất lợi nhuận gộp hoặc tỷ suất lợi nhuận thuần của các đối tượng so sánh độc lập được chọn để xác định tỷ suất lợi nhuận gộp hoặc tỷ suất lợi nhuận thuần tương ứng của người nộp thuế. Việc lựa chọn tỷ suất lợi nhuận bao gồm tỷ suất lợi nhuận gộp hoặc tỷ suất lợi nhuận thuần tính trên doanh thu, chi phí hoặc tài sản phụ thuộc vào bản chất và điều kiện kinh tế của giao dịch, chức năng của người nộp thuế và phương pháp hạch toán kế toán của các bên. Cơ sở xác định tỷ suất lợi nhuận là số liệu kế toán của người nộp thuế về doanh thu, chi phí hoặc tài sản không do các bên liên kết kiểm soát, quyết định.
+
+a) Phương pháp so sánh tỷ suất lợi nhuận gộp trên doanh thu (phương pháp giá bán lại):
+
+Giá mua vào của hàng hóa, dịch vụ, tài sản (giá vốn) từ bên liên kết bằng (=) giá bán ra (doanh thu thuần) của hàng hóa, dịch vụ, tài sản bán lại cho bên độc lập trừ (-) lợi nhuận gộp trên giá bán ra (doanh thu thuần) của người nộp thuế trừ (-) một số chi phí khác bao gồm trong giá mua:
+
+Thuế nhập khẩu; lệ phí hải quan; chi phí bảo hiểm, vận chuyển quốc tế (nếu có).
+
+Lợi nhuận gộp trên giá bán ra (doanh thu thuần) của người nộp thuế được xác định từ các đối tượng so sánh độc lập bằng (=) giá bán ra (doanh thu thuần) của người nộp thuế nhân (x) tỷ suất lợi nhuận gộp trên giá bán ra (doanh thu thuần) của các đối tượng so sánh độc lập được lựa chọn.
+
+Tỷ suất lợi nhuận gộp trên giá bán ra (doanh thu thuần) của các đối tượng so sánh độc lập được lựa chọn là giá trị thuộc khoảng giao dịch độc lập chuẩn của tỷ suất lợi nhuận gộp trên giá bán ra (doanh thu thuần) của các đối tượng so sánh độc lập được lựa chọn để điều chỉnh phù hợp với các nguyên tắc quy định tại Nghị định này.
+
+Giá mua vào từ bên liên kết (hoặc giá vốn) được điều chỉnh theo đối tượng so sánh độc lập là giá tính thuế, chi phí kê khai, để xác định nghĩa vụ thuế thu nhập doanh nghiệp phải nộp của người nộp thuế.
+
+b) Phương pháp so sánh tỷ suất lợi nhuận gộp trên giá vốn (phương pháp giá vốn cộng lãi):
+
+Giá bán ra (hoặc doanh thu thuần) của hàng hóa, dịch vụ, tài sản bán cho bên liên kết được xác định bằng (=) giá vốn của hàng hóa, dịch vụ, tài sản mua vào từ bên độc lập cộng (+) lợi nhuận gộp trên giá vốn của người nộp thuế.
+
+Lợi nhuận gộp trên giá vốn của người nộp thuế được xác định từ các đối tượng so sánh độc lập bằng (=) giá vốn của người nộp thuế nhân (x) tỷ suất lợi nhuận gộp trên giá vốn của các đối tượng so sánh độc lập được lựa chọn.
+
+Tỷ suất lợi nhuận gộp trên giá vốn của các đối tượng so sánh độc lập được lựa chọn là giá trị thuộc khoảng giao dịch độc lập chuẩn của tỷ suất lợi nhuận gộp trên giá vốn của các đối tượng so sánh độc lập được lựa chọn để điều chỉnh phù hợp với các nguyên tắc quy định tại Nghị định này.

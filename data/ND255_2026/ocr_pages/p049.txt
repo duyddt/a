@@ -1,0 +1,31 @@
+PRINTED_PAGE: 49
+
++ Cột (6): Ghi giá trị bằng giá trị tương ứng theo từng cột tại chỉ tiêu “Lợi nhuận gộp về bán hàng và cung cấp dịch vụ” trừ (-) chỉ tiêu “Chi phí bán hàng” trừ (-) chỉ tiêu “Chi phí quản lý doanh nghiệp” cộng (+) chỉ tiêu “Doanh thu tài chính” trừ (-) chỉ tiêu “Chi phí tài chính”.
+
+- Chỉ tiêu “Lợi nhuận thuần từ hoạt động sản xuất kinh doanh trong kỳ không bao gồm chênh lệch doanh thu và chi phí của hoạt động tài chính”:
+
++ Cột (3), (4), (5) và (6): Ghi giá trị bằng giá trị tương ứng theo từng cột tại chỉ tiêu “Lợi nhuận gộp về bán hàng và cung cấp dịch vụ” trừ (-) chỉ tiêu “Chi phí bán hàng” trừ (-) chỉ tiêu “Chi phí quản lý doanh nghiệp”.
+
+- Chỉ tiêu “Tổng lợi nhuận thuần từ hoạt động kinh doanh cộng chi phí lãi vay sau khi trừ lãi tiền gửi và lãi cho vay trong kỳ cộng chi phí khấu hao trong kỳ”:
+
++ Cột (3), (4) và (5): Người nộp thuế để trống không kê khai.
+
++ Cột (6): Ghi giá trị bằng giá trị chỉ tiêu “Lợi nhuận thuần từ hoạt động sản xuất kinh doanh” cộng (+) chỉ tiêu “Chi phí lãi vay” trừ (-) chỉ tiêu “Lãi tiền gửi và lãi cho vay” cộng (+) chỉ tiêu “Chi phí khấu hao”.
+
+- Chỉ tiêu “Tỷ lệ chi phí lãi vay sau khi trừ lãi tiền gửi và lãi cho vay phát sinh trong kỳ trên tổng lợi nhuận thuần từ hoạt động kinh doanh cộng chi phí lãi vay sau khi trừ lãi tiền gửi và lãi cho vay trong kỳ cộng chi phí khấu hao trong kỳ”:
+
++ Cột (3), (4) và (5): Người nộp thuế để trống không kê khai.
+
++ Cột (6): Ghi giá trị tỷ lệ phần trăm bằng (=) giá trị [chỉ tiêu “Chi phí lãi tiền vay” trừ (-) chỉ tiêu “Lãi tiền gửi và lãi cho vay”] chia (:) giá trị chỉ tiêu “Tổng lợi nhuận thuần từ hoạt động kinh doanh cộng chi phí lãi vay sau khi trừ lãi tiền gửi và lãi cho vay trong kỳ cộng chi phí khấu hao trong kỳ”.
+
+- Chỉ tiêu “Tỷ suất lợi nhuận sử dụng xác định giá giao dịch liên kết”:
+
++ Cột (2): Ghi các tỷ suất lợi nhuận áp dụng để điều chỉnh, xác định giá giao dịch liên kết tại các dòng chỉ tiêu (17.1), (17.2), (17.3),... tương ứng với phương pháp xác định giá giao dịch liên kết theo quy định tại Điều 13, Điều 14, Điều 15 Nghị định này.
+
++ Cột (3) và (4): Ghi giá trị tỷ suất lợi nhuận sử dụng xác định giá giao dịch liên kết theo Hồ sơ xác định giá giao dịch liên kết tại Cột (3) và theo APA tại Cột (4).
+
++ Cột (5) và (6): Người nộp thuế để trống không kê khai.
+
+Ví dụ:
+
++ Người nộp thuế sử dụng phương pháp so sánh tỷ suất lợi nhuận thuần và áp dụng Lợi nhuận thuần từ hoạt động sản xuất kinh doanh trong kỳ không bao gồm chênh lệch doanh thu và chi phí

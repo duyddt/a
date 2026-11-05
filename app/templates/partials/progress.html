@@ -1,0 +1,15 @@
+<div id="progress" class="progress-wrap"{% if oob %} hx-swap-oob="true"{% endif %}>
+  <div class="progress-text">
+    <span>Tiến độ: <strong>{{ progress.approved_units }}/{{ progress.total_units }}</strong> đã duyệt ({{ progress.percent_completed }}%)</span>
+    <span class="progress-stats">
+      {% if progress.edited_units > 0 %}<span class="stat-edited">✎ {{ progress.edited_units }} đã sửa</span> &nbsp;{% endif %}
+      {% if progress.flagged_units > 0 %}<span class="stat-flagged">⚑ {{ progress.flagged_units }} cờ</span> &nbsp;{% endif %}
+      {% if progress.structural_error_units > 0 %}<span class="stat-structural">⚠ {{ progress.structural_error_units }} lỗi CT</span>{% endif %}
+    </span>
+  </div>
+  <div class="progress-bar-container">
+    <div class="progress-approved" title="Đã duyệt: {{ progress.approved_units }}" style="width: {{ (progress.approved_units / progress.total_units * 100) if progress.total_units else 0 }}%"></div>
+    <div class="progress-flagged" title="Gắn cờ: {{ progress.flagged_units }}" style="width: {{ (progress.flagged_units / progress.total_units * 100) if progress.total_units else 0 }}%"></div>
+    <div class="progress-structural" title="Lỗi cấu trúc: {{ progress.structural_error_units }}" style="width: {{ (progress.structural_error_units / progress.total_units * 100) if progress.total_units else 0 }}%"></div>
+  </div>
+</div>

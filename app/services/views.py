@@ -1,6 +1,7 @@
 """Chuẩn bị dữ liệu cho template: cây Điều/Khoản/Điểm và khung xem trang. Không phụ thuộc FastAPI."""
 from __future__ import annotations
 
+from typing import Any
 from urllib.parse import quote
 
 from app.contracts import LegalUnit
@@ -29,15 +30,35 @@ def unit_url(document_id: str, unit_id: str, zoom: int) -> str:
     return f"/documents/{document_id}/units/{quote(unit_id, safe='')}?zoom={zoom}"
 
 
-def build_rows(loaded: LoadedDocument, selected_id: str | None, zoom: int) -> list[dict]:
-    """Một dòng cho mỗi đơn vị, theo thứ tự trong file (cha đứng trước con)."""
+def build_rows(
+    loaded: LoadedDocument,
+    selected_id: str | None,
+    zoom: int,
+    unit_statuses: dict[str, Any] | None = None,
+) -> list[dict]:
+    """Một dòng cho mỗi đơn vị, theo thứ tự trong file (cha đứng trước con).
+    Bao gồm trạng thái quyết định (duyệt, sửa, cờ, lỗi cấu trúc) nếu có.
+    """
     rows = []
+    statuses = unit_statuses or {}
     for unit in loaded.doc.legal_units:
         depth = 2 if unit.point is not None else 1 if unit.clause is not None else 0
+        status = statuses.get(unit.unit_id)
+        content = status.current_content if status else unit.content
+
         if unit.clause is None and unit.point is None:
-            snippet = unit.title or " ".join(unit.content.split())
+            snippet = unit.title or " ".join(content.split())
         else:
-            snippet = " ".join(unit.content.split())
+            snippet = " ".join(content.split())
+
+        decision_val = None
+        if status and status.decision:
+            decision_val = status.decision.value if hasattr(status.decision, "value") else str(status.decision)
+
+        err_val = None
+        if status and status.structural_error_type:
+            err_val = status.structural_error_type.value if hasattr(status.structural_error_type, "value") else str(status.structural_error_type)
+
         rows.append(
             {
                 "unit_id": unit.unit_id,
@@ -47,6 +68,10 @@ def build_rows(loaded: LoadedDocument, selected_id: str | None, zoom: int) -> li
                 "confident": unit.is_confident,
                 "selected": unit.unit_id == selected_id,
                 "url": unit_url(loaded.doc.document_id, unit.unit_id, zoom),
+                "decision": decision_val,
+                "is_edited": status.is_edited if status else False,
+                "structural_error_type": err_val,
+                "note": status.note if status else None,
             }
         )
     return rows

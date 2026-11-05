@@ -1,0 +1,5 @@
+PRINTED_PAGE: 38
+
+5 Chi phí hoạt động dịch vụ 6 Lãi/lỗ thuần từ hoạt động dịch vụ (6)=(4)-(5) 7 Lãi/lỗ thuần từ hoạt động kinh doanh ngoại hối 8 Lãi/lỗ thuần từ mua bán chứng khoán kinh doanh 9 Lãi/lỗ thuần từ mua bán chứng khoán đầu tư 10 Thu nhập từ hoạt động khác 11 Chi phí hoạt động khác 12 Lãi/lỗ thuần từ hoạt động khác (12)=(10)-(11) 13 Thu nhập từ góp vốn, mua cổ phần 14 Chi phí hoạt động 15 Chi phí dự phòng rủi ro tín dụng 16 Tổng lợi nhuận trước thuế (16)=(3)+(6)+(7)+(8)+(9)+ (12)+(13)-(14)-(15) 17 Lợi nhuận thuần từ hoạt động sản xuất kinh doanh (17)=(16)- (12) 18 Tỷ suất lợi nhuận sử dụng xác định giá giao dịch liên kết 18.1Tỷ suất .................................. 18.2Tỷ suất .................................. … …………………………………
+
+3. Dành cho người nộp thuế là các Công ty chứng khoán Người nộp thuế đã ký thỏa thuận trước về phương pháp xác định giá tính thuế (APA) Có □ Không □ Đơn vị tiền: Đồng Việt Nam

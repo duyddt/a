@@ -1,0 +1,61 @@
+<div class="history-section">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+    <strong>📜 Lịch sử thẩm định & bản sửa của đơn vị</strong>
+    <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('history-container').innerHTML = ''">✕ Đóng</button>
+  </div>
+
+  <div style="margin-bottom: 14px;">
+    <span class="muted small">Nội dung gốc ban đầu (bất biến):</span>
+    <pre class="content original-content" style="font-size: 13px; max-height: 120px; overflow-y: auto;">{{ history.original_content }}</pre>
+  </div>
+
+  <h4 style="margin: 12px 0 6px 0; font-size: 13px;">Bản sửa chữ đã lưu ({{ history.revisions|length }} lần):</h4>
+  {% if history.revisions %}
+    {% for rev in history.revisions %}
+    <div class="history-item">
+      <div class="history-meta">
+        <span><strong>Lần {{ loop.index }}:</strong> bởi <em>{{ rev.reviewer }}</em></span>
+        <span>{{ rev.created_at[:19].replace("T", " ") }}</span>
+      </div>
+      <div class="history-diff">
+        <div class="diff-before">
+          {{ rev.content_before }}
+        </div>
+        <div class="diff-after">
+          {{ rev.content_after }}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  {% else %}
+    <p class="muted small">Chưa có lần sửa chữ nào.</p>
+  {% endif %}
+
+  <h4 style="margin: 14px 0 6px 0; font-size: 13px;">Nhật ký quyết định ({{ history.decisions|length }} lần):</h4>
+  {% if history.decisions %}
+    {% for dec in history.decisions %}
+    <div class="history-item">
+      <div class="history-meta">
+        <span>
+          {% if dec.decision == "approved" %}
+            <strong class="stat-approved">✓ Duyệt</strong>
+          {% elif dec.decision == "flagged" %}
+            <strong class="stat-flagged">⚑ Gắn cờ</strong>
+          {% elif dec.decision == "structural_error" %}
+            <strong class="stat-structural">⚠ Báo lỗi cấu trúc ({{ dec.structural_error_type }})</strong>
+          {% endif %}
+          bởi <em>{{ dec.reviewer }}</em>
+        </span>
+        <span>{{ dec.created_at[:19].replace("T", " ") }}</span>
+      </div>
+      {% if dec.note %}
+      <div class="history-note">
+        <em>Ghi chú:</em> {{ dec.note }}
+      </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  {% else %}
+    <p class="muted small">Chưa có quyết định nào.</p>
+  {% endif %}
+</div>

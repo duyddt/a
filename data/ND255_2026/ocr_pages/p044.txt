@@ -1,0 +1,33 @@
+PRINTED_PAGE: 44
+
++ Cột (3), (4), (7) và (8): Ghi tổng giá trị tại các ô tương ứng với các chỉ tiêu “Nghiên cứu, phát triển” cộng (+) “Quảng cáo, tiếp thị” cộng (+) “Quản lý kinh doanh và tư vấn, đào tạo” cộng (+) “Hoạt động tài chính” cộng (+) “Dịch vụ khác”.
+
+- Các chỉ tiêu “Nghiên cứu, phát triển”; “Quảng cáo, tiếp thị”; “Quản lý kinh doanh và tư vấn, đào tạo”; “Hoạt động tài chính và Dịch vụ khác”, và chi tiết theo từng “Bên liên kết A”, “Bên liên kết B”, ...:
+
++ Cột (3) và (7): Ghi tổng giá trị từng loại dịch vụ phát sinh từ giao dịch với các bên liên kết được ghi nhận theo giá trị ghi tại sổ kế toán.
+
++ Cột (4) và (8): Ghi tổng giá trị từng loại dịch vụ phát sinh từ giao dịch với các bên liên kết được xác định theo phương pháp xác định giá giao dịch liên kết tương ứng tại Cột (6) và Cột (10).
+
+- Cột (6) và (10): Ghi tương ứng với từng chỉ tiêu theo từng bên liên kết ký hiệu viết tắt tên phương pháp xác định giá giao dịch liên kết theo quy định tại Điều 13, Điều 14, Điều 15 Nghị định này cấu thành giá trị bán ra cho bên liên kết và giá trị mua vào từ bên liên kết của người nộp thuế xác định theo Hồ sơ xác định giá giao dịch liên kết, cụ thể như sau:
+
++ PP1: Phương pháp so sánh giá giao dịch liên kết với giá giao dịch độc lập (phương pháp so sánh giá giao dịch độc lập).
+
++ PP2: Phương pháp so sánh tỷ suất lợi nhuận của người nộp thuế với tỷ suất lợi nhuận của các đối tượng so sánh độc lập.
+
+PP2-1: Phương pháp so sánh tỷ suất lợi gộp trên doanh thu (phương pháp giá bán lại).
+
+PP2-2: Phương pháp so sánh tỷ suất lợi gộp trên giá vốn (phương pháp giá vốn cộng lãi).
+
+PP2-3: Phương pháp so sánh tỷ suất lợi nhuận thuần.
+
++ PP3: Phương pháp phân bổ lợi nhuận giữa các bên liên kết.
+
+Ví dụ:
+
++ Mua máy móc từ bên liên kết A trên cơ sở phương pháp so sánh giá giao dịch độc lập, tại dòng chỉ tiêu Hàng hóa hình thành tài sản cố định từ bên liên kết A Cột (10): Ghi PP1.
+
++ Thu phí dịch vụ quản lý cung cấp cho bên liên kết B trên cơ sở phương pháp giá vốn cộng lãi, tại dòng chỉ tiêu Quản lý kinh doanh và tư vấn, đào tạo cho bên liên kết B Cột (6): Ghi PP2-2.
+
+- Cột (5) và (9): Ghi tổng giá trị được xác định theo công thức tính tại Phụ lục I ban hành kèm theo Nghị định này.
+
+- Cột (11): Ghi lợi nhuận tăng do xác định lại theo giá giao dịch độc lập.
