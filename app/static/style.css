@@ -217,15 +217,21 @@ code {
   line-height: 1.4;
 }
 .guide-list {
-  margin: 0;
-  padding-left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 10px 0;
+  padding: 0;
   list-style: none;
 }
+.guide-item,
 .guide-list li {
-  padding: 5px 0;
+  list-style: none !important;
+  list-style-type: none !important;
+  padding: 4px 0;
   font-size: 14.5px;
   color: var(--text-main);
-  line-height: 1.45;
+  line-height: 1.5;
 }
 .guide-tip {
   margin-top: 10px;
