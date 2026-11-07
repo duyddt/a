@@ -17,6 +17,13 @@ class Settings:
 
 
 def load_settings() -> Settings:
+    try:
+        from dotenv import load_dotenv
+
+        load_dotenv(BASE_DIR / ".env")
+    except Exception:
+        pass
+
     conninfo = os.environ.get("DATABASE_URL") or None
     if conninfo is None and os.environ.get("POSTGRES_HOST"):
         from psycopg.conninfo import make_conninfo  # tự escape ký tự đặc biệt trong mật khẩu
@@ -28,6 +35,17 @@ def load_settings() -> Settings:
             user=os.environ.get("POSTGRES_USER", "review"),
             password=os.environ.get("POSTGRES_PASSWORD", ""),
         )
+    if conninfo is None:
+        # Tự động kết nối PostgreSQL nội bộ nếu có sẵn dịch vụ trên máy
+        default_url = "postgresql://review@localhost:5432/review"
+        try:
+            import psycopg
+
+            with psycopg.connect(default_url, connect_timeout=1):
+                conninfo = default_url
+        except Exception:
+            pass
+
     auto = os.environ.get("AUTO_IMPORT_DIR")
     return Settings(
         data_dir=Path(os.environ.get("DATA_DIR") or BASE_DIR / "data"),
