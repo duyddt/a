@@ -1,65 +1,96 @@
-<div id="ocr-report-box" class="ocr-panel"{% if oob %} hx-swap-oob="true"{% endif %}>
-{% if can_review and progress and progress.ocr_report and progress.ocr_report.edited_units > 0 %}
-  <details class="ocr-card" open>
-    <summary>
-      📊 Bảng Phân Tích Lỗi Hệ Thống OCR &amp; Giải Pháp Cải Tiến Độ Chính Xác
-      (Đã ghi nhận {{ progress.ocr_report.edited_units }} đơn vị có lỗi OCR
-      {%- if progress.char_accuracy_percent is not none %} · Độ chính xác ký tự: {{ progress.char_accuracy_percent }}%{% endif %})
-    </summary>
-    <div style="margin-top: 12px;">
-      {% if progress.ocr_report.common_substitutions %}
-      <p style="margin: 6px 0; font-weight: 700;">1. Thống kê các ký tự/cụm từ hệ thống đọc sai &amp; Giải pháp khắc phục:</p>
-      <table class="doclist" style="margin-bottom: 14px;">
-        <thead>
-          <tr>
-            <th>Hệ thống đọc sai</th>
-            <th>Chữ đúng (Nhãn chuẩn)</th>
-            <th>Số lần lặp</th>
-            <th>Giải pháp cải tiến độ chính xác</th>
-          </tr>
-        </thead>
-        <tbody>
-        {% for item in progress.ocr_report.common_substitutions %}
-          <tr>
-            <td><del class="diff-del">{{ item.ocr_read or "(bỏ sót chữ)" }}</del></td>
-            <td><ins class="diff-ins">{{ item.corrected_to or "(xóa ký tự rác)" }}</ins></td>
-            <td><strong>{{ item.count }}</strong></td>
-            <td>{{ item.solution }}</td>
-          </tr>
-        {% endfor %}
-        </tbody>
-      </table>
-      {% endif %}
+<div id="ocr-report-box"{% if oob %} hx-swap-oob="true"{% endif %}>
+  <div id="modal-ocr-report" class="modal-overlay" style="display:none;" onclick="if(event.target===this)closeModal('modal-ocr-report')">
+    <div class="modal-window modal-xl">
+      <div class="modal-header">
+        <h3>📊 Bảng Phân Tích Lỗi Hệ Thống OCR &amp; Giải Pháp Cải Tiến Độ Chính Xác</h3>
+        <button type="button" class="modal-close" onclick="closeModal('modal-ocr-report')" aria-label="Đóng">&times;</button>
+      </div>
+      <div class="modal-body">
+        {% if progress and progress.ocr_report and progress.ocr_report.edited_units > 0 %}
+          <div style="display:flex; flex-wrap:wrap; gap:12px; margin-bottom:16px;">
+            <div style="flex:1; min-width:200px; padding:12px; background:var(--pastel-report-bg); border:1px solid var(--pastel-report-border); border-radius:8px;">
+              <div class="muted small">Độ chính xác ký tự (Accuracy)</div>
+              <div style="font-size:24px; font-weight:800; color:var(--pastel-report-text);">
+                {{ progress.char_accuracy_percent if progress.char_accuracy_percent is not none else "100" }}%
+              </div>
+            </div>
+            <div style="flex:1; min-width:200px; padding:12px; background:var(--pastel-edit-bg); border:1px solid var(--pastel-edit-border); border-radius:8px;">
+              <div class="muted small">Số đơn vị đã sửa lỗi OCR</div>
+              <div style="font-size:24px; font-weight:800; color:var(--pastel-edit-text);">
+                {{ progress.ocr_report.edited_units }} / {{ progress.total }}
+              </div>
+            </div>
+            <div style="flex:1; min-width:200px; padding:12px; background:var(--pastel-approve-bg); border:1px solid var(--pastel-approve-border); border-radius:8px;">
+              <div class="muted small">Đơn vị chuẩn xác không có lỗi</div>
+              <div style="font-size:24px; font-weight:800; color:var(--pastel-approve-text);">
+                {{ progress.total - progress.ocr_report.edited_units }} đơn vị
+              </div>
+            </div>
+          </div>
 
-      {% if progress.ocr_report.unit_errors %}
-      <p style="margin: 6px 0; font-weight: 700;">2. Danh sách vị trí sai chi tiết (Sai ở đâu · Tô màu chỗ sai · Lý do · Giải pháp):</p>
-      <table class="doclist">
-        <thead>
-          <tr>
-            <th style="width:160px;">Vị trí (Đơn vị / Trang)</th>
-            <th>Đối chiếu chỗ sai (Đỏ = Sai, Xanh = Đúng)</th>
-            <th style="width:220px;">Phân tích lý do sai</th>
-            <th style="width:280px;">Giải pháp cải tiến</th>
-          </tr>
-        </thead>
-        <tbody>
-        {% for uerr in progress.ocr_report.unit_errors %}
-          <tr>
-            <td>
-              <strong>{{ uerr.unit_id }}</strong><br>
-              <span class="muted small">Trang {{ uerr.pages|join(", ") }}</span>
-            </td>
-            <td>
-              <div class="diff-render" style="font-size:15px; max-height:140px; overflow:auto;">{{ uerr.diff_html|safe }}</div>
-            </td>
-            <td><strong>{{ uerr.reasons|join("; ") }}</strong></td>
-            <td>{{ uerr.solution }}</td>
-          </tr>
-        {% endfor %}
-        </tbody>
-      </table>
-      {% endif %}
+          {% if progress.ocr_report.common_substitutions %}
+          <p style="margin: 12px 0 6px; font-weight: 700; font-size:15px;">1. Thống kê các ký tự/cụm từ hệ thống đọc sai &amp; Giải pháp khắc phục:</p>
+          <table class="doclist" style="margin-bottom: 16px;">
+            <thead>
+              <tr>
+                <th style="width:160px;">Hệ thống đọc sai</th>
+                <th style="width:160px;">Chữ đúng (Nhãn chuẩn)</th>
+                <th style="width:110px;">Số lần lặp</th>
+                <th>Giải pháp cải tiến độ chính xác</th>
+              </tr>
+            </thead>
+            <tbody>
+            {% for item in progress.ocr_report.common_substitutions %}
+              <tr>
+                <td><del class="diff-del">{{ item.ocr_read or "(bỏ sót chữ)" }}</del></td>
+                <td><ins class="diff-ins">{{ item.corrected_to or "(xóa ký tự rác)" }}</ins></td>
+                <td><strong>{{ item.count }}</strong></td>
+                <td>{{ item.solution }}</td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+          {% endif %}
+
+          {% if progress.ocr_report.unit_errors %}
+          <p style="margin: 14px 0 6px; font-weight: 700; font-size:15px;">2. Danh sách vị trí sai chi tiết (Sai ở đâu · Tô màu chỗ sai · Lý do · Giải pháp):</p>
+          <table class="doclist">
+            <thead>
+              <tr>
+                <th style="width:170px;">Vị trí (Đơn vị / Trang)</th>
+                <th>Đối chiếu chỗ sai (Đỏ = Sai, Xanh = Đúng)</th>
+                <th style="width:200px;">Phân tích lý do sai</th>
+                <th style="width:260px;">Giải pháp cải tiến</th>
+              </tr>
+            </thead>
+            <tbody>
+            {% for uerr in progress.ocr_report.unit_errors %}
+              <tr>
+                <td>
+                  <strong>{{ uerr.unit_id }}</strong><br>
+                  <span class="muted small">Trang {{ uerr.pages|join(", ") }}</span>
+                </td>
+                <td>
+                  <div class="diff-render" style="font-size:15px; max-height:140px; overflow:auto;">{{ uerr.diff_html|safe }}</div>
+                </td>
+                <td><strong>{{ uerr.reasons|join("; ") }}</strong></td>
+                <td>{{ uerr.solution }}</td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+          {% endif %}
+        {% else %}
+          <div style="text-align:center; padding:32px 16px;">
+            <div style="font-size:36px; margin-bottom:12px;">✅</div>
+            <h4 style="margin:0 0 6px; font-size:18px;">Chưa ghi nhận lỗi sai OCR nào</h4>
+            <p class="muted" style="margin:0;">Văn bản hiện tại đang đạt 100% độ chính xác hoặc chưa có đơn vị nào được thẩm định viên sửa chữ.</p>
+          </div>
+        {% endif %}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="pastel-btn btn-neutral" onclick="closeModal('modal-ocr-report')">Đóng</button>
+      </div>
     </div>
-  </details>
-{% endif %}
+  </div>
 </div>

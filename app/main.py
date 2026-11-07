@@ -192,7 +192,8 @@ def create_app(settings: Settings | None = None, catalog=None) -> FastAPI:
 
     @app.post("/documents/{document_id}/units/{unit_id}/review", include_in_schema=False)
     def review_action(request: Request, document_id: str, unit_id: str, action: str = Form(...), reviewer: str = Form(""),
-                      note: str = Form(""), ocr_reason: str = Form(""), content: str = Form(""),
+                      note: str = Form(""), flag_note: str = Form(""), structure_note: str = Form(""),
+                      structure_type: str = Form(""), ocr_reason: str = Form(""), content: str = Form(""),
                       catalog=Depends(get_catalog)):
         """Nút thẩm định (HTMX): ghi sự kiện rồi trả lại khung chi tiết, chấm màu ở cây và thanh tiến độ (out-of-band)."""
         loaded = load_or_404(catalog, document_id)
@@ -203,6 +204,16 @@ def create_app(settings: Settings | None = None, catalog=None) -> FastAPI:
         combined_note = note.strip()
         if action == "edit" and ocr_reason.strip():
             combined_note = f"[{ocr_reason.strip()}] {combined_note}".strip()
+        elif action == "flag":
+            chosen = flag_note.strip() or combined_note
+            combined_note = chosen
+        elif action == "structure_error":
+            stype = structure_type.strip()
+            chosen = structure_note.strip() or combined_note
+            if stype and not chosen.startswith(f"[{stype}]"):
+                combined_note = f"[{stype}] {chosen}".strip()
+            else:
+                combined_note = chosen
         errors: list[str] = []
         if not hasattr(catalog, "record_review"):
             errors = ["Thẩm định cần PostgreSQL (đặt POSTGRES_HOST hoặc DATABASE_URL)"]
@@ -212,7 +223,7 @@ def create_app(settings: Settings | None = None, catalog=None) -> FastAPI:
             except ReviewProblem as exc:
                 errors = exc.problems
         if errors:
-            context = detail_context(request, loaded, selected, errors=errors, form_note=note,
+            context = detail_context(request, loaded, selected, errors=errors, form_note=combined_note or note,
                                      form_content=content if action == "edit" else None, reviewer=reviewer, oob=False)
             return templates.TemplateResponse(request, "partials/detail.html", context)
         loaded = catalog.get(document_id)

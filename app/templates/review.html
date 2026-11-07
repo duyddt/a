@@ -9,6 +9,10 @@
   </div>
   <div class="topbar-right">
     <div id="progress">{{ bar(progress) }}</div>
+    <button type="button" class="pastel-btn btn-report" onclick="openModal('modal-ocr-report')" title="Xem bảng phân tích lỗi OCR &amp; Giải pháp cải tiến">
+      <span class="btn-icon">📊</span>
+      <span>Báo cáo OCR{% if progress and progress.char_accuracy_percent is not none %} ({{ progress.char_accuracy_percent }}%){% endif %}</span>
+    </button>
     {% if can_review %}<a class="button-link" href="/api/documents/{{ doc.document_id }}/export" download>⬇ Xuất JSON đã duyệt</a>{% endif %}
     <button type="button" class="btn-theme-toggle" onclick="toggleTheme()" title="Chuyển đổi giao diện sáng / tối">
       <span class="theme-icon">🌓</span>

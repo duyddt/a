@@ -54,21 +54,26 @@ Khung trái nhảy tới `source_pages[0]` của đơn vị được bấm. `rev
 
 ## Thẩm định
 
-Mở một văn bản, bấm một dòng trong cây thì khung trái nhảy tới trang, khung chi tiết bên phải hiện nội dung và các nút:
+Mở một văn bản, bấm một dòng trong cây thì khung trái nhảy tới trang, khung chi tiết bên phải hiện nội dung đối chiếu và thanh thao tác nút pastel nhẹ nhàng, tinh tế, tích hợp cửa sổ pop-up modal gọn gàng:
 
-| Nút | Việc làm | Trạng thái sau đó |
-|---|---|---|
-| Duyệt | Chữ, ranh giới, số hiệu đều đúng | Đã duyệt (xanh) |
-| Gắn cờ | Nghi ngờ, cần người khác xem; bắt buộc ghi lý do | Gắn cờ (cam) |
-| Báo lỗi cấu trúc | Sai cấp (Khoản thành Điểm...), thiếu hoặc thừa đơn vị; bắt buộc ghi lý do | Lỗi cấu trúc (đỏ) |
-| Sửa chữ | Sửa nội dung cho đúng ảnh trang; bản trước khi sửa nằm trong lịch sử | Nếu đang "Đã duyệt" thì về "Chưa soát" (chữ đã đổi, cần duyệt lại); trạng thái khác giữ nguyên |
-| Bỏ đánh dấu | Đưa về chưa soát | Chưa soát (xám) |
+| Thao tác | Cơ chế giao diện | Việc làm | Trạng thái sau đó |
+|---|---|---|---|
+| Duyệt | Nút pastel xanh lá | Xác nhận chữ, ranh giới, số hiệu đều chuẩn xác | Đã duyệt (xanh lá) |
+| Sửa chữ | Cửa sổ pop-up modal | Sửa nội dung cho đúng ảnh trang; chọn nguyên nhân lỗi OCR; lưu bản sửa và tự động cập nhật độ chính xác | Nếu đang "Đã duyệt" thì về "Chưa soát" (cần duyệt lại chữ mới); trạng thái khác giữ nguyên |
+| Gắn cờ | Cửa sổ pop-up modal | Nghi ngờ cần đối chiếu lại; bắt buộc nhập ghi chú lý do | Gắn cờ (vàng hổ phách) |
+| Báo lỗi cấu trúc | Cửa sổ pop-up modal | Chọn 1 trong 4 loại lỗi (Sai cấp, Sai số, Cần tách, Cần gộp) và nhập ghi chú cho nhóm parser | Lỗi cấu trúc (cam) |
+| Lịch sử thao tác | Cửa sổ pop-up modal | Xem toàn bộ nhật ký kiểm tra, đối chiếu chữ trước và sau khi sửa, người sửa và mốc thời gian | Giữ nguyên trạng thái |
+| Báo cáo OCR | Cửa sổ pop-up modal | Thống kê tỷ lệ phần trăm độ chính xác ký tự, bảng các lỗi thay thế thường gặp và giải pháp cải tiến | Giữ nguyên trạng thái |
+| Bỏ đánh dấu | Nút pastel trung tính | Đưa đơn vị về trạng thái ban đầu | Chưa soát (xám) |
 
-- Ô "Người soát" bắt buộc, được nhớ trong trình duyệt (cookie `reviewer`). Chưa có đăng nhập: tên do người soát tự gõ.
-- **Lịch sử chỉ ghi thêm.** Mỗi thao tác là một dòng ở bảng `review_event`; trigger trong PostgreSQL từ chối UPDATE và DELETE. Trạng thái hiện tại của đơn vị luôn được tính lại từ lịch sử. Bản gốc trong `legal_unit` không bao giờ bị sửa; nội dung hiển thị và xuất ra là bản sửa gần nhất.
+- Giao diện sử dụng hệ thống cửa sổ pop-up modal nổi bật trên lớp phủ làm mờ (backdrop blur), phím Escape hoặc bấm ra ngoài để đóng, giúp vùng làm việc luôn thoáng và tập trung vào văn bản đối chiếu.
+- Bảng màu pastel nhẹ nhàng, dịu mắt, tương thích hoàn toàn khi chuyển đổi giữa Giao diện Sáng và Giao diện Tối, đảm bảo độ tương phản cao và chữ không bị chìm xuống nền.
+- Báo cáo lỗi OCR được chuyển vào cửa sổ modal trên thanh công cụ (topbar), nhường 100% không gian màn hình cho hai khung đối chiếu PDF và cây mục lục.
+- Lịch sử chỉ ghi thêm. Mỗi thao tác là một dòng ở bảng review_event; trigger trong PostgreSQL từ chối UPDATE và DELETE. Trạng thái hiện tại của đơn vị luôn được tính lại từ lịch sử. Bản gốc trong legal_unit không bao giờ bị sửa; nội dung hiển thị và xuất ra là bản sửa gần nhất.
 - Tải lại trang hoặc khởi động lại container vẫn còn (dữ liệu nằm trong volume của PostgreSQL).
+- Tự động nhảy tới tiến độ đang soát dở (resume_unit_id) khi mở lại văn bản.
 - Thanh tiến độ ở đầu màn hình soát và ở danh sách: đã duyệt / tổng số đơn vị, kèm số gắn cờ và lỗi cấu trúc.
-- **Xuất JSON:** nút "Xuất JSON đã duyệt" hoặc `GET /api/documents/{id}/export`. Tệp chỉ gồm đơn vị đang ở trạng thái "Đã duyệt", cùng các trường như `LegalDocument`, nội dung là bản hiện hành. Nếu một đơn vị đã duyệt mà đơn vị cha chưa duyệt thì `parent_unit_id` trỏ tới đơn vị không có trong tệp; số trường hợp này nằm ở header `X-Export-Parent-Missing`.
+- Xuất JSON: nút "Xuất JSON đã duyệt" hoặc GET /api/documents/{id}/export. Tệp chỉ gồm đơn vị đang ở trạng thái "Đã duyệt", cùng các trường như LegalDocument, nội dung là bản hiện hành. Nếu một đơn vị đã duyệt mà đơn vị cha chưa duyệt thì parent_unit_id trỏ tới đơn vị không có trong tệp; số trường hợp này nằm ở header X-Export-Parent-Missing.
 
 API: `POST /api/documents/{id}/units/{unit_id}/reviews` với `{"action": "approve|edit|flag|structure_error|reset", "reviewer": "Duy", "note": "...", "content": "..."}`; `GET` cùng đường dẫn trả lịch sử (mới nhất trước); `GET /api/documents/{id}/progress`; `GET /api/documents/{id}/export`.
 

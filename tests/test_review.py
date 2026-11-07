@@ -218,3 +218,40 @@ def test_progress_bar_and_review_response_render(env, doc):
         form_note="", form_content=None, progress=p)
     assert f'id="dot-{ids[0]}"' in response and "st-approved" in response and 'hx-swap-oob="true"' in response
     assert 'id="progress"' in response
+
+
+def test_detail_modal_popups_and_pastel_palette_elements(env, doc):
+    html = render_detail(env, doc)
+    for modal_id in ("modal-edit", "modal-flag", "modal-structure", "modal-history"):
+        assert f'id="{modal_id}"' in html
+    for struct_type in ("Sai cấp", "Sai số", "Cần tách", "Cần gộp"):
+        assert struct_type in html
+    for pastel_cls in ("pastel-btn", "btn-approve", "btn-edit", "btn-flag", "btn-structure", "btn-history"):
+        assert pastel_cls in html
+
+
+def test_ocr_report_modal_renders_accuracy_and_substitutions(env):
+    p = {
+        "total": 10,
+        "char_accuracy_percent": 98.7,
+        "ocr_report": {
+            "edited_units": 2,
+            "common_substitutions": [
+                {"ocr_read": "dieu", "corrected_to": "điều", "count": 3, "solution": "Nâng cấp mô hình từ điển"}
+            ],
+            "unit_errors": [
+                {
+                    "unit_id": "ND254_2026_D1",
+                    "pages": [1],
+                    "diff_html": "<del>dieu</del><ins>điều</ins>",
+                    "reasons": ["Sai dấu tiếng Việt"],
+                    "solution": "Nâng cấp mô hình từ điển",
+                }
+            ],
+        },
+    }
+    html = env.get_template("partials/ocr_report.html").render(can_review=True, progress=p, oob=False)
+    assert 'id="modal-ocr-report"' in html
+    assert "98.7%" in html
+    assert "2 / 10" in html
+    assert "Nâng cấp mô hình từ điển" in html

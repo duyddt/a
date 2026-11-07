@@ -44,6 +44,42 @@
   --diff-ins-bg: #dcfce7;
   --diff-ins-text: #166534;
 
+  /* BẢNG MÀU PASTEL NHẸ NHÀNG, DỊU MẮT (LIGHT THEME) */
+  --pastel-approve-bg: #e8f5e9;
+  --pastel-approve-border: #a5d6a7;
+  --pastel-approve-text: #1b5e20;
+  --pastel-approve-hover: #c8e6c9;
+
+  --pastel-edit-bg: #e0f2fe;
+  --pastel-edit-border: #7dd3fc;
+  --pastel-edit-text: #0369a1;
+  --pastel-edit-hover: #bae6fd;
+
+  --pastel-flag-bg: #fef3c7;
+  --pastel-flag-border: #fcd34d;
+  --pastel-flag-text: #92400e;
+  --pastel-flag-hover: #fde68a;
+
+  --pastel-structure-bg: #ffedd5;
+  --pastel-structure-border: #fdba74;
+  --pastel-structure-text: #9a3412;
+  --pastel-structure-hover: #fed7aa;
+
+  --pastel-history-bg: #f3e8ff;
+  --pastel-history-border: #d8b4fe;
+  --pastel-history-text: #6b21a8;
+  --pastel-history-hover: #e9d5ff;
+
+  --pastel-report-bg: #ccfbf1;
+  --pastel-report-border: #5eead4;
+  --pastel-report-text: #115e59;
+  --pastel-report-hover: #99f6e4;
+
+  --pastel-neutral-bg: #f1f5f9;
+  --pastel-neutral-border: #cbd5e1;
+  --pastel-neutral-text: #475569;
+  --pastel-neutral-hover: #e2e8f0;
+
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
 
@@ -95,6 +131,42 @@
   --diff-del-text: #fca5a5;
   --diff-ins-bg: #093b1e;
   --diff-ins-text: #86efac;
+
+  /* BẢNG MÀU PASTEL TƯƠNG THÍCH DARK THEME (ĐỘ TƯƠNG PHẢN CAO, CHỐNG CHÌM CHỮ) */
+  --pastel-approve-bg: #143224;
+  --pastel-approve-border: #245e43;
+  --pastel-approve-text: #86efac;
+  --pastel-approve-hover: #1c4532;
+
+  --pastel-edit-bg: #142a42;
+  --pastel-edit-border: #1e5280;
+  --pastel-edit-text: #7dd3fc;
+  --pastel-edit-hover: #1b395a;
+
+  --pastel-flag-bg: #35260f;
+  --pastel-flag-border: #6d4e1a;
+  --pastel-flag-text: #fde68a;
+  --pastel-flag-hover: #483416;
+
+  --pastel-structure-bg: #381f14;
+  --pastel-structure-border: #733c23;
+  --pastel-structure-text: #fdba74;
+  --pastel-structure-hover: #4d2b1c;
+
+  --pastel-history-bg: #2d193d;
+  --pastel-history-border: #5e3280;
+  --pastel-history-text: #d8b4fe;
+  --pastel-history-hover: #3f2354;
+
+  --pastel-report-bg: #113330;
+  --pastel-report-border: #1e5e58;
+  --pastel-report-text: #5eead4;
+  --pastel-report-hover: #184440;
+
+  --pastel-neutral-bg: #1e293b;
+  --pastel-neutral-border: #334155;
+  --pastel-neutral-text: #cbd5e1;
+  --pastel-neutral-hover: #293548;
 
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
@@ -622,22 +694,343 @@ ins.diff-ins {
   color: var(--text-main);
 }
 .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
+.actions-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 14px 0;
+  padding: 10px 12px;
+  background: var(--bg-surface-alt);
+  border: 1px solid var(--border-main);
+  border-radius: 10px;
+}
 .act {
-  min-height: 46px;
-  padding: 0 18px;
-  border: 2px solid var(--border-strong);
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1.5px solid var(--border-strong);
   background: var(--bg-surface);
   color: var(--text-main);
-  border-radius: 6px;
+  border-radius: 8px;
   font-weight: 700;
   font-size: 15px;
+  cursor: pointer;
+  transition: all 0.15s ease;
 }
-.act.approve { background: var(--success); border-color: var(--success-hover); color: #ffffff; }
-.act.approve:hover { background: var(--success-hover); }
-.act.flag { background: var(--warning-bg); border-color: var(--warning); color: var(--warning-text); }
-.act.structure { background: var(--danger-bg); border-color: var(--danger); color: var(--danger-text); }
-.act.save-edit { background: var(--accent); border-color: var(--accent-hover); color: #ffffff; }
-.act.save-edit:hover { background: var(--accent-hover); }
+.act.approve { background: var(--pastel-approve-bg); border-color: var(--pastel-approve-border); color: var(--pastel-approve-text); }
+.act.approve:hover { background: var(--pastel-approve-hover); }
+.act.flag { background: var(--pastel-flag-bg); border-color: var(--pastel-flag-border); color: var(--pastel-flag-text); }
+.act.flag:hover { background: var(--pastel-flag-hover); }
+.act.structure { background: var(--pastel-structure-bg); border-color: var(--pastel-structure-border); color: var(--pastel-structure-text); }
+.act.structure:hover { background: var(--pastel-structure-hover); }
+.act.save-edit { background: var(--pastel-edit-bg); border-color: var(--pastel-edit-border); color: var(--pastel-edit-text); }
+.act.save-edit:hover { background: var(--pastel-edit-hover); }
+
+/* BẢNG NÚT BẤM PASTEL NHẸ NHÀNG */
+.pastel-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 8px 16px;
+  border: 1.5px solid transparent;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14.5px;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  user-select: none;
+}
+.pastel-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
+}
+.pastel-btn:active {
+  transform: translateY(0);
+}
+.pastel-btn .btn-icon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.btn-approve {
+  background: var(--pastel-approve-bg);
+  border-color: var(--pastel-approve-border);
+  color: var(--pastel-approve-text);
+}
+.btn-approve:hover {
+  background: var(--pastel-approve-hover);
+}
+
+.btn-edit {
+  background: var(--pastel-edit-bg);
+  border-color: var(--pastel-edit-border);
+  color: var(--pastel-edit-text);
+}
+.btn-edit:hover {
+  background: var(--pastel-edit-hover);
+}
+
+.btn-flag {
+  background: var(--pastel-flag-bg);
+  border-color: var(--pastel-flag-border);
+  color: var(--pastel-flag-text);
+}
+.btn-flag:hover {
+  background: var(--pastel-flag-hover);
+}
+
+.btn-structure {
+  background: var(--pastel-structure-bg);
+  border-color: var(--pastel-structure-border);
+  color: var(--pastel-structure-text);
+}
+.btn-structure:hover {
+  background: var(--pastel-structure-hover);
+}
+
+.btn-history {
+  background: var(--pastel-history-bg);
+  border-color: var(--pastel-history-border);
+  color: var(--pastel-history-text);
+}
+.btn-history:hover {
+  background: var(--pastel-history-hover);
+}
+
+.btn-report {
+  background: var(--pastel-report-bg);
+  border-color: var(--pastel-report-border);
+  color: var(--pastel-report-text);
+}
+.btn-report:hover {
+  background: var(--pastel-report-hover);
+}
+
+.btn-neutral, .btn-reset {
+  background: var(--pastel-neutral-bg);
+  border-color: var(--pastel-neutral-border);
+  color: var(--pastel-neutral-text);
+}
+.btn-neutral:hover, .btn-reset:hover {
+  background: var(--pastel-neutral-hover);
+}
+
+/* POP-UP MODAL WINDOWS (GỌN GÀNG, TRỰC QUAN, TỰ ĐỘNG THU PHÓNG) */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 9999;
+  animation: modalFadeIn 0.16s ease-out;
+}
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.modal-window {
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border-strong);
+  border-radius: 12px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.25), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 660px;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  color: var(--text-main);
+  animation: modalSlideUp 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.modal-window.modal-lg {
+  max-width: 840px;
+}
+.modal-window.modal-xl {
+  max-width: 1100px;
+}
+@keyframes modalSlideUp {
+  from { transform: translateY(14px) scale(0.98); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border-main);
+  background: var(--bg-surface-alt);
+}
+.modal-header h3 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+.modal-close {
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  line-height: 1;
+  color: var(--text-muted);
+  padding: 2px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.modal-close:hover {
+  background: var(--border-subtle);
+  color: var(--text-main);
+}
+.modal-body {
+  padding: 20px;
+  overflow-y: auto;
+  flex: 1 1 auto;
+}
+.modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 12px 20px;
+  border-top: 1px solid var(--border-main);
+  background: var(--bg-surface-alt);
+}
+.modal-hint {
+  margin: 0 0 14px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+.field-title {
+  display: block;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 6px;
+}
+.field-title .required {
+  color: var(--danger);
+  font-weight: 700;
+}
+.modal-select {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 15px;
+  border: 1.5px solid var(--border-strong);
+  border-radius: 6px;
+  background: var(--bg-input);
+  color: var(--text-main);
+}
+.modal-textarea {
+  width: 100%;
+  padding: 12px 14px;
+  font-family: inherit;
+  font-size: 15px;
+  line-height: 1.6;
+  border: 1.5px solid var(--border-strong);
+  border-radius: 6px;
+  background: var(--bg-input);
+  color: var(--text-main);
+  resize: vertical;
+}
+.modal-textarea:focus, .modal-select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-border);
+}
+
+/* KHUNG CHỌN 4 LOẠI LỖI CẤU TRÚC */
+.structure-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 14px;
+}
+@media (max-width: 640px) {
+  .structure-grid { grid-template-columns: 1fr; }
+}
+.structure-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px;
+  border: 1.5px solid var(--border-main);
+  border-radius: 8px;
+  background: var(--bg-surface);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.structure-card:hover {
+  border-color: var(--pastel-structure-border);
+  background: var(--pastel-structure-bg);
+}
+.structure-card input[type="radio"] {
+  margin-top: 4px;
+  cursor: pointer;
+}
+.structure-card .card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.structure-card .card-content strong {
+  font-size: 14.5px;
+  color: var(--text-main);
+}
+.structure-card .card-content span {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.35;
+}
+
+/* KHUNG LỊCH SỬ THẨM ĐỊNH & ĐỐI CHIẾU */
+.history-item {
+  margin-bottom: 14px;
+  padding: 10px 14px;
+  background: var(--bg-surface-alt);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+}
+.history-meta {
+  font-size: 14.5px;
+  color: var(--text-main);
+}
+.history-note {
+  margin-top: 4px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--warning-text);
+}
+.history-diff-view {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 8px;
+}
+@media (max-width: 700px) {
+  .history-diff-view { grid-template-columns: 1fr; }
+}
+.history-diff-col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.diff-tag-before {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+.diff-tag-after {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
 .edit-box {
   margin-top: 10px;
   padding: 14px;

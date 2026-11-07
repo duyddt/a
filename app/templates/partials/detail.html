@@ -35,7 +35,7 @@
   <div style="margin-top:8px; font-size:14px;">
     <strong>Chi tiết ký tự sai tại đơn vị này:</strong>
     {% for d in char_diffs %}
-      <span style="display:inline-block; background:#fff; border:1px solid #cbd5e1; border-radius:4px; padding:2px 8px; margin:2px 4px 2px 0;">
+      <span style="display:inline-block; background:var(--bg-surface); border:1px solid var(--border-main); border-radius:4px; padding:2px 8px; margin:2px 4px 2px 0;">
         OCR đọc: <del class="diff-del">{{ d.ocr_read or "(bỏ sót)" }}</del> &rarr; Sửa thành: <ins class="diff-ins">{{ d.corrected_to or "(xóa ký tự thừa)" }}</ins>
       </span>
     {% endfor %}
@@ -46,68 +46,209 @@
 
 {% if can_review %}
 <form id="review-form" class="review-form" onsubmit="return false;">
-  {% if errors %}<ul class="err" role="alert">{% for e in errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+  {% if errors %}
+  <ul class="err" role="alert">{% for e in errors %}<li>{{ e }}</li>{% endfor %}</ul>
+  <script>
+    (function() {
+      var errStr = "{{ errors|join(' ') }}";
+      if (errStr.indexOf('Gắn cờ') !== -1 || errStr.indexOf('cần ghi chú') !== -1) {
+        if (typeof openModal === 'function') openModal('modal-flag');
+      }
+    })();
+  </script>
+  {% endif %}
   {% set url = "/documents/" ~ doc.document_id ~ "/units/" ~ (unit.unit_id|urlencode) ~ "/review" %}
   <input type="hidden" name="reviewer" value="{{ reviewer or 'Thẩm định viên' }}">
-  <label class="field" style="margin-bottom: 14px;">Ghi chú / Lý do sai <span class="muted">(bắt buộc khi Gắn cờ / Báo lỗi cấu trúc)</span>
-    <input type="text" name="note" value="{{ form_note }}" maxlength="2000" placeholder="Ví dụ: Chữ mờ, thiếu khoản, OCR nhầm chữ d thành đ...">
-  </label>
+  <input type="hidden" name="note" value="{{ form_note }}">
 
-  <div class="actions">
-    <button type="button" class="act approve" hx-post="{{ url }}" hx-vals='{"action": "approve"}' hx-include="#review-form" hx-target="#detail" hx-swap="innerHTML">✓ Duyệt (Chính xác)</button>
-    <button type="button" class="act flag" hx-post="{{ url }}" hx-vals='{"action": "flag"}' hx-include="#review-form" hx-target="#detail" hx-swap="innerHTML">⚑ Gắn cờ</button>
-    <button type="button" class="act structure" hx-post="{{ url }}" hx-vals='{"action": "structure_error"}' hx-include="#review-form" hx-target="#detail" hx-swap="innerHTML">⚠ Báo lỗi cấu trúc</button>
+  <!-- THANH CÔNG CỤ THAO TÁC PASTEL GỌN GÀNG -->
+  <div class="actions-toolbar">
+    <button type="button" class="act approve pastel-btn btn-approve" hx-post="{{ url }}" hx-vals='{"action": "approve"}' hx-include="#review-form" hx-target="#detail" hx-swap="innerHTML" title="Xác nhận đơn vị chính xác theo ảnh PDF gốc">
+      <span class="btn-icon">✓</span>
+      <span>Duyệt</span>
+    </button>
+    <button type="button" class="pastel-btn btn-edit" onclick="openModal('modal-edit')" title="Mở hộp sửa chữ và ghi nhận nguyên nhân lỗi OCR">
+      <span class="btn-icon">✎</span>
+      <span>Sửa chữ</span>
+    </button>
+    <button type="button" class="pastel-btn btn-flag" onclick="openModal('modal-flag')" title="Mở hộp ghi chú gắn cờ nghi ngờ">
+      <span class="btn-icon">⚑</span>
+      <span>Gắn cờ</span>
+    </button>
+    <button type="button" class="pastel-btn btn-structure" onclick="openModal('modal-structure')" title="Mở hộp phân loại báo lỗi cấu trúc cho nhóm parser">
+      <span class="btn-icon">⚠</span>
+      <span>Báo lỗi cấu trúc</span>
+    </button>
+    <button type="button" class="pastel-btn btn-history" onclick="openModal('modal-history')" title="Xem nhật ký và lịch sử thẩm định của đơn vị">
+      <span class="btn-icon">🕒</span>
+      <span>Lịch sử thao tác ({{ history|length }})</span>
+    </button>
     {% if status != 'unreviewed' %}
-    <button type="button" class="act" hx-post="{{ url }}" hx-vals='{"action": "reset"}' hx-include="#review-form" hx-target="#detail" hx-swap="innerHTML">↺ Bỏ đánh dấu</button>
+    <button type="button" class="act pastel-btn btn-reset" hx-post="{{ url }}" hx-vals='{"action": "reset"}' hx-include="#review-form" hx-target="#detail" hx-swap="innerHTML" title="Bỏ đánh dấu, đưa đơn vị về trạng thái chưa soát">
+      <span class="btn-icon">↺</span>
+      <span>Bỏ đánh dấu</span>
+    </button>
     {% endif %}
   </div>
 
-  <details class="edit-box" open>
-    <summary>✎ Sửa chữ &amp; Ghi nhận lý do hệ thống OCR đọc sai</summary>
-    <label class="field" style="margin-top: 10px;">1. Chọn lý do vì sao OCR đọc sai ở đoạn này (để phân tích &amp; đề xuất giải pháp cải tiến):
-      <select name="ocr_reason">
-        <option value="">-- Chọn nguyên nhân lỗi OCR --</option>
-        {% for r in OCR_REASONS or [
-          "Mờ/nhòe bản scan",
-          "Sai dấu tiếng Việt",
-          "Nhầm ký tự giống nhau (d/đ, 0/O, 1/l...)",
-          "Mất chữ / dính chữ",
-          "Lỗi công thức / ký hiệu / bảng biểu"
-        ] %}
-        <option value="{{ r }}">{{ r }}</option>
-        {% endfor %}
-      </select>
-    </label>
-    <label class="field">2. Sửa lại nội dung bên dưới cho đúng với ảnh PDF gốc bên trái:
-      <textarea name="content" rows="8" spellcheck="false">{{ form_content if form_content is not none else unit.content }}</textarea>
-    </label>
-    <p class="muted small" style="margin: 4px 0 10px;">Hệ thống tự động lưu lại chữ trước và sau khi sửa, chỉ rõ vị trí sai và đề xuất giải pháp cải tiến độ chính xác. Sửa một đơn vị đã duyệt thì phải bấm Duyệt lại.</p>
-    <button type="button" class="act save-edit" hx-post="{{ url }}" hx-vals='{"action": "edit"}' hx-include="#review-form" hx-target="#detail" hx-swap="innerHTML">💾 Lưu bản sửa &amp; Phân tích lỗi OCR</button>
-  </details>
-</form>
+  <!-- CỬA SỔ POP-UP 1: SỬA CHỮ & PHÂN TÍCH NGUYÊN NHÂN LỖI OCR -->
+  <div id="modal-edit" class="modal-overlay" style="display:none;" onclick="if(event.target===this)closeModal('modal-edit')">
+    <div class="modal-window modal-lg">
+      <div class="modal-header">
+        <h3>✎ Sửa chữ &amp; Ghi nhận nguyên nhân OCR đọc sai</h3>
+        <button type="button" class="modal-close" onclick="closeModal('modal-edit')" aria-label="Đóng">&times;</button>
+      </div>
+      <div class="modal-body">
+        <details class="edit-box" open>
+          <summary>✎ Sửa chữ &amp; Ghi nhận lý do hệ thống OCR đọc sai</summary>
+          <label class="field" style="margin-top: 10px;">
+            <span class="field-title">1. Chọn lý do vì sao OCR đọc sai ở đoạn này (để phân tích &amp; đề xuất giải pháp cải tiến):</span>
+            <select name="ocr_reason" class="modal-select">
+              <option value="">-- Chọn nguyên nhân lỗi OCR --</option>
+              {% for r in OCR_REASONS or [
+                "Mờ/nhòe bản scan",
+                "Sai dấu tiếng Việt",
+                "Nhầm ký tự giống nhau (d/đ, 0/O, 1/l...)",
+                "Mất chữ / dính chữ",
+                "Lỗi công thức / ký hiệu / bảng biểu"
+              ] %}
+              <option value="{{ r }}">{{ r }}</option>
+              {% endfor %}
+            </select>
+          </label>
+          <label class="field">
+            <span class="field-title">2. Sửa lại nội dung bên dưới cho đúng với ảnh PDF gốc bên trái:</span>
+            <textarea name="content" class="modal-textarea" rows="8" spellcheck="false">{{ form_content if form_content is not none else unit.content }}</textarea>
+          </label>
+          <p class="muted small" style="margin: 6px 0 10px;">Hệ thống tự động lưu lại chữ trước và sau khi sửa, chỉ rõ vị trí sai và đề xuất giải pháp cải tiến độ chính xác. Sửa một đơn vị đã duyệt thì phải bấm Duyệt lại.</p>
+          <div class="modal-footer" style="padding: 10px 0 0; background: transparent; border: none;">
+            <button type="button" class="pastel-btn btn-neutral" onclick="closeModal('modal-edit')">Huỷ</button>
+            <button type="button" class="act save-edit pastel-btn btn-edit" hx-post="{{ url }}" hx-vals='{"action": "edit"}' hx-include="#review-form" hx-target="#detail" hx-swap="innerHTML">💾 Lưu bản sửa &amp; Phân tích lỗi OCR</button>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
 
-<details class="history">
-  <summary>Lịch sử thao tác ({{ history|length }})</summary>
-  {% if not history %}<p class="muted small">Chưa có thao tác nào.</p>{% endif %}
-  <ol class="history-list">
-    {% for e in history %}
-    <li>
-      <span><strong>{{ e.action_label }}</strong>{% if e.reviewer %} · {{ e.reviewer }}{% endif %} · {{ e.created_at|vn_time }}</span>
-      {% if e.note %}<div class="small" style="color:var(--warning-text); font-weight:600;">Lý do / Ghi chú: {{ e.note }}</div>{% endif %}
-      {% if e.action == 'edit' %}
-      <details class="small"><summary>Xem chữ trước và sau khi sửa</summary>
-        <div class="muted">Trước (OCR gốc):</div><pre class="content small">{{ e.content_before }}</pre>
-        <div class="muted">Sau (Đã sửa):</div><pre class="content small">{{ e.content_after }}</pre>
-      </details>
-      {% endif %}
-    </li>
-    {% endfor %}
-  </ol>
-</details>
+  <!-- CỬA SỔ POP-UP 2: GẮN CỜ NGHI NGỜ / KHÔNG CHẮC -->
+  <div id="modal-flag" class="modal-overlay" style="display:none;" onclick="if(event.target===this)closeModal('modal-flag')">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h3>⚑ Gắn cờ nghi ngờ / Cần kiểm tra lại</h3>
+        <button type="button" class="modal-close" onclick="closeModal('modal-flag')" aria-label="Đóng">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-hint">Gắn cờ khi bạn không chắc chắn về nội dung hoặc cần thẩm định viên khác hỗ trợ đối chiếu.</p>
+        <label class="field">
+          <span class="field-title">Ghi chú / Lý do không chắc chắn <span class="required">*</span>:</span>
+          <textarea name="flag_note" class="modal-textarea" rows="4" placeholder="Ví dụ: Chữ mờ không đọc rõ số năm, nghi ngờ thiếu câu cuối...">{{ form_note }}</textarea>
+        </label>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="pastel-btn btn-neutral" onclick="closeModal('modal-flag')">Huỷ</button>
+        <button type="button" class="act flag pastel-btn btn-flag" hx-post="{{ url }}" hx-vals='{"action": "flag"}' hx-include="#review-form" hx-target="#detail" hx-swap="innerHTML">⚑ Xác nhận Gắn cờ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CỬA SỔ POP-UP 3: BÁO LỖI CẤU TRÚC VĂN BẢN (4 LOẠI) -->
+  <div id="modal-structure" class="modal-overlay" style="display:none;" onclick="if(event.target===this)closeModal('modal-structure')">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h3>⚠ Báo lỗi cấu trúc (Dành cho nhóm Parser)</h3>
+        <button type="button" class="modal-close" onclick="closeModal('modal-structure')" aria-label="Đóng">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-hint">Chọn loại lỗi cấu trúc và nhập ghi chú để chuyển cho nhóm kỹ thuật xử lý:</p>
+        <div class="structure-grid">
+          <label class="structure-card">
+            <input type="radio" name="structure_type" value="Sai cấp" checked>
+            <div class="card-content">
+              <strong>1. Sai cấp</strong>
+              <span>Phân loại nhầm cấp (Điểm nhận thành Khoản, Khoản thành Điều...)</span>
+            </div>
+          </label>
+          <label class="structure-card">
+            <input type="radio" name="structure_type" value="Sai số">
+            <div class="card-content">
+              <strong>2. Sai số</strong>
+              <span>Số thứ tự điều/khoản/điểm bị sai hoặc bị bỏ sót</span>
+            </div>
+          </label>
+          <label class="structure-card">
+            <input type="radio" name="structure_type" value="Cần tách">
+            <div class="card-content">
+              <strong>3. Cần tách</strong>
+              <span>Nhiều khoản/điểm bị dính liền thành một đơn vị duy nhất</span>
+            </div>
+          </label>
+          <label class="structure-card">
+            <input type="radio" name="structure_type" value="Cần gộp">
+            <div class="card-content">
+              <strong>4. Cần gộp</strong>
+              <span>Một câu hoặc đoạn văn bị cắt rời vô lý thành nhiều đơn vị</span>
+            </div>
+          </label>
+        </div>
+        <label class="field" style="margin-top:10px;">
+          <span class="field-title">Ghi chú chi tiết vị trí lỗi <span class="required">*</span>:</span>
+          <textarea name="structure_note" class="modal-textarea" rows="3" placeholder="Ví dụ: Đoạn này nên gộp với khoản 2 bên trên..."></textarea>
+        </label>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="pastel-btn btn-neutral" onclick="closeModal('modal-structure')">Huỷ</button>
+        <button type="button" class="act structure pastel-btn btn-structure" hx-post="{{ url }}" hx-vals='{"action": "structure_error"}' hx-include="#review-form" hx-target="#detail" hx-swap="innerHTML">⚠ Xác nhận Báo lỗi cấu trúc</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CỬA SỔ POP-UP 4: LỊCH SỬ THAO TÁC & NHẬT KÝ SỬA ĐỔI -->
+  <div id="modal-history" class="modal-overlay" style="display:none;" onclick="if(event.target===this)closeModal('modal-history')">
+    <div class="modal-window modal-lg">
+      <div class="modal-header">
+        <h3>🕒 Lịch sử thẩm định &amp; Nhật ký sửa đổi</h3>
+        <button type="button" class="modal-close" onclick="closeModal('modal-history')" aria-label="Đóng">&times;</button>
+      </div>
+      <div class="modal-body">
+        <details class="history" open>
+          <summary>Lịch sử thao tác ({{ history|length }})</summary>
+          {% if not history %}
+          <p class="muted small" style="margin-top:10px;">Chưa có thao tác nào trên đơn vị này.</p>
+          {% else %}
+          <ol class="history-list" style="margin-top:10px;">
+            {% for e in history %}
+            <li class="history-item">
+              <div class="history-meta">
+                <strong>{{ e.action_label }}</strong>{% if e.reviewer %} · {{ e.reviewer }}{% endif %} · {{ e.created_at|vn_time }}
+              </div>
+              {% if e.note %}<div class="history-note">Lý do / Ghi chú: {{ e.note }}</div>{% endif %}
+              {% if e.action == 'edit' %}
+              <div class="history-diff-view">
+                <div class="history-diff-col">
+                  <span class="diff-tag-before">Trước (OCR gốc):</span>
+                  <pre class="content small">{{ e.content_before }}</pre>
+                </div>
+                <div class="history-diff-col">
+                  <span class="diff-tag-after">Sau (Đã sửa):</span>
+                  <pre class="content small">{{ e.content_after }}</pre>
+                </div>
+              </div>
+              {% endif %}
+            </li>
+            {% endfor %}
+          </ol>
+          {% endif %}
+        </details>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="pastel-btn btn-neutral" onclick="closeModal('modal-history')">Đóng</button>
+      </div>
+    </div>
+  </div>
+</form>
 {% else %}
 <p class="muted small">Chế độ xem thư mục file: chưa lưu được thao tác thẩm định (cần PostgreSQL, xem README).</p>
 {% endif %}
 {% else %}
 <p class="muted">Văn bản chưa có đơn vị nào.</p>
 {% endif %}
-
