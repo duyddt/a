@@ -1,0 +1,39 @@
+# Một lệnh khởi động cả PostgreSQL và API:  docker compose up --build
+# Trước đó: sao chép .env.example thành .env và đặt POSTGRES_PASSWORD (file .env không được đưa lên Git).
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-review}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Hãy sao chép .env.example thành .env và đặt POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-review}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_USER: ${POSTGRES_USER:-review}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-review}
+      STORAGE_DIR: /storage
+      # Khi khởi động, nhập mọi văn bản trong ./data (đã nhập rồi thì bỏ qua). Đặt AUTO_IMPORT_DIR= (rỗng) trong .env để tắt.
+      AUTO_IMPORT_DIR: ${AUTO_IMPORT_DIR-/seed}
+    volumes:
+      - storage:/storage
+      - ./data:/seed:ro
+    ports:
+      - "8080:8000"
+
+volumes:
+  pgdata:
+  storage:
