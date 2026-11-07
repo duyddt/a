@@ -94,14 +94,21 @@ def create_app(settings: Settings | None = None, catalog=None) -> FastAPI:
             from app.services.db_catalog import DbCatalog
             from app.services.importer import Importer
 
-            pool = create_pool(settings.conninfo)
-            for name in migrate(pool):
-                log.info("Đã áp dụng migration %s", name)
-            app.state.catalog = DbCatalog(pool, settings.storage_dir)
-            app.state.importer = Importer(pool, settings.storage_dir)
-            if settings.auto_import_dir:
-                for name, outcome in app.state.importer.import_all(settings.auto_import_dir):
-                    log.info("Nhập tự động %s: %s", name, outcome)
+            try:
+                pool = create_pool(settings.conninfo, wait_seconds=1)
+                for name in migrate(pool):
+                    log.info("Đã áp dụng migration %s", name)
+                app.state.catalog = DbCatalog(pool, settings.storage_dir)
+                app.state.importer = Importer(pool, settings.storage_dir)
+                if settings.auto_import_dir:
+                    for name, outcome in app.state.importer.import_all(settings.auto_import_dir):
+                        log.info("Nhập tự động %s: %s", name, outcome)
+            except Exception as exc:
+                log.warning("Không thể kết nối PostgreSQL (%s): %s. Tự động chuyển sang chế độ thẩm định tệp cục bộ.", settings.conninfo, exc)
+                pool = None
+                app.state.catalog = DocumentStore(settings.data_dir, can_review=True, storage_dir=settings.storage_dir)
+        elif catalog is None:
+            app.state.catalog = DocumentStore(settings.data_dir, can_review=True, storage_dir=settings.storage_dir)
         try:
             yield
         finally:
@@ -109,7 +116,7 @@ def create_app(settings: Settings | None = None, catalog=None) -> FastAPI:
                 pool.close()
 
     app = FastAPI(title="Web app thẩm định dữ liệu pháp lý", lifespan=lifespan)
-    app.state.catalog = catalog or (None if use_db else DocumentStore(settings.data_dir))
+    app.state.catalog = catalog or (None if use_db else DocumentStore(settings.data_dir, can_review=True, storage_dir=settings.storage_dir))
     app.state.importer = None  # chế độ DB gán trong lifespan
     app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
     app.include_router(api_router)
