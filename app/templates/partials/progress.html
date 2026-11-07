@@ -1,0 +1,16 @@
+{#- Thanh tiến độ: đoạn xanh = đã duyệt, cam = gắn cờ, đỏ = lỗi cấu trúc, xám = chưa soát. `p` có thể là None (chế độ thư mục file). -#}
+{% macro bar(p) -%}
+{% if p and p.total %}
+<div class="progress" role="img" aria-label="Đã duyệt {{ p.approved }} trên {{ p.total }} đơn vị">
+  <div class="progress-bar">
+    <span class="seg st-approved" style="width: {{ 100 * p.approved / p.total }}%"></span><span class="seg st-flagged" style="width: {{ 100 * p.flagged / p.total }}%"></span><span class="seg st-structure_error" style="width: {{ 100 * p.structure_error / p.total }}%"></span>
+  </div>
+  <span class="progress-text">
+    Đã duyệt {{ p.approved }}/{{ p.total }} ({{ p.percent_approved }}%)
+    {%- if p.char_accuracy_percent is not none %} · <strong>Độ chính xác OCR: {{ p.char_accuracy_percent }}%</strong> (ký tự) / {{ p.unit_accuracy_percent }}% (đơn vị nguyên vẹn){% endif -%}
+    {%- if p.flagged %} · gắn cờ {{ p.flagged }}{% endif -%}
+    {%- if p.structure_error %} · lỗi cấu trúc {{ p.structure_error }}{% endif -%}
+  </span>
+</div>
+{% endif %}
+{%- endmacro %}

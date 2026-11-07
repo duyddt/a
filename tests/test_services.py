@@ -1,11 +1,14 @@
 import json
+import os
+from pathlib import Path
 
 import pytest
 from jinja2 import Environment, FileSystemLoader, select_autoescape
-from pathlib import Path
 
-from app.services.store import DocumentStore, ImportProblem
-from app.services.views import build_rows, first_page_of, nearest_zoom, viewer_context
+from app.services.store import DocumentStore
+from app.services.models import ImportProblem
+from app.services.tree import build_tree, decorate_for_page
+from app.services.views import first_page_of, nearest_zoom, viewer_context, vn_time
 
 TEMPLATES = Path(__file__).resolve().parent.parent / "app" / "templates"
 DOC = "ND254_2026"
@@ -13,6 +16,7 @@ DOC = "ND254_2026"
 
 def render(name, **context):
     env = Environment(loader=FileSystemLoader(str(TEMPLATES)), autoescape=select_autoescape(["html"]))
+    env.filters["vn_time"] = vn_time
     return env.get_template(name).render(**context)
 
 
@@ -28,9 +32,21 @@ def test_list_and_load_renders_pages_on_demand(data_dir):
         assert png.read_bytes()[:8] == b"\x89PNG\r\n\x1a\n"
 
 
+def test_list_documents_summaries(data_dir):
+    (summary,) = DocumentStore(data_dir).list_documents()
+    assert (summary.document_id, summary.document_no) == (DOC, "254/2026/NĐ-CP")
+    assert (summary.page_count, summary.unit_count) == (3, 7)
+    assert summary.problem is None
+
+
+def test_list_documents_reports_broken_document(data_dir):
+    (data_dir / DOC / "document.json").write_text("{ khong phai json", encoding="utf-8")
+    (summary,) = DocumentStore(data_dir).list_documents()
+    assert summary.problem is not None and summary.title is None
+
+
 def test_replacing_pdf_discards_old_page_images(data_dir):
     """Chép PDF mới đè lên (ngày sửa có thể cũ hơn ảnh đã render) thì ảnh cũ không được dùng lại."""
-    import os
     from reportlab.pdfgen import canvas
 
     loaded = DocumentStore(data_dir).get(DOC)
@@ -84,15 +100,6 @@ def test_invalid_json_and_contract_errors_are_reported(data_dir):
     assert "sai quy ước" in " ".join(exc.value.problems)
 
 
-def test_tree_rows_and_depths(data_dir):
-    loaded = DocumentStore(data_dir).get(DOC)
-    rows = build_rows(loaded, "ND254_2026_D9_K1_a", 100)
-    labels = [(r["label"], r["depth"]) for r in rows]
-    assert labels[:5] == [("Điều 9", 0), ("Khoản 1", 1), ("Điểm a", 2), ("Điểm b", 2), ("Khoản 2", 1)]
-    assert [r["unit_id"] for r in rows if r["selected"]] == ["ND254_2026_D9_K1_a"]
-    assert rows[0]["url"] == "/documents/ND254_2026/units/ND254_2026_D9?zoom=100"
-
-
 def test_viewer_context_clamps_and_links(data_dir):
     loaded = DocumentStore(data_dir).get(DOC)
     v = viewer_context(loaded, page=99, zoom=110, unit_id="ND254_2026_D9")
@@ -109,7 +116,6 @@ def test_click_unit_jumps_left_pane_to_its_page(data_dir):
     html = render(
         "unit_response.html",
         doc=loaded.doc, unit=selected, oob=True,
-        rows=build_rows(loaded, selected.unit_id, 100),
         v=viewer_context(loaded, first_page_of(selected), 100, selected.unit_id),
     )
     assert 'src="/documents/ND254_2026/pages/3"' in html
@@ -117,15 +123,36 @@ def test_click_unit_jumps_left_pane_to_its_page(data_dir):
     assert "Khoản 1, Điều 10" in html
 
 
-def test_review_page_renders_tree_and_escapes_content(data_dir):
-    loaded = DocumentStore(data_dir).get(DOC)
-    loaded.doc.legal_units[0].content = "<script>alert(1)</script>"
-    html = render(
+def review_html(loaded, unit_id, content_override=None):
+    units = loaded.doc.legal_units
+    if content_override:
+        units[0].content = content_override
+    tree = build_tree(units)
+    decorate_for_page(tree, DOC, unit_id, 100)
+    return render(
         "review.html",
-        doc=loaded.doc, unit=loaded.doc.legal_units[0], oob=False,
-        rows=build_rows(loaded, "ND254_2026_D9", 100),
-        v=viewer_context(loaded, 1, 100, "ND254_2026_D9"),
+        doc=loaded.doc, unit=loaded.units_by_id[unit_id], oob=False, tree=tree,
+        v=viewer_context(loaded, first_page_of(loaded.units_by_id[unit_id]), 100, unit_id),
     )
+
+
+def test_review_page_renders_nested_tree_and_escapes_content(data_dir):
+    loaded = DocumentStore(data_dir).get(DOC)
+    html = review_html(loaded, "ND254_2026_D9", content_override="<script>alert(1)</script>")
     assert "Điều 9" in html and "Điểm a" in html and "Không chắc" in html
+    assert html.count("<details") == 3  # Điều 9, Khoản 1 (có Điểm), Điều 10 (có Khoản)
     assert "<script>alert(1)</script>" not in html
     assert "&lt;script&gt;" in html
+    for label in ("Chưa soát", "Đã duyệt", "Gắn cờ", "Lỗi cấu trúc"):
+        assert label in html
+
+
+def test_tree_opens_ancestors_of_selected_unit_only(data_dir):
+    loaded = DocumentStore(data_dir).get(DOC)
+    tree = build_tree(loaded.doc.legal_units)
+    decorate_for_page(tree, DOC, "ND254_2026_D9_K1_b", 100)
+    d9, d10 = tree
+    k1 = d9["children"][0]
+    assert d9["open"] and k1["open"] and not d10["open"]
+    assert k1["children"][1]["selected"] and not k1["children"][1]["open"]
+    assert k1["children"][1]["url"] == "/documents/ND254_2026/units/ND254_2026_D9_K1_b?zoom=100"

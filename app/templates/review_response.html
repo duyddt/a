@@ -1,0 +1,7 @@
+{#- Phản hồi sau một thao tác thẩm định: cập nhật chi tiết, chấm màu, thanh tiến độ và bảng phân tích lỗi OCR -#}
+{% from "partials/progress.html" import bar %}
+{% include "partials/detail.html" %}
+<span id="dot-{{ unit.unit_id }}" class="dot st-{{ review.status if review else 'unreviewed' }}" title="{{ review.status_label if review else 'Chưa soát' }}" hx-swap-oob="true"></span>
+<div id="progress" hx-swap-oob="true">{{ bar(progress) }}</div>
+{% set oob = True %}
+{% include "partials/ocr_report.html" %}

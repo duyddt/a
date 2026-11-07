@@ -1,20 +1,58 @@
 {% extends "base.html" %}
+{% from "partials/progress.html" import bar %}
 {% block title %}{{ doc.document_no }}{% endblock %}
 {% block body %}
 <header class="topbar">
   <a href="/">&larr; Danh sách văn bản</a>
   <h1>{{ doc.title }} <span class="muted">· {{ doc.document_no }}</span></h1>
+  <div id="progress">{{ bar(progress) }}</div>
+  {% if can_review %}<a class="button-link" href="/api/documents/{{ doc.document_id }}/export" download>⬇ Xuất JSON đã duyệt</a>{% endif %}
 </header>
+
+{% include "partials/ocr_report.html" %}
+
 <div class="split">
   <section class="pane left" aria-label="Trang PDF gốc">
+    <h2 class="pane-title">
+      <span>📄 Bản chụp PDF gốc (Đối chiếu bên trái)</span>
+    </h2>
     {% include "partials/viewer.html" %}
   </section>
   <section class="pane right">
-    <h2 class="pane-title">Cấu trúc: Điều &rarr; Khoản &rarr; Điểm</h2>
+    <h2 class="pane-title">
+      <span>📑 Cây cấu trúc &amp; Nội dung đối chiếu (Bên phải)</span>
+      <button type="button" onclick="toggleTreePane()" style="padding:4px 10px; font-size:13px; border:1px solid #64748b; background:#fff; border-radius:4px;">
+        Ẩn/Hiện cây mục lục (Nhường chỗ đối chiếu)
+      </button>
+    </h2>
     {% include "partials/tree.html" %}
     <div id="detail" class="detail" aria-live="polite">
       {% include "partials/detail.html" %}
     </div>
   </section>
 </div>
+
+<script>
+  function changeCompareFont(delta) {
+    var root = document.documentElement;
+    var current = parseInt(getComputedStyle(root).getPropertyValue("--compare-font-size")) || 18;
+    var next = Math.min(Math.max(current + delta, 14), 26);
+    root.style.setProperty("--compare-font-size", next + "px");
+    localStorage.setItem("compareFontSize", next);
+  }
+  function toggleTreePane() {
+    var tree = document.getElementById("tree");
+    if (tree) tree.classList.toggle("collapsed");
+  }
+  window.addEventListener("DOMContentLoaded", function () {
+    var savedSize = localStorage.getItem("compareFontSize");
+    if (savedSize) {
+      document.documentElement.style.setProperty("--compare-font-size", savedSize + "px");
+    }
+    var selectedRow = document.querySelector("#tree .row.selected");
+    if (selectedRow && selectedRow.scrollIntoView) {
+      selectedRow.scrollIntoView({ block: "center" });
+    }
+  });
+</script>
 {% endblock %}

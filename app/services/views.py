@@ -1,55 +1,20 @@
-"""Chuẩn bị dữ liệu cho template: cây Điều/Khoản/Điểm và khung xem trang. Không phụ thuộc FastAPI."""
+"""Chuẩn bị dữ liệu khung xem trang cho template. Không phụ thuộc FastAPI."""
 from __future__ import annotations
 
+from datetime import timedelta, timezone
 from urllib.parse import quote
 
 from app.contracts import LegalUnit
 
-from .store import LoadedDocument
+from .models import LoadedDocument
 
+VN_TIME = timezone(timedelta(hours=7))  # cố định UTC+7, không cần cơ sở dữ liệu múi giờ của hệ điều hành
 ZOOMS = [50, 75, 100, 125, 150, 200, 300]  # % chiều rộng khung; 100 = vừa chiều rộng
 DEFAULT_ZOOM = 100
 
 
 def nearest_zoom(zoom: int) -> int:
     return min(ZOOMS, key=lambda z: abs(z - zoom))
-
-
-def unit_label(unit: LegalUnit) -> str:
-    if unit.point is not None:
-        return f"Điểm {unit.point}"
-    if unit.clause is not None:
-        return f"Khoản {unit.clause}"
-    if unit.article is not None:
-        return f"Điều {unit.article}"
-    return unit.title or unit.unit_id  # phụ lục, biểu mẫu
-
-
-def unit_url(document_id: str, unit_id: str, zoom: int) -> str:
-    return f"/documents/{document_id}/units/{quote(unit_id, safe='')}?zoom={zoom}"
-
-
-def build_rows(loaded: LoadedDocument, selected_id: str | None, zoom: int) -> list[dict]:
-    """Một dòng cho mỗi đơn vị, theo thứ tự trong file (cha đứng trước con)."""
-    rows = []
-    for unit in loaded.doc.legal_units:
-        depth = 2 if unit.point is not None else 1 if unit.clause is not None else 0
-        if unit.clause is None and unit.point is None:
-            snippet = unit.title or " ".join(unit.content.split())
-        else:
-            snippet = " ".join(unit.content.split())
-        rows.append(
-            {
-                "unit_id": unit.unit_id,
-                "depth": depth,
-                "label": unit_label(unit),
-                "snippet": snippet[:80],
-                "confident": unit.is_confident,
-                "selected": unit.unit_id == selected_id,
-                "url": unit_url(loaded.doc.document_id, unit.unit_id, zoom),
-            }
-        )
-    return rows
 
 
 def viewer_context(loaded: LoadedDocument, page: int, zoom: int, unit_id: str | None) -> dict:
@@ -87,3 +52,8 @@ def viewer_context(loaded: LoadedDocument, page: int, zoom: int, unit_id: str | 
 
 def first_page_of(unit: LegalUnit | None) -> int:
     return unit.source_pages[0] if unit and unit.source_pages else 1
+
+
+def vn_time(value) -> str:
+    """Giờ Việt Nam, ví dụ 31/10/2026 07:45."""
+    return value.astimezone(VN_TIME).strftime("%d/%m/%Y %H:%M") if value else ""

@@ -1,66 +1,26 @@
-"""Nạp văn bản từ thư mục dữ liệu: data/<document_id>/source.pdf + document.json.
+"""Nguồn dữ liệu dạng thư mục file: data/<document_id>/source.pdf + document.json.
 
-Bản đầu đọc thẳng từ file (chưa có PostgreSQL). Phần còn lại của app chỉ gọi DocumentStore.list_ids() và
-DocumentStore.get(), nên khi chuyển sang PostgreSQL chỉ cần thay lớp này.
+Dùng khi không cấu hình PostgreSQL (xem nhanh, hoặc khi DB chưa sẵn sàng). Cùng giao diện với DbCatalog:
+list_documents() và get(document_id).
 """
 from __future__ import annotations
 
 import json
-import re
-from dataclasses import dataclass
 from pathlib import Path
 
 from pydantic import ValidationError
 
-from app.contracts import LegalDocument, LegalUnit
+from app.contracts import LegalDocument
 
-from .render_pdf import count_pages, render_page
-
-DOC_ID_RE = re.compile(r"^[A-Za-z0-9_-]{1,64}$")
-MAX_PROBLEMS_SHOWN = 50
-
-
-class ImportProblem(Exception):
-    """Văn bản không nhập được; `problems` là danh sách lỗi đọc được bởi người dùng."""
-
-    def __init__(self, document_id: str, problems: list[str]):
-        super().__init__(f"{document_id}: {len(problems)} lỗi")
-        self.document_id = document_id
-        self.problems = problems[:MAX_PROBLEMS_SHOWN]
-        self.truncated = len(problems) > MAX_PROBLEMS_SHOWN
-
-
-@dataclass
-class LoadedDocument:
-    doc: LegalDocument
-    page_count: int
-    directory: Path
-
-    @property
-    def units_by_id(self) -> dict[str, LegalUnit]:
-        return {unit.unit_id: unit for unit in self.doc.legal_units}
-
-    @property
-    def pdf_path(self) -> Path:
-        return self.directory / "source.pdf"
-
-    def page_image(self, page: int) -> Path:
-        """Ảnh PNG của trang `page` (đếm từ 1); render lần đầu khi cần."""
-        return render_page(self.pdf_path, self.directory / "pages", page)
-
-
-def check_source_pages(doc: LegalDocument, page_count: int) -> list[str]:
-    """Kiểm tra riêng của app: mọi đơn vị phải có source_pages hợp lệ."""
-    problems: list[str] = []
-    for unit in doc.legal_units:
-        pages = unit.source_pages
-        if not pages:
-            problems.append(f"{unit.unit_id}: thiếu source_pages")
-        elif any(p < 1 or p > page_count for p in pages):
-            problems.append(f"{unit.unit_id}: source_pages {pages} nằm ngoài 1..{page_count}")
-        elif pages != sorted(pages):
-            problems.append(f"{unit.unit_id}: source_pages {pages} phải tăng dần")
-    return problems
+from .models import (
+    DOC_ID_RE,
+    DocumentSummary,
+    ImportProblem,
+    LoadedDocument,
+    check_parents_exist,
+    check_source_pages,
+)
+from .render_pdf import count_pages
 
 
 class DocumentStore:
@@ -71,11 +31,35 @@ class DocumentStore:
     def list_ids(self) -> list[str]:
         if not self.data_dir.is_dir():
             return []
-        ids = []
-        for child in sorted(self.data_dir.iterdir()):
-            if child.is_dir() and DOC_ID_RE.match(child.name) and (child / "document.json").is_file() and (child / "source.pdf").is_file():
-                ids.append(child.name)
-        return ids
+        return [
+            child.name
+            for child in sorted(self.data_dir.iterdir())
+            if child.is_dir()
+            and DOC_ID_RE.match(child.name)
+            and (child / "document.json").is_file()
+            and (child / "source.pdf").is_file()
+        ]
+
+    def list_documents(self) -> list[DocumentSummary]:
+        summaries = []
+        for document_id in self.list_ids():
+            try:
+                loaded = self.get(document_id)
+            except ImportProblem as problem:
+                summaries.append(DocumentSummary(document_id=document_id, problem=problem))
+                continue
+            doc = loaded.doc
+            summaries.append(
+                DocumentSummary(
+                    document_id=document_id,
+                    document_no=doc.document_no,
+                    document_type=doc.document_type,
+                    title=doc.title,
+                    page_count=loaded.page_count,
+                    unit_count=len(doc.legal_units),
+                )
+            )
+        return summaries
 
     def get(self, document_id: str) -> LoadedDocument:
         """Trả LoadedDocument. KeyError nếu không có văn bản; ImportProblem nếu dữ liệu sai."""
@@ -119,7 +103,7 @@ class DocumentStore:
         except Exception as exc:  # PDF hỏng hoặc có mật khẩu
             raise ImportProblem(document_id, [f"Không đọc được PDF: {exc}"]) from exc
 
-        problems = check_source_pages(doc, page_count)
+        problems = check_source_pages(doc, page_count) + check_parents_exist(doc)
         if problems:
             raise ImportProblem(document_id, problems)
 

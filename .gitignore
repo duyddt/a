@@ -2,5 +2,8 @@ __pycache__/
 *.pyc
 .venv/
 .pytest_cache/
-# ảnh trang PDF do app tự render
+# bí mật và dữ liệu sinh ra khi chạy
+.env
+storage/
+# ảnh trang PDF do chế độ thư mục file tự render
 data/*/pages/

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "partials/progress.html" import bar %}
 {% block title %}Danh sách văn bản{% endblock %}
 {% block body %}
 <header class="topbar">
@@ -7,26 +8,27 @@
 <main class="narrow">
   <h2>Văn bản cần soát</h2>
   {% if not items %}
-  <p class="muted">Chưa có văn bản nào. Đặt mỗi văn bản vào <code>data/&lt;document_id&gt;/</code> gồm <code>source.pdf</code> và <code>document.json</code>.</p>
+  <p class="muted">Chưa có văn bản nào. Nhập bằng lệnh <code>python -m app.cli import-dir &lt;thư mục&gt;</code> hoặc qua API <code>POST /api/documents</code> (xem README).</p>
   {% else %}
   <table class="doclist">
     <thead>
-      <tr><th>Văn bản</th><th>Số đơn vị</th><th>Số trang</th></tr>
+      <tr><th>Văn bản</th><th>Số đơn vị</th><th>Số trang</th><th>Tiến độ thẩm định</th></tr>
     </thead>
     <tbody>
     {% for item in items %}
-      {% if item.loaded %}
+      {% if not item.problem %}
       <tr>
         <td>
-          <a href="/documents/{{ item.document_id }}">{{ item.loaded.doc.title }}</a><br>
-          <span class="muted">{{ item.loaded.doc.document_no }}</span>
+          <a href="/documents/{{ item.document_id }}">{{ item.title }}</a><br>
+          <span class="muted">{{ item.document_no }}</span>
         </td>
-        <td>{{ item.loaded.doc.legal_units|length }}</td>
-        <td>{{ item.loaded.page_count }}</td>
+        <td>{{ item.unit_count }}</td>
+        <td>{{ item.page_count }}</td>
+        <td>{{ bar(item.progress) }}</td>
       </tr>
       {% else %}
       <tr>
-        <td colspan="3">
+        <td colspan="4">
           <strong>{{ item.document_id }}</strong>: <span class="err">không nhập được</span>
           (<a href="/documents/{{ item.document_id }}">xem lỗi</a>)
         </td>

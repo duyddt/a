@@ -1,11 +1,37 @@
-<div id="tree" class="tree"{% if oob %} hx-swap-oob="true"{% endif %}>
-  {% for r in rows %}
-  <button type="button" class="row{% if r.selected %} selected{% endif %}"{% if r.selected %} aria-current="true"{% endif %}
-          style="padding-left: {{ 12 + r.depth * 24 }}px"
-          hx-get="{{ r.url }}" hx-target="#detail" hx-swap="innerHTML">
-    <span class="label">{{ r.label }}</span>
-    <span class="snippet">{{ r.snippet }}</span>
-    {% if not r.confident %}<span class="tag warn">Không chắc</span>{% endif %}
-  </button>
-  {% endfor %}
+{#- Cây Điều → Khoản → Điểm. Nút có con là <details> (thu gọn/mở được, không cần JavaScript); bấm dòng thì HTMX nạp chi tiết
+    và nhảy trang khung trái. Dòng đang chọn đổi highlight bằng một dòng JS nhỏ để không phải vẽ lại cả cây (giữ trạng thái đóng/mở). -#}
+{% macro row(n) -%}
+<button type="button" class="row{% if n.selected %} selected{% endif %}"{% if n.selected %} aria-current="true"{% endif %}
+        hx-get="{{ n.url }}" hx-target="#detail" hx-swap="innerHTML"
+        hx-on:click="document.querySelectorAll('#tree .row.selected').forEach(function (e) { e.classList.remove('selected'); e.removeAttribute('aria-current'); }); this.classList.add('selected'); this.setAttribute('aria-current', 'true');">
+  <span id="dot-{{ n.unit_id }}" class="dot st-{{ n.review_status }}" title="{{ n.review_status_label }}" role="img" aria-label="{{ n.review_status_label }}"></span>
+  <span class="label">{{ n.label }}</span>
+  <span class="snippet">{{ n.snippet }}</span>
+  {% if not n.is_confident %}<span class="tag warn">Không chắc</span>{% endif %}
+</button>
+{%- endmacro %}
+
+{% macro node(n) -%}
+{% if n.children %}
+<details class="node"{% if n.open %} open{% endif %}>
+  <summary><span class="caret" aria-hidden="true"></span>{{ row(n) }}</summary>
+  <div class="children">{% for child in n.children %}{{ node(child) }}{% endfor %}</div>
+</details>
+{% else %}
+<div class="node leaf"><span class="caret-space" aria-hidden="true"></span>{{ row(n) }}</div>
+{% endif %}
+{%- endmacro %}
+
+<div class="tree-actions">
+  <button type="button" onclick="document.querySelectorAll('#tree details').forEach(function (d) { d.open = true; })">Mở hết</button>
+  <button type="button" onclick="document.querySelectorAll('#tree details').forEach(function (d) { d.open = false; })">Thu hết</button>
+</div>
+<div id="tree" class="tree">
+  {% for root in tree %}{{ node(root) }}{% endfor %}
+</div>
+<div class="legend">
+  <span><span class="dot st-unreviewed"></span>Chưa soát</span>
+  <span><span class="dot st-approved"></span>Đã duyệt</span>
+  <span><span class="dot st-flagged"></span>Gắn cờ</span>
+  <span><span class="dot st-structure_error"></span>Lỗi cấu trúc</span>
 </div>

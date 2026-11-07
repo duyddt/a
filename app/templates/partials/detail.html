@@ -1,12 +1,117 @@
-{% if unit %}
+﻿{% if unit %}
+{% set status = review.status if review else 'unreviewed' %}
+{% set status_label = review.status_label if review else 'Chưa soát' %}
 <div class="detail-head">
   <strong>{% if unit.point is not none %}Điểm {{ unit.point }}, {% endif %}{% if unit.clause is not none %}Khoản {{ unit.clause }}, {% endif %}{% if unit.article is not none %}Điều {{ unit.article }}{% else %}{{ unit.unit_id }}{% endif %}</strong>
-  <span class="muted">Trang {{ unit.source_pages|join(", ") }}</span>
+  <span class="tag warn" style="background:#e0e7ff; border-color:#6366f1; color:#1e1b4b;">
+    Đối chiếu với Trang {{ unit.source_pages|join(", ") }} (khung trái)
+  </span>
 </div>
-{% if unit.title %}<div class="muted">{{ unit.title }}</div>{% endif %}
-{% if not unit.is_confident %}<p class="tag warn">Parser đánh dấu không chắc chắn</p>{% endif %}
+{% if unit.title %}<div class="muted" style="font-size:16px; font-weight:600; margin-bottom:6px;">{{ unit.title }}</div>{% endif %}
+<div class="status-line">
+  <span class="dot st-{{ status }}" aria-hidden="true"></span><strong>{{ status_label }}</strong>
+  {% if review and review.edit_count %}<span class="tag edited">Đã sửa chữ ({{ review.edit_count }} lần)</span>{% endif %}
+  {% if not unit.is_confident %}<span class="tag warn">Parser đánh dấu không chắc chắn</span>{% endif %}
+  {% if review and review.last %}<span class="muted small">· {{ review.last.action_label }} bởi {{ review.last.reviewer }}, {{ review.last.created_at|vn_time }}</span>{% endif %}
+</div>
+{% if review and review.note %}<p class="note">Ghi chú / Lý do lỗi: {{ review.note }}</p>{% endif %}
+
+<div class="compare-box-header">
+  <span>Văn bản trích xuất (đối chiếu từng dòng với ảnh PDF bên trái):</span>
+  <div class="font-controls" title="Chỉnh cỡ chữ để đối chiếu dễ hơn">
+    <span class="muted small">Cỡ chữ:</span>
+    <button type="button" onclick="changeCompareFont(-2)">A-</button>
+    <button type="button" onclick="changeCompareFont(2)">A+</button>
+  </div>
+</div>
 <pre class="content">{{ unit.content }}</pre>
-<div class="muted small">{{ unit.unit_id }}</div>
+<div class="muted small">Mã đơn vị: <code>{{ unit.unit_id }}</code></div>
+
+{% if inline_diff %}
+<div class="diff-box">
+  <div class="diff-box-title">🔍 Đối chiếu trực quan chỗ hệ thống OCR đọc sai (Đỏ = OCR đọc sai, Xanh = Đã sửa đúng):</div>
+  <div class="diff-render">{{ inline_diff|safe }}</div>
+  {% if char_diffs %}
+  <div style="margin-top:8px; font-size:14px;">
+    <strong>Chi tiết ký tự sai tại đơn vị này:</strong>
+    {% for d in char_diffs %}
+      <span style="display:inline-block; background:#fff; border:1px solid #cbd5e1; border-radius:4px; padding:2px 8px; margin:2px 4px 2px 0;">
+        OCR đọc: <del class="diff-del">{{ d.ocr_read or "(bỏ sót)" }}</del> &rarr; Sửa thành: <ins class="diff-ins">{{ d.corrected_to or "(xóa ký tự thừa)" }}</ins>
+      </span>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% endif %}
+
+{% if can_review %}
+<form id="review-form" class="review-form" onsubmit="return false;">
+  {% if errors %}<ul class="err" role="alert">{% for e in errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+  {% set url = "/documents/" ~ doc.document_id ~ "/units/" ~ (unit.unit_id|urlencode) ~ "/review" %}
+  <div style="display:grid; grid-template-columns: 1fr 2fr; gap: 12px;">
+    <label class="field">Người soát
+      <input type="text" name="reviewer" value="{{ reviewer }}" maxlength="100" autocomplete="name" placeholder="Nhập tên của bạn" required>
+    </label>
+    <label class="field">Ghi chú / Lý do sai <span class="muted">(bắt buộc khi Gắn cờ / Báo lỗi cấu trúc)</span>
+      <input type="text" name="note" value="{{ form_note }}" maxlength="2000" placeholder="Ví dụ: Chữ mở, thiếu khoản, OCR nhầm chữ d thành đ...">
+    </label>
+  </div>
+
+  <div class="actions">
+    <button type="button" class="act approve" hx-post="{{ url }}" hx-vals='{"action": "approve"}' hx-include="#review-form" hx-target="#detail" hx-swap="innerHTML">✓ Duyệt (Chính xác)</button>
+    <button type="button" class="act flag" hx-post="{{ url }}" hx-vals='{"action": "flag"}' hx-include="#review-form" hx-target="#detail" hx-swap="innerHTML">⚑ Gắn cờ</button>
+    <button type="button" class="act structure" hx-post="{{ url }}" hx-vals='{"action": "structure_error"}' hx-include="#review-form" hx-target="#detail" hx-swap="innerHTML">⚠ Báo lỗi cấu trúc</button>
+    {% if status != 'unreviewed' %}
+    <button type="button" class="act" hx-post="{{ url }}" hx-vals='{"action": "reset"}' hx-include="#review-form" hx-target="#detail" hx-swap="innerHTML">↺ Bỏ đánh dấu</button>
+    {% endif %}
+  </div>
+
+  <details class="edit-box" open>
+    <summary>✎ Sửa chữ &amp; Ghi nhận lý do hệ thống OCR đọc sai</summary>
+    <label class="field" style="margin-top: 10px;">1. Chọn lý do vì sao OCR đọc sai ở đoạn này (để phân tích &amp; đề xuất giải pháp cải tiến):
+      <select name="ocr_reason">
+        <option value="">-- Chọn nguyên nhân lỗi OCR --</option>
+        {% for r in OCR_REASONS or [
+          "Mờ/nhòe bản scan",
+          "Sai dấu tiếng Việt",
+          "Nhầm ký tự giống nhau (d/đ, 0/O, 1/l...)",
+          "Mất chữ / dính chữ",
+          "Lỗi công thức / ký hiệu / bảng biểu"
+        ] %}
+        <option value="{{ r }}">{{ r }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label class="field">2. Sửa lại nội dung bên dưới cho đúng với ảnh PDF gốc bên trái:
+      <textarea name="content" rows="8" spellcheck="false">{{ form_content if form_content is not none else unit.content }}</textarea>
+    </label>
+    <p class="muted small" style="margin: 4px 0 10px;">Hệ thống tự động lưu lại chữ trước và sau khi sửa, chỉ rõ vị trí sai và đề xuất giải pháp cải tiến độ chính xác. Sửa một đơn vị đã duyệt thì phải bấm Duyệt lại.</p>
+    <button type="button" class="act save-edit" hx-post="{{ url }}" hx-vals='{"action": "edit"}' hx-include="#review-form" hx-target="#detail" hx-swap="innerHTML">💾 Lưu bản sửa &amp; Phân tích lỗi OCR</button>
+  </details>
+</form>
+
+<details class="history">
+  <summary>Lịch sử thao tác ({{ history|length }})</summary>
+  {% if not history %}<p class="muted small">Chưa có thao tác nào.</p>{% endif %}
+  <ol class="history-list">
+    {% for e in history %}
+    <li>
+      <span><strong>{{ e.action_label }}</strong> · {{ e.reviewer }} · {{ e.created_at|vn_time }}</span>
+      {% if e.note %}<div class="small" style="color:#92400e; font-weight:600;">Lý do / Ghi chú: {{ e.note }}</div>{% endif %}
+      {% if e.action == 'edit' %}
+      <details class="small"><summary>Xem chữ trước và sau khi sửa</summary>
+        <div class="muted">Trước (OCR gốc):</div><pre class="content small">{{ e.content_before }}</pre>
+        <div class="muted">Sau (Đã sửa):</div><pre class="content small">{{ e.content_after }}</pre>
+      </details>
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ol>
+</details>
+{% else %}
+<p class="muted small">Chế độ xem thư mục file: chưa lưu được thao tác thẩm định (cần PostgreSQL, xem README).</p>
+{% endif %}
 {% else %}
 <p class="muted">Văn bản chưa có đơn vị nào.</p>
 {% endif %}
+
