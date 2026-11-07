@@ -44,8 +44,12 @@
     updateThemeUI();
   }
 
+  window.toggleTheme = toggleTheme;
+  window.updateThemeUI = updateThemeUI;
+
   document.addEventListener('DOMContentLoaded', updateThemeUI);
   document.addEventListener('htmx:afterSwap', updateThemeUI);
+  updateThemeUI();
 </script>
 </body>
 </html>

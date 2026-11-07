@@ -11,16 +11,6 @@
       <span class="theme-icon">🌓</span>
       <span class="theme-text">Chế độ tối</span>
     </button>
-    <div class="user-badge" title="Chọn tài khoản để ghi nhận người thực hiện thẩm định">
-      <span>👤 Người soát:</span>
-      <select onchange="window.location.href='/switch-user/' + this.value">
-        {% for u in users %}
-        <option value="{{ u.username }}" {% if current_user and current_user.username == u.username %}selected{% endif %}>
-          {{ u.full_name }}
-        </option>
-        {% endfor %}
-      </select>
-    </div>
   </div>
 </header>
 

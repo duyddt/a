@@ -3,10 +3,18 @@
 {% block title %}{{ doc.document_no }}{% endblock %}
 {% block body %}
 <header class="topbar">
-  <a href="/">&larr; Danh sách văn bản</a>
-  <h1>{{ doc.title }} <span class="muted">· {{ doc.document_no }}</span></h1>
-  <div id="progress">{{ bar(progress) }}</div>
-  {% if can_review %}<a class="button-link" href="/api/documents/{{ doc.document_id }}/export" download>⬇ Xuất JSON đã duyệt</a>{% endif %}
+  <div class="topbar-left">
+    <a href="/">&larr; Danh sách văn bản</a>
+    <h1 style="margin: 0; font-size: 18px;">{{ doc.title }} <span class="muted">· {{ doc.document_no }}</span></h1>
+  </div>
+  <div class="topbar-right">
+    <div id="progress">{{ bar(progress) }}</div>
+    {% if can_review %}<a class="button-link" href="/api/documents/{{ doc.document_id }}/export" download>⬇ Xuất JSON đã duyệt</a>{% endif %}
+    <button type="button" class="btn-theme-toggle" onclick="toggleTheme()" title="Chuyển đổi giao diện sáng / tối">
+      <span class="theme-icon">🌓</span>
+      <span class="theme-text">Chế độ tối</span>
+    </button>
+  </div>
 </header>
 
 {% include "partials/ocr_report.html" %}

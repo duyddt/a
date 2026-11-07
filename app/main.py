@@ -199,6 +199,7 @@ def create_app(settings: Settings | None = None, catalog=None) -> FastAPI:
         selected = loaded.units_by_id.get(unit_id)
         if selected is None:
             raise HTTPException(status_code=404, detail="Không có đơn vị này")
+        reviewer = reviewer.strip() or unquote(request.cookies.get(REVIEWER_COOKIE, "")).strip() or "Thẩm định viên"
         combined_note = note.strip()
         if action == "edit" and ocr_reason.strip():
             combined_note = f"[{ocr_reason.strip()}] {combined_note}".strip()
@@ -216,9 +217,9 @@ def create_app(settings: Settings | None = None, catalog=None) -> FastAPI:
             return templates.TemplateResponse(request, "partials/detail.html", context)
         loaded = catalog.get(document_id)
         selected = loaded.units_by_id[unit_id]
-        context = detail_context(request, loaded, selected, reviewer=reviewer.strip(), progress=progress_of(loaded))
+        context = detail_context(request, loaded, selected, reviewer=reviewer, progress=progress_of(loaded))
         response = templates.TemplateResponse(request, "review_response.html", context)
-        response.set_cookie(REVIEWER_COOKIE, quote(reviewer.strip(), safe=""), max_age=365 * 24 * 3600, samesite="lax")
+        response.set_cookie(REVIEWER_COOKIE, quote(reviewer, safe=""), max_age=365 * 24 * 3600, samesite="lax")
         return response
 
     return app

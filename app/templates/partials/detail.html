@@ -12,7 +12,7 @@
   <span class="dot st-{{ status }}" aria-hidden="true"></span><strong>{{ status_label }}</strong>
   {% if review and review.edit_count %}<span class="tag edited">Đã sửa chữ ({{ review.edit_count }} lần)</span>{% endif %}
   {% if not unit.is_confident %}<span class="tag warn">Parser đánh dấu không chắc chắn</span>{% endif %}
-  {% if review and review.last %}<span class="muted small">· {{ review.last.action_label }} bởi {{ review.last.reviewer }}, {{ review.last.created_at|vn_time }}</span>{% endif %}
+  {% if review and review.last %}<span class="muted small">· {{ review.last.action_label }}{% if review.last.reviewer %} bởi {{ review.last.reviewer }}{% endif %}, {{ review.last.created_at|vn_time }}</span>{% endif %}
 </div>
 {% if review and review.note %}<p class="note">Ghi chú / Lý do lỗi: {{ review.note }}</p>{% endif %}
 
@@ -48,14 +48,10 @@
 <form id="review-form" class="review-form" onsubmit="return false;">
   {% if errors %}<ul class="err" role="alert">{% for e in errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
   {% set url = "/documents/" ~ doc.document_id ~ "/units/" ~ (unit.unit_id|urlencode) ~ "/review" %}
-  <div style="display:grid; grid-template-columns: 1fr 2fr; gap: 12px;">
-    <label class="field">Người soát
-      <input type="text" name="reviewer" value="{{ reviewer }}" maxlength="100" autocomplete="name" placeholder="Nhập tên của bạn" required>
-    </label>
-    <label class="field">Ghi chú / Lý do sai <span class="muted">(bắt buộc khi Gắn cờ / Báo lỗi cấu trúc)</span>
-      <input type="text" name="note" value="{{ form_note }}" maxlength="2000" placeholder="Ví dụ: Chữ mở, thiếu khoản, OCR nhầm chữ d thành đ...">
-    </label>
-  </div>
+  <input type="hidden" name="reviewer" value="{{ reviewer or 'Thẩm định viên' }}">
+  <label class="field" style="margin-bottom: 14px;">Ghi chú / Lý do sai <span class="muted">(bắt buộc khi Gắn cờ / Báo lỗi cấu trúc)</span>
+    <input type="text" name="note" value="{{ form_note }}" maxlength="2000" placeholder="Ví dụ: Chữ mờ, thiếu khoản, OCR nhầm chữ d thành đ...">
+  </label>
 
   <div class="actions">
     <button type="button" class="act approve" hx-post="{{ url }}" hx-vals='{"action": "approve"}' hx-include="#review-form" hx-target="#detail" hx-swap="innerHTML">✓ Duyệt (Chính xác)</button>
@@ -96,8 +92,8 @@
   <ol class="history-list">
     {% for e in history %}
     <li>
-      <span><strong>{{ e.action_label }}</strong> · {{ e.reviewer }} · {{ e.created_at|vn_time }}</span>
-      {% if e.note %}<div class="small" style="color:#92400e; font-weight:600;">Lý do / Ghi chú: {{ e.note }}</div>{% endif %}
+      <span><strong>{{ e.action_label }}</strong>{% if e.reviewer %} · {{ e.reviewer }}{% endif %} · {{ e.created_at|vn_time }}</span>
+      {% if e.note %}<div class="small" style="color:var(--warning-text); font-weight:600;">Lý do / Ghi chú: {{ e.note }}</div>{% endif %}
       {% if e.action == 'edit' %}
       <details class="small"><summary>Xem chữ trước và sau khi sửa</summary>
         <div class="muted">Trước (OCR gốc):</div><pre class="content small">{{ e.content_before }}</pre>
