@@ -1,0 +1,17 @@
+PRINTED_PAGE: 14
+
+điểm mua, khi đó giá trị tài sản được xác định lại theo quy định hiện hành của pháp luật về hướng dẫn quản lý, sử dụng và trích khấu hao tài sản cố định.
+
+4. Kết quả xác định giá giao dịch liên kết là giá tính thuế để kê khai, xác định số thuế thu nhập doanh nghiệp phải nộp nhưng không làm giảm nghĩa vụ thuế phải nộp ngân sách nhà nước của người nộp thuế.
+
+Điều 14. Phương pháp so sánh tỷ suất lợi nhuận của người nộp thuế với tỷ suất lợi nhuận của các đối tượng so sánh độc lập
+
+1. Các trường hợp áp dụng:
+
+Người nộp thuế không có cơ sở dữ liệu và thông tin để áp dụng phương pháp so sánh giá giao dịch độc lập quy định tại Điều 13 Nghị định này hoặc người nộp thuế không thể so sánh giao dịch theo sản phẩm trên cơ sở từng giao dịch đối với từng sản phẩm tương đồng, việc gộp chung các giao dịch được tiến hành nhằm đảm bảo phù hợp bản chất, thực tiễn kinh doanh và lựa chọn được tỷ suất lợi nhuận của các đối tượng so sánh độc lập phù hợp hoặc người nộp thuế không thực hiện chức năng tự chủ đối với toàn bộ chuỗi hoạt động sản xuất, kinh doanh hoặc không tham gia thực hiện các giao dịch liên kết theo quy định tại Điều 15 Nghị định này, cụ thể:
+
+a) Phương pháp so sánh tỷ suất lợi nhuận gộp trên doanh thu (phương pháp giá bán lại) áp dụng trong trường hợp người nộp thuế thực hiện bán hàng, phân phối lại các sản phẩm mua từ bên liên kết cho các khách hàng độc lập và không tạo ra tài sản vô hình gắn liền với sản phẩm bán ra; không tham gia vào quá trình phát triển, gia tăng, duy trì, bảo vệ tài sản vô hình do bên liên kết sở hữu gắn với sản phẩm bán ra hoặc không thực hiện gia công, chế biến, lắp ráp thay đổi tính chất, đặc điểm sản phẩm, gắn nhãn hiệu thương mại để làm gia tăng giá trị sản phẩm. Phương pháp giá bán lại không áp dụng cho người nộp thuế là nhà phân phối sở hữu các tài sản vô hình có giá trị của tập đoàn đối với thương hiệu, nhãn hiệu hàng hóa và các tài sản vô hình liên quan đến marketing khác như danh sách khách hàng, kênh phân phối, biểu tượng, hình ảnh và các yếu tố nhận diện thương hiệu trong hoạt động nghiên cứu thị trường, tiếp thị, xúc tiến thương mại hoặc phát sinh chi phí tạo lập, thiết kế các kênh phân phối, nhận diện thương hiệu, hoặc các chi phí sau bán hàng;
+
+b) Phương pháp so sánh tỷ suất lợi nhuận gộp trên giá vốn (phương pháp giá vốn cộng lãi) áp dụng trong trường hợp người nộp thuế không sở hữu tài sản vô hình và gánh chịu ít rủi ro kinh doanh, thực hiện chức năng sản xuất theo hợp đồng, đơn đặt hàng hoặc gia công, lắp ráp, chế tạo, chế biến sản phẩm, cài đặt thiết bị; thu mua, cung ứng sản phẩm; cung cấp dịch vụ hoặc thực hiện nghiên cứu phát triển theo hợp đồng cho bên liên kết. Phương pháp giá vốn cộng lãi không áp dụng cho người nộp thuế là doanh nghiệp sản xuất tự chủ, thực hiện các chức năng nghiên cứu phát triển sản phẩm đến xây dựng thương hiệu, nhãn hiệu hàng hóa, chiến lược thị trường và bảo hành sản phẩm, chăm sóc khách hàng;
+
+c) Phương pháp so sánh tỷ suất lợi nhuận thuần: Phương pháp so sánh tỷ suất lợi nhuận thuần áp dụng trong trường hợp người nộp thuế không có thông tin để áp dụng phương pháp so sánh giá giao dịch độc lập; không có dữ liệu và thông tin về phương pháp hạch toán kế toán của các đối tượng so sánh độc lập hoặc không tìm được các đối tượng so sánh có chức năng và sản phẩm

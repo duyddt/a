@@ -1,0 +1,17 @@
+PRINTED_PAGE: 15
+
+tương đồng nên không đủ cơ sở áp dụng các phương pháp so sánh tỷ suất lợi nhuận gộp trên doanh thu hoặc trên giá vốn; người nộp thuế thực hiện các chức năng phân phối hoặc sản xuất không sở hữu tài sản vô hình hoặc không tham gia phát triển, gia tăng, duy trì, bảo vệ và khai thác tài sản vô hình hoặc không thuộc trường hợp áp dụng phương pháp phân bổ lợi nhuận giữa các bên liên kết theo quy định tại khoản 1 Điều 15 Nghị định này.
+
+2. Nguyên tắc áp dụng:
+
+a) Phương pháp so sánh tỷ suất lợi nhuận được áp dụng trên nguyên tắc không có khác biệt về chức năng hoạt động, tài sản, rủi ro; điều kiện kinh tế và phương pháp hạch toán kế toán khi so sánh giữa người nộp thuế và đối tượng so sánh độc lập có ảnh hưởng trọng yếu đến tỷ suất lợi nhuận. Trường hợp có các khác biệt ảnh hưởng trọng yếu đến tỷ suất lợi nhuận, khi đó phải loại trừ các khác biệt trọng yếu này;
+
+Các yếu tố có tác động trọng yếu đến tỷ suất lợi nhuận, bao gồm: Các yếu tố về tài sản, vốn, chi phí; quyền kiểm soát, quyền quyết định trên thực tế phục vụ cho việc thực hiện chức năng chính của người nộp thuế; tính chất ngành nghề hoạt động kinh doanh và thị trường sản xuất, tiêu thụ sản phẩm; phương pháp hạch toán kế toán và cơ cấu chi phí của sản phẩm; điều kiện kinh tế diễn ra giao dịch; các quan hệ thương mại hoặc tài chính của tập đoàn đa quốc gia; hỗ trợ kỹ thuật; chia sẻ bí quyết kinh doanh; sử dụng nhân sự biệt phái hoặc kiêm nhiệm và các điều kiện kinh tế của ngành, lĩnh vực kinh doanh của người nộp thuế, đặc tính sản phẩm và điều kiện hợp đồng;
+
+b) Trường hợp áp dụng phương pháp giá bán lại: Khác biệt có thể gây ảnh hưởng trọng yếu đến tỷ suất lợi nhuận gộp trên giá bán ra (doanh thu thuần) như các chi phí phản ánh chức năng của doanh nghiệp là đại lý bán hàng, nhà phân phối độc quyền hoặc nhà phân phối thực hiện marketing; mức độ tăng trưởng phát triển của thị trường tiêu thụ sản phẩm; chức năng của người nộp thuế trong chuỗi cung ứng như bán lẻ, bán buôn và phương pháp hạch toán kế toán của các bên;
+
+c) Trường hợp áp dụng phương pháp giá vốn cộng lãi: Khác biệt có thể gây ảnh hưởng trọng yếu đến tỷ suất lợi nhuận gộp trên giá vốn gồm các chi phí phản ánh chức năng hoạt động của doanh nghiệp như sản xuất theo hợp đồng chỉ định từ công ty mẹ hoặc cung cấp dịch vụ nội bộ tập đoàn; các nghĩa vụ thực hiện hợp đồng như thời hạn chuyển giao sản phẩm, chi phí giám sát chất lượng, lưu kho, điều kiện thanh toán và phương pháp hạch toán kế toán đối với các yếu tố cấu thành trong giá vốn của người nộp thuế và các đối tượng so sánh độc lập;
+
+d) Trường hợp áp dụng phương pháp so sánh tỷ suất lợi nhuận thuần: Khác biệt có thể gây ảnh hưởng trọng yếu đến tỷ suất lợi nhuận thuần như khác biệt về chức năng hoạt động, tài sản, rủi ro; điều kiện kinh tế; điều kiện hợp đồng và đặc tính sản phẩm theo quy định tại Điều 10 Nghị định này.
+
+Người nộp thuế thực hiện kinh doanh với chức năng sản xuất phân phối đơn giản, không có chức năng quyết định chiến lược và phát sinh giao dịch tạo giá trị gia tăng thấp, không chịu rủi ro hàng tồn kho, rủi ro thị trường và không phát sinh doanh thu, chi phí từ hoạt động khai thác tài sản vô hình thì không gánh chịu lỗ phát sinh trong hoạt động sản xuất kinh doanh từ các rủi ro này.

@@ -7,3 +7,6 @@ psycopg[binary]>=3.2
 psycopg-pool>=3.2
 pypdfium2>=4.30
 pillow>=10
+sqlalchemy>=2.0
+alembic>=1.13
+python-multipart>=0.0.9

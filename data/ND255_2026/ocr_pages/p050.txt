@@ -1,0 +1,23 @@
+PRINTED_PAGE: 50
+
+của hoạt động tài chính trên tổng chi phí để xác định lợi nhuận thuần trong kỳ tính thuế, tại Cột (2) chỉ tiêu (17.1): Ghi Lợi nhuận thuần từ hoạt động sản xuất kinh doanh trong kỳ không bao gồm chênh lệch doanh thu và chi phí của hoạt động tài chính trên tổng chi phí và kê khai mức tỷ suất tương ứng theo Hồ sơ xác định giá giao dịch liên kết tại Cột (3) và theo APA tại Cột (4).
+
++ Người nộp thuế sử dụng phương pháp so sánh tỷ suất lợi nhuận thuần và áp dụng Lợi nhuận thuần từ hoạt động sản xuất kinh doanh trong kỳ không bao gồm chênh lệch doanh thu và chi phí của hoạt động tài chính trên tổng chi phí đối với hoạt động sản xuất theo Hồ sơ xác định giá giao dịch liên kết; Lợi nhuận thuần từ hoạt động sản xuất kinh doanh trong kỳ không bao gồm chênh lệch doanh thu và chi phí của hoạt động tài chính trên doanh thu thuần đối với hoạt động phân phối theo APA, tại Cột (2) chỉ tiêu (17.1) và (17.2): Ghi Lợi nhuận thuần từ hoạt động sản xuất kinh doanh trong kỳ không bao gồm chênh lệch doanh thu và chi phí của hoạt động tài chính trên tổng chi phí đối với hoạt động sản xuất tại chỉ tiêu (17.1) và kê khai tỷ suất tương ứng tại Cột (3); ghi Lợi nhuận thuần từ hoạt động sản xuất kinh doanh trong kỳ không bao gồm chênh lệch doanh thu và chi phí của hoạt động tài chính trên doanh thu thuần đối với hoạt động phân phối tại chỉ tiêu (17.2) và kê khai tỷ suất tương ứng tại Cột (4).
+
+- Trường hợp người nộp thuế thực hiện nhiều chức năng sản xuất, kinh doanh và tỷ suất lợi nhuận sử dụng xác định giá giao dịch liên kết khác nhau thì kê khai kết quả sản xuất kinh doanh sau khi xác định giá giao dịch liên kết riêng đối với từng chức năng sản xuất, kinh doanh.
+
+2. Dành cho người nộp thuế thuộc các ngành ngân hàng, tín dụng:
+
+- Chỉ tiêu “Thu nhập lãi và các khoản thu nhập tương tự”:
+
++ Cột (3), (4) và (5): Ghi tổng giá trị của thu nhập lãi và các khoản thu nhập tương tự từ các bên liên kết không ký APA xác định theo Hồ sơ xác định giá giao dịch liên kết tại Cột (3), theo APA tại Cột (4) và theo giá trị ghi sổ kế toán phát sinh với bên độc lập tại Cột (5).
+
++ Cột (6): Ghi tổng giá trị được xác định theo công thức tính tại Phụ lục I ban hành kèm theo Nghị định này.
+
+- Chỉ tiêu “Chi phí lãi và các khoản chi phí tương tự”:
+
++ Cột (3) và (4): Ghi tổng giá trị Chi trả lãi và các khoản chi phí tương tự tương ứng với thu nhập lãi và các khoản thu nhập tương tự thu được từ các bên liên kết và bằng (=) tổng giá trị phát sinh với các bên liên kết xác định theo Hồ sơ xác định giá giao dịch liên kết và theo APA cộng (+) giá trị giao dịch phát sinh với các bên độc lập ghi tại sổ kế toán.
+
++ Cột (5): Ghi tổng giá trị Chi trả lãi và các khoản chi phí tương tự tương ứng với thu nhập lãi và các khoản thu nhập tương tự thu được từ các bên độc lập bằng (=) tổng giá trị phát sinh với các bên liên kết xác định theo Hồ sơ xác định giá giao dịch liên kết và theo APA cộng (+) giá trị giao dịch phát sinh với các bên độc lập ghi tại sổ kế toán.
+
++ Cột (6): Ghi tổng giá trị được xác định theo công thức tính tại Phụ lục I ban hành kèm theo Nghị định này.

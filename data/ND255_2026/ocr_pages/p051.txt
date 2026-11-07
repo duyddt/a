@@ -1,0 +1,33 @@
+PRINTED_PAGE: 51
+
+- Chỉ tiêu “Thu nhập lãi thuần”:
+
+Cột (3), (4), (5) và (6): Ghi giá trị bằng (=) giá trị tương ứng theo từng cột tại chỉ tiêu thu nhập lãi và các khoản thu nhập tương tự trừ (-) chỉ tiêu Chi trả lãi và các khoản chi phí tương tự.
+
+- Chỉ tiêu “Thu nhập từ hoạt động dịch vụ”: Ghi theo hướng dẫn tương tự tại chỉ tiêu thu nhập lãi và các khoản thu nhập tương tự.
+
+- Chỉ tiêu “Chi phí hoạt động dịch vụ”: Ghi theo hướng dẫn tương tự tại chỉ tiêu Chi trả lãi và các khoản chi phí tương tự.
+
+- Chỉ tiêu “Lãi/lỗ thuần từ hoạt động dịch vụ”:
+
+Cột (3), (4), (5) và (6): Ghi giá trị bằng (=) giá trị tương ứng theo từng cột tại chỉ tiêu “Thu nhập từ hoạt động dịch vụ” trừ (-) chỉ tiêu “Chi phí hoạt động dịch vụ”.
+
+- Các chỉ tiêu “Lãi/lỗ thuần từ hoạt động kinh doanh ngoại hối”, “Lãi/lỗ thuần từ mua bán chứng khoán kinh doanh”, “Lãi/lỗ thuần từ mua bán chứng khoán đầu tư”: Ghi theo hướng dẫn tương tự tại chỉ tiêu “Thu nhập lãi và các khoản thu nhập tương tự”.
+
+- Chỉ tiêu “Thu nhập từ hoạt động khác”: Ghi theo hướng dẫn tương tự tại chỉ tiêu “Thu nhập lãi và các khoản thu nhập tương tự”.
+
+- Chỉ tiêu “Chi phí hoạt động khác”: Ghi theo hướng dẫn tương tự tại chỉ tiêu Chi trả lãi và các khoản chi phí tương tự.
+
+- Chỉ tiêu “Lãi/lỗ thuần từ hoạt động khác”:
+
+Cột (3), (4), (5) và (6): Ghi giá trị bằng (=) giá trị tương ứng theo từng cột tại chỉ tiêu “Thu nhập từ hoạt động khác” trừ (-) chỉ tiêu “Chi phí hoạt động khác”.
+
+- Chỉ tiêu “Thu nhập từ góp vốn, mua cổ phần”: Ghi theo hướng dẫn tương tự tại chỉ tiêu “Thu nhập lãi và các khoản thu nhập tương tự”.
+
+- Chỉ tiêu “Chi phí hoạt động”: Ghi theo hướng dẫn tương tự tại chỉ tiêu “Chi trả lãi và các khoản chi phí tương tự”.
+
+- Chỉ tiêu “Chi phí dự phòng rủi ro tín dụng”:
+
++ Cột (3), (4) và (5): Ghi tổng giá trị chi phí dự phòng rủi ro tín dụng tương ứng với thu nhập và các khoản thu có tính chất là doanh thu tại Cột (3), (4) và (5) được trích lập dự phòng.
+
++ Cột (6): Ghi tổng giá trị được xác định theo công thức tính tại Phụ lục I ban hành kèm theo Nghị định này.

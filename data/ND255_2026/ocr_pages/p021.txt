@@ -1,0 +1,29 @@
+PRINTED_PAGE: 21
+
+Việc sử dụng thứ tự ưu tiên cơ sở dữ liệu theo quy định tại khoản này phải đảm bảo nguyên tắc phân tích, so sánh theo Điều 6 Nghị định này.
+
+4. Phân tích lựa chọn đối tượng so sánh độc lập để phân tích, xác định khoảng giao dịch độc lập tuân thủ nguyên tắc phân tích, so sánh và các phương pháp xác định giá giao dịch liên kết quy định tại Nghị định này, theo thứ tự ưu tiên lựa chọn dữ liệu so sánh như sau:
+
+a) Đối tượng so sánh nội bộ của người nộp thuế;
+
+b) Đối tượng so sánh cư trú cùng quốc gia, lãnh thổ với người nộp thuế;
+
+c) Đối tượng ở các nước trong khu vực có điều kiện ngành và trình độ phát triển kinh tế tương đồng.
+
+Trường hợp lựa chọn đối tượng so sánh nước ngoài tại các thị trường địa lý khác, phải phân tích tính tương đồng và các khác biệt trọng yếu định tính và định lượng theo quy định tại Điều 9 và Điều 10 Nghị định này.
+
+Điều 18. Quyền và nghĩa vụ của người nộp thuế trong kê khai, lập hồ sơ xác định giá giao dịch liên kết
+
+1. Quyền của người nộp thuế Quyền của người nộp thuế trong kê khai, xác định giá giao dịch liên kết thực hiện theo quy định tại khoản 1 Điều 37 Luật Quản lý thuế số 108/2025/QH15.
+
+2. Nghĩa vụ của người nộp thuế Nghĩa vụ của người nộp thuế trong kê khai, xác định giá giao dịch liên kết thực hiện theo quy định tại khoản 2 Điều 37 Luật Quản lý thuế số 108/2025/QH15 và các quy định sau:
+
+a) Kê khai, xác định giá giao dịch liên kết không làm giảm nghĩa vụ thuế thu nhập doanh nghiệp phải nộp tại Việt Nam;
+
+b) Chứng minh việc thực hiện phân tích, so sánh và lựa chọn phương pháp xác định giá giao dịch liên kết;
+
+c) Kê khai thông tin về quan hệ liên kết và giao dịch liên kết theo Phụ lục I, Phụ lục II, Phụ lục III ban hành kèm theo Nghị định này và nộp cùng Tờ khai quyết toán thuế thu nhập doanh nghiệp;
+
+d) Lập, lưu giữ và cung cấp Hồ sơ xác định giá giao dịch liên kết là các thông tin, hồ sơ, tài liệu, số liệu, chứng từ gồm:
+
+d.1) Thông tin về quan hệ liên kết và giao dịch liên kết theo Phụ lục I ban hành kèm theo Nghị định này;

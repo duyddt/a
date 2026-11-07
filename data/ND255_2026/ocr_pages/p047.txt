@@ -1,0 +1,27 @@
+PRINTED_PAGE: 47
+
+- Chỉ tiêu “Doanh thu thuần về bán hàng và cung cấp dịch vụ”:
+
++ Cột (3), (4), (5) và (6): Ghi giá trị bằng giá trị tương ứng theo từng cột tại chỉ tiêu “Doanh thu bán hàng và cung cấp dịch vụ” trừ (-) chỉ tiêu “Các khoản giảm trừ doanh thu”.
+
+- Chỉ tiêu “Giá vốn hàng bán”:
+
++ Cột (3) và (4): Ghi tổng giá trị của giá vốn hàng bán tương ứng với doanh thu bán hàng và cung cấp dịch vụ cho các bên liên kết và bằng (=) tổng giá trị phát sinh với các bên liên kết xác định theo Hồ sơ xác định giá giao dịch liên kết và theo APA cộng (+) giá trị giao dịch phát sinh với các bên độc lập ghi tại sổ kế toán.
+
++ Cột (5): Ghi tổng giá trị của giá vốn hàng bán tương ứng với doanh thu bán hàng và cung cấp dịch vụ cho các bên độc lập và bằng (=) tổng giá trị phát sinh với các bên liên kết xác định theo Hồ sơ xác định giá giao dịch liên kết và theo APA cộng (+) giá trị giao dịch phát sinh với các bên độc lập ghi tại sổ kế toán.
+
++ Cột (6): Ghi tổng giá trị được xác định theo công thức tính tại Phụ lục I ban hành kèm theo Nghị định này.
+
+- Chỉ tiêu “Lợi nhuận gộp về bán hàng và cung cấp dịch vụ”:
+
++ Cột (3), (4), (5) và (6) có giá trị bằng giá trị tương ứng theo từng cột tại chỉ tiêu “Doanh thu thuần về bán hàng và cung cấp dịch vụ” trừ (-) chỉ tiêu “Giá vốn hàng bán”.
+
+- Các chỉ tiêu “Chi phí bán hàng” và “Chi phí quản lý doanh nghiệp”:
+
++ Cột (3) và (4): Ghi tổng giá trị của chi phí bán hàng, chi phí quản lý doanh nghiệp tương ứng với doanh thu bán hàng và cung cấp dịch vụ cho các bên liên kết bằng (=) tổng giá trị phát sinh với các bên liên kết xác định theo Hồ sơ xác định giá giao dịch liên kết và theo APA cộng (+) giá trị giao dịch phát sinh với các bên độc lập ghi tại sổ kế toán.
+
++ Cột (5): Ghi tổng giá trị của chi phí bán hàng, chi phí quản lý doanh nghiệp tương ứng với doanh thu bán hàng và cung cấp dịch vụ cho các bên độc lập bằng (=) tổng giá trị phát sinh với các bên liên kết xác định theo Hồ sơ xác định giá giao dịch liên kết và theo APA cộng (+) giá trị giao dịch phát sinh với các bên độc lập ghi tại sổ kế toán.
+
++ Cột (6): Ghi tổng giá trị được xác định theo công thức tính tại Phụ lục I ban hành kèm theo Nghị định này.
+
+- Đối với các chỉ tiêu chi phí phát sinh trong hoạt động sản xuất kinh doanh, người nộp thuế theo dõi hạch toán và ghi giá trị hạch toán, xác định riêng đối với chi phí từ bên liên kết thuộc phạm vi xác định giá theo Hồ sơ xác định giá giao dịch liên kết; theo APA và giao dịch với các bên độc lập tương ứng với Cột (3), (4) và (5). Trường hợp không xác định riêng được thì người nộp thuế lựa chọn tiêu thức phân bổ phù hợp nhất theo một hoặc một số yếu tố như doanh thu, chi phí, tài

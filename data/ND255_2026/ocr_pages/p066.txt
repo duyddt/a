@@ -1,0 +1,19 @@
+PRINTED_PAGE: 66
+
+1 2 3 … <Mục này chỉ yêu cầu khai báo thông tin đối với trường hợp tập đoàn đa quốc gia có nhiều hơn 01 người nộp thuế tại Việt Nam và công ty mẹ tối cao ở nước ngoài có văn bản chỉ định Người nộp thuế đại diện nộp Báo cáo lợi nhuận liên quốc gia hoặc nộp thông báo về đối tượng nộp báo cáo lợi nhuận liên quốc gia>.
+
+Tài liệu gửi kèm: (ghi rõ tên tài liệu) (1) ………………………………………………………………………………………… (2) ………………………………………………………………………………………… (3) ………………………………………………………………………………………… Tôi cam đoan thông tin khai báo nêu trên là đúng và chịu trách nhiệm trước pháp luật về những thông tin đã khai.
+
+NHÂN VIÊN ĐẠI LÝ THUẾ Họ và tên: …………………………..
+
+Chứng chỉ hành nghề số: ………… ........, ngày........tháng........năm......
+
+NGƯỜI NỘP THUẾ hoặc ĐẠI DIỆN HỢP PHÁP CỦA NGƯỜI NỘP THUẾ (Ký, ghi rõ họ tên; chức vụ và đóng dấu (nếu có))
+
+PHỤ LỤC V
+
+(Kèm theo Nghị định số 255/2026/NĐ-CP ngày 30 tháng 6 năm 2026 của Chính phủ) CÔNG THỨC TÍNH GIÁ TRỊ GIAO DỊCH ĐỘC LẬP CHUẨN Công thức tính khoảng giao dịch độc lập chuẩn và giá trị trung vị được xác định theo hàm Percentile trong Microsoft Excel như sau:
+
+1. Cách tính
+
+- Lập một vùng dữ liệu trong Excel là các ô chứa các giá trị về mức giá hoặc tỷ suất lợi nhuận hoặc tỷ lệ phân bổ lợi nhuận được xác định từ các đối tượng so sánh độc lập (có thể là một cột hoặc một dòng).

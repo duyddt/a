@@ -1,0 +1,25 @@
+PRINTED_PAGE: 25
+
+5. Thông báo và Báo cáo lợi nhuận liên quốc gia được nộp qua Hệ thống thông tin quản lý thuế.
+
+6. Tỷ giá ngoại tệ để xác định ngưỡng doanh thu hợp nhất được xác định theo tỷ giá trung tâm hoặc trung bình tỷ giá tính chéo của tháng 12 năm liền kề trước năm báo cáo được tham chiếu do Ngân hàng Nhà nước Việt Nam công bố.
+
+Điều 20. Các trường hợp người nộp thuế được miễn kê khai, miễn lập Hồ sơ xác định giá giao dịch liên kết
+
+1. Người nộp thuế được miễn kê khai xác định giá giao dịch liên kết tại Mục III, Mục IV Phụ lục I ban hành kèm theo Nghị định, miễn lập Hồ sơ xác định giá giao dịch liên kết theo quy định tại Nghị định này trong trường hợp chỉ phát sinh giao dịch với các bên liên kết là đối tượng nộp thuế thu nhập doanh nghiệp tại Việt Nam, áp dụng cùng mức thuế suất thuế thu nhập doanh nghiệp với người nộp thuế và không bên nào được hưởng ưu đãi thuế thu nhập doanh nghiệp trong kỳ tính thuế, nhưng phải kê khai căn cứ miễn trừ tại Mục I, Mục II tại Phụ lục I ban hành kèm theo Nghị định này.
+
+2. Người nộp thuế có trách nhiệm kê khai xác định giá giao dịch liên kết theo Phụ lục I ban hành kèm theo Nghị định này nhưng được miễn lập Hồ sơ xác định giá giao dịch liên kết trong các trường hợp sau:
+
+a) Người nộp thuế có phát sinh giao dịch liên kết nhưng tổng doanh thu phát sinh của kỳ tính thuế dưới 50 tỷ đồng và tổng giá trị tất cả các giao dịch liên kết phát sinh trong kỳ tính thuế dưới 30 tỷ đồng;
+
+b) Người nộp thuế đã ký kết Thỏa thuận trước về phương pháp xác định giá tính thuế thực hiện nộp báo cáo thường niên theo quy định pháp luật về Thỏa thuận trước về phương pháp xác định giá tính thuế. Các giao dịch liên kết không thuộc phạm vi áp dụng Thỏa thuận trước về phương pháp xác định giá tính thuế, người nộp thuế có trách nhiệm kê khai xác định giá giao dịch liên kết theo quy định tại Điều 18 Nghị định này;
+
+c) Người nộp thuế thực hiện kinh doanh không phát sinh doanh thu, chi phí từ hoạt động khai thác, sử dụng tài sản vô hình, có doanh thu dưới 500 tỷ đồng, áp dụng tỷ suất lợi nhuận thuần chưa trừ chi phí lãi vay và thuế thu nhập doanh nghiệp (không bao gồm chênh lệch doanh thu và chi phí của hoạt động tài chính) trên doanh thu thuần, bao gồm các lĩnh vực như sau:
+
+c.1) Phân phối: Từ 5% trở lên;
+
+c.2) Sản xuất: Từ 10% trở lên;
+
+c.3) Gia công: Từ 15% trở lên.
+
+Trường hợp người nộp thuế theo dõi, hạch toán riêng doanh thu, chi phí của từng lĩnh vực thì áp dụng tỷ suất lợi nhuận thuần chưa trừ chi phí lãi vay và thuế thu nhập doanh nghiệp trên doanh thu thuần tương ứng với từng lĩnh vực.

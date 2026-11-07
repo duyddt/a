@@ -1,0 +1,29 @@
+PRINTED_PAGE: 42
+
+- Cột (4): Ghi mã số thuế của các bên liên kết:
+
++ Trường hợp bên liên kết là tổ chức, cá nhân tại Việt Nam thì ghi đủ mã số thuế.
+
++ Trường hợp bên liên kết là tổ chức, cá nhân ngoài Việt Nam thì ghi đủ mã số thuế, mã định danh người nộp thuế, nếu không có thì ghi rõ lý do.
+
+- Cột (5): Căn cứ quy định tại khoản 2 Điều 5 Nghị định này, người nộp thuế phát sinh giao dịch liên kết kê khai hình thức quan hệ liên kết tương ứng với từng bên liên kết bằng cách đánh dấu “x” vào ô tương ứng. Trường hợp bên liên kết thuộc nhiều hơn một hình thức quan hệ liên kết, người nộp thuế đánh dấu “x” vào các ô tương ứng.
+
+D. Mục II. Các trường hợp được miễn kê khai, miễn lập hồ sơ xác định giá giao dịch liên kết:
+
+Nếu người nộp thuế thuộc trường hợp được miễn kê khai, miễn lập Hồ sơ xác định giá giao dịch liên kết quy định tại Điều 20 Nghị định này tại Cột (2) thì đánh dấu “x” vào ô thuộc diện miễn trừ tương ứng tại Cột (3).
+
+Trường hợp người nộp thuế được miễn kê khai, miễn lập hồ sơ xác định giá giao dịch liên kết theo quy định tại khoản 1 Điều 20 Nghị định này, người nộp thuế chỉ đánh dấu vào ô tương ứng tại Cột (3) và không phải kê khai các mục III và IV Phụ lục I kèm theo Nghị định này.
+
+Trường hợp người nộp thuế được miễn lập Hồ sơ xác định giá giao dịch liên kết theo quy định tại điểm a hoặc điểm c khoản 2 Điều 20 Nghị định này, người nộp thuế kê khai các mục III và IV theo hướng dẫn tương ứng tại các phần Đ.1 và E.
+
+Trường hợp người nộp thuế được miễn lập Hồ sơ xác định giá giao dịch liên kết theo quy định tại điểm b khoản 2 Điều 20 Nghị định này, người nộp thuế kê khai theo hướng dẫn tương ứng tại các phần Đ.2 và E.
+
+Đ. Mục III. Thông tin xác định giá giao dịch liên kết:
+
+Đ.1. Trường hợp người nộp thuế được miễn lập Hồ sơ xác định giá giao dịch liên kết theo quy định tại điểm a hoặc điểm c khoản 2 Điều 20 Nghị định này và đã kê khai đánh dấu (x) vào cột 3 tại dòng a hoặc dòng c chỉ tiêu miễn lập Hồ sơ xác định giá giao dịch liên kết của Mục II Phụ lục I kèm theo Nghị định này thực hiện kê khai mục này như sau:
+
+- Cột (3), (7) và (12): Kê khai như hướng dẫn tại phần Đ.2 Phụ lục này.
+
+- Cột (4), (5), (6), (8), (9), (10) và (11): Người nộp thuế để trống không kê khai.
+
+Đối với trường hợp người nộp thuế được miễn lập Hồ sơ xác định giá giao dịch liên kết theo quy định tại điểm a khoản 2 Điều 20 Nghị định này, tổng giá trị tất cả các giao dịch liên kết phát sinh trong kỳ tính thuế làm căn cứ xác định điều kiện được miễn trừ được tính bằng (=) tổng giá trị tại Cột (3) cộng (+) Cột (7) của dòng chỉ tiêu “Tổng giá trị giao dịch phát sinh từ hoạt động liên kết”.

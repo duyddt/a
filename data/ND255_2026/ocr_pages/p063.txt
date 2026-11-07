@@ -1,0 +1,27 @@
+PRINTED_PAGE: 63
+
+- Chỉ tiêu “Vốn đăng ký”: Ghi tổng số vốn cam kết đầu tư đã được giải ngân thực tế của các bên liên kết thuộc tập đoàn đa quốc gia tại nơi cư trú.
+
+- Chỉ tiêu “Lợi nhuận lũy kế”: Ghi tổng cộng dồn lợi nhuận sau thuế chưa phân phối của tất cả các bên liên kết thuộc tập đoàn tại quốc gia tại thời điểm cuối kỳ.
+
+- Chỉ tiêu “Số lượng nhân viên”: Ghi tổng số người lao động bình quân của các bên liên kết sử dụng.
+
+- Chỉ tiêu “Tài sản hữu hình ngoại trừ tiền và các khoản tương đương tiền mặt”: Ghi tổng giá trị tài sản của các bên liên kết, gồm: Tài sản cố định hữu hình, Tài sản cố định thuê tài chính, Bất động sản đầu tư, Tài sản dở dang dài hạn.
+
+D. Mục II. Danh mục các công ty con của tập đoàn theo nước, vùng lãnh thổ nơi cư trú
+
+- Chỉ tiêu “Quốc gia”: Ghi tương tự Chỉ tiêu Quốc gia tại Mục I.
+
+- Chỉ tiêu “Các Công ty là đối tượng cư trú ở nước sở tại”: Ghi tên pháp nhân của các bên liên kết của công ty mẹ tối cao có nghĩa vụ kê khai thuế thu nhập doanh nghiệp (hoặc loại thuế có tính chất tương tự) theo quy định của pháp luật tại nước, vùng lãnh thổ nơi cư trú.
+
+Trường hợp công ty mẹ tối cao hoặc các bên liên kết có cơ sở thường trú tại bên liên kết khác, ghi cơ sở thường trú tương ứng với dòng kê khai tên quốc gia là nước, vùng lãnh thổ nơi cư trú của bên liên kết.
+
+- Chỉ tiêu “Quốc gia hoặc vùng lãnh thổ đăng ký kinh doanh nếu khác với quốc gia hoặc vùng lãnh thổ cư trú”: Ghi tên của quốc gia hoặc vùng lãnh thổ mà các công ty con của tập đoàn đăng ký kinh doanh khác với quốc gia hoặc vùng lãnh thổ cư trú.
+
+- Chỉ tiêu “Các hoạt động kinh doanh”: Công ty mẹ tối cao xác định chức năng hoạt động kinh doanh của các bên liên kết, đánh dấu “x” vào ô tương ứng theo từng chức năng được liệt kê tại chỉ tiêu “Các hoạt động kinh doanh”. Trường hợp bên liên kết thực hiện nhiều hơn một chức năng, Công ty mẹ tối cao đánh dấu “x” vào tất cả các ô tương ứng với từng chức năng.
+
+Đ. Mục III. Thông tin bổ sung Nêu ra bất kỳ thông tin hoặc giải thích ngắn gọn nào mà người nộp thuế cho là cần thiết hoặc bổ sung thông tin cho các thông tin đã cung cấp tại Mục I, Mục II theo từng quốc gia.
+
+Mẫu số: 01/TB-BCLN
+
+(Kèm theo Nghị định số 255/2026/NĐ-CP của Chính phủ)

@@ -1,0 +1,25 @@
+PRINTED_PAGE: 62
+
+- Chỉ tiêu “Quốc gia”: Ghi tên quốc gia, vùng lãnh thổ nơi các bên liên kết là đối tượng cư trú và nơi đặt cơ sở thường trú, cơ sở sản xuất, kinh doanh mà thông qua cơ sở này các bên liên kết tiến hành một phần hoặc toàn bộ hoạt động sản xuất, kinh doanh của người nộp thuế và các bên liên kết thuộc tập đoàn (bao gồm cả trường hợp các bên liên kết này không xác định được là đối tượng cư trú của quốc gia, vùng lãnh thổ nào).
+
++ Trường hợp công ty mẹ tối cao và bên liên kết cư trú thuế ở nhiều nước thì phải thực hiện xác định nơi cư trú thuế theo hướng dẫn của Hiệp định thuế liên quan.
+
++ Trường hợp không có Hiệp định thuế giữa các quốc gia, vùng lãnh thổ liên quan thì ghi nước hoặc vùng lãnh thổ bên liên kết đăng ký kinh doanh hoặc ghi quốc gia hoặc vùng lãnh thổ nơi các bên liên kết có cơ sở sản xuất, kinh doanh mà thông qua cơ sở này các bên liên kết tiến hành một phần hoặc toàn bộ hoạt động sản xuất, kinh doanh tại quốc gia hoặc vùng lãnh thổ đó.
+
+- Chỉ tiêu “Doanh thu”: Tổng giá trị các khoản thu có tính chất là doanh thu trong kỳ từ các bên liên kết và các bên độc lập, trừ cổ tức và lợi nhuận được chia từ các bên liên kết, gồm:
+
++ Bên độc lập: Ghi tổng các khoản thu của các bên liên kết thuộc tập đoàn tại từng quốc gia, vùng lãnh thổ nơi cư trú thu được từ các bên độc lập.
+
++ Bên liên kết: Ghi tổng các khoản thu của các bên liên kết thuộc tập đoàn tại từng quốc gia, vùng lãnh thổ nơi cư trú thu được từ các bên liên kết khác.
+
++ Chỉ tiêu tổng doanh thu: Ghi tổng giá trị doanh thu tại cột bên độc lập cộng (+) giá trị doanh thu tại cột bên liên kết.
+
+- Chỉ tiêu “Lợi nhuận trước thuế”: Ghi tổng lợi nhuận kế toán trước thuế của các bên liên kết của tập đoàn đa quốc gia tại quốc gia, vùng lãnh thổ nơi cư trú.
+
+- Chỉ tiêu “Tổng số thuế thu nhập doanh nghiệp phải nộp”: Ghi tổng số thuế thu nhập doanh nghiệp (hoặc loại thuế có tính chất tương tự) mà các bên liên kết của tập đoàn đa quốc gia phải nộp tại quốc gia hoặc vùng lãnh thổ nơi cư trú và số thuế có tính chất tương tự thuế thu nhập doanh nghiệp (như thuế thu nhập doanh nghiệp nhà thầu) phải nộp tại các nước, vùng lãnh thổ khác nơi cư trú.
+
+Tổng số thuế thu nhập doanh nghiệp phải nộp được xác định căn cứ chế độ kế toán theo cơ sở tiền mặt hoặc cơ sở dồn tích theo quy định tại nơi cư trú của bên liên kết và ghi chú phương pháp áp dụng nếu xác định theo cơ sở tiền mặt.
+
+- Chỉ tiêu “Thuế thu nhập đã nộp”: Ghi tổng số thuế thu nhập đã nộp của tất cả các bên liên kết thuộc tập đoàn.
+
+Trường hợp các bên liên kết đã nộp thuế thu nhập doanh nghiệp của nhà thầu nước ngoài (hoặc loại thuế có tính chất tương tự) tại nước, vùng lãnh thổ khác nơi cư trú, số thuế nhà thầu này được tính vào tổng số thuế thu nhập doanh nghiệp đã nộp.

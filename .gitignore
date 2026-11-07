@@ -7,3 +7,7 @@ __pycache__/
 storage/
 # ảnh trang PDF do chế độ thư mục file tự render
 data/*/pages/
+# database file
+*.db
+data/*.db
+HeThongTroLyAIPhapLy-KeToan.pdf

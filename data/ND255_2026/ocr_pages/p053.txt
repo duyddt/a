@@ -1,0 +1,27 @@
+PRINTED_PAGE: 53
+
+- Chỉ tiêu tại dòng (15): Người nộp thuế để trống không kê khai.
+
+b) Trường hợp người nộp thuế không được miễn lập Hồ sơ xác định giá giao dịch liên kết theo quy định tại điểm a khoản 2 Điều 20 Nghị định này, kê khai như sau:
+
+- Các chỉ tiêu tại dòng (1.1.a), (1.1.b), (1.1.c), (1.2), (1.3), (1.4), (1.5), (1.6), (1.7), (1.8), (1.9), (1.10), (1.11), (2.1.a), (2.1.b), (2.1.c), (2.2), (2.3), (2.4), (2.5), (2.6), (2.7), (2.8), (2.9), (2.10), (2.11), (2.12), (3.1), (3.2), (3.3), (3.4), (4.1), (4.2), (4.3), (4.4), (4.5), (5), (6) và (10):
+
++ Cột (3), (4) và (5): Ghi tổng giá trị của thu nhập lãi và các khoản thu nhập tương tự từ các bên liên kết không ký APA xác định theo Hồ sơ xác định giá giao dịch liên kết tại Cột (3), theo APA tại Cột (4) và theo giá trị ghi sổ kế toán phát sinh với bên độc lập tại Cột (5).
+
++ Cột (6): Ghi tổng giá trị được xác định theo công thức tính tại Phụ lục I ban hành kèm theo Nghị định này.
+
+- Đối với các chỉ tiêu chi phí phát sinh trong kỳ, người nộp thuế theo dõi hạch toán và ghi giá trị hạch toán, xác định riêng đối với chi phí từ bên liên kết thuộc phạm vi xác định giá theo Hồ sơ xác định giá giao dịch liên kết; theo APA và giao dịch với các bên độc lập tương ứng với Cột (3), (4) và (5). Trường hợp không xác định riêng được thì người nộp thuế lựa chọn tiêu thức phân bổ phù hợp nhất theo một hoặc một số yếu tố như doanh thu, chi phí, tài sản, nhân lực hoặc yếu tố khác phù hợp với bản chất hoạt động và ghi giá trị chi phí phân bổ vào các ô tương ứng (3), (4) và (5).
+
+- Chỉ tiêu “Tổng lợi nhuận thuần từ hoạt động kinh doanh trong kỳ cộng chi phí lãi vay sau khi trừ lãi tiền gửi và lãi cho vay phát sinh trong kỳ cộng chi phí khấu hao phát sinh trong kỳ”:
+
++ Cột (3), (4) và (5): Người nộp thuế để trống không kê khai.
+
++ Cột (6): Ghi giá trị bằng giá trị chỉ tiêu “Kết quả hoạt động” cộng (+) chỉ tiêu “Tổng Chi phí lãi vay phát sinh trong kỳ” trừ (-) “Tổng lãi tiền gửi và lãi cho vay phát sinh trong kỳ” cộng (+) chỉ tiêu “Chi phí khấu hao phát sinh trong kỳ”.
+
+- Chỉ tiêu “Tỷ lệ chi phí lãi vay sau khi trừ lãi tiền gửi và lãi cho vay phát sinh trong kỳ trên tổng lợi nhuận thuần từ hoạt động kinh doanh cộng chi phí lãi vay sau khi trừ lãi tiền gửi và lãi cho vay trong kỳ cộng chi phí khấu hao phát sinh trong kỳ”:
+
++ Cột (3), (4) và (5): Người nộp thuế để trống không kê khai.
+
++ Cột (6): Ghi giá trị tỷ lệ phần trăm bằng (=) giá trị [chỉ tiêu “Tổng Chi phí lãi tiền vay” trừ (-) chỉ tiêu “Tổng lãi tiền gửi và lãi cho vay”] chia (:) giá trị chỉ tiêu “Lợi nhuận thuần từ hoạt động kinh doanh cộng chi phí lãi vay cộng chi phí khấu hao phát sinh trong kỳ”.
+
+- Chỉ tiêu “Tỷ suất lợi nhuận sử dụng xác định giá giao dịch liên kết”:

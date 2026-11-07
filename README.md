@@ -77,7 +77,7 @@ API: `POST /api/documents/{id}/units/{unit_id}/reviews` với `{"action": "appro
 Không đặt `POSTGRES_HOST` hay `DATABASE_URL` thì app chạy ở chế độ xem nhanh: đọc thư mục `data/<document_id>/{source.pdf,document.json}` trực tiếp, không cần PostgreSQL (không nhập được văn bản và không lưu được thao tác thẩm định; các nút thẩm định ẩn đi).
 
 ```powershell
-py -m venv .venv
+python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements-dev.txt
 uvicorn app.main:app --reload
@@ -98,7 +98,7 @@ $env:TEST_DATABASE_URL = "postgresql://review:<mật khẩu>@localhost:5432/revi
 pytest tests/test_db_import.py
 ```
 
-## Cấu trúc
+## 2. Tiêu chuẩn Thẩm định và 4 Thao tác trên Giao diện
 
 ```
 docker-compose.yml, Dockerfile, .env.example

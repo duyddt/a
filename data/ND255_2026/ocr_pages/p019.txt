@@ -1,0 +1,19 @@
+PRINTED_PAGE: 19
+
+c) Chi phí thanh toán cho bên liên kết là đối tượng cư trú của một nước hoặc vùng lãnh thổ không thu thuế thu nhập doanh nghiệp, không góp phần tạo ra doanh thu, giá trị gia tăng cho hoạt động sản xuất, kinh doanh của người nộp thuế.
+
+2. Chi phí dịch vụ giữa các bên liên kết:
+
+a) Trừ các khoản chi quy định tại điểm b khoản này, người nộp thuế được trừ các khoản chi phí dịch vụ vào chi phí tính thuế trong kỳ nếu đáp ứng đủ các điều kiện như sau: Dịch vụ được cung cấp có giá trị thương mại, tài chính, kinh tế và phục vụ trực tiếp cho hoạt động sản xuất kinh doanh của người nộp thuế; dịch vụ từ các bên liên kết được xác định đã cung cấp trong điều kiện hoàn cảnh tương tự các bên độc lập chi trả cho các dịch vụ này; phí dịch vụ được thanh toán trên cơ sở nguyên tắc giao dịch độc lập và phương pháp tính giá giao dịch liên kết hoặc phân bổ mức phí dịch vụ giữa các bên liên kết phải được áp dụng thống nhất trong toàn tập đoàn đối với loại hình dịch vụ tương tự và người nộp thuế phải cung cấp hợp đồng, chứng từ, hóa đơn và thông tin về phương pháp tính, yếu tố phân bổ và chính sách giá của tập đoàn đối với dịch vụ được cung cấp.
+
+Trường hợp liên quan đến các trung tâm thực hiện chức năng chuyên môn hóa và hợp lực tạo giá trị tăng thêm của tập đoàn, người nộp thuế phải xác định tổng giá trị tạo ra từ các chức năng này, xác định mức phân bổ lợi nhuận phù hợp với giá trị đóng góp của các bên liên kết sau khi đã trừ (-) mức phí dịch vụ tương ứng cho bên liên kết thực hiện chức năng điều phối, cung cấp dịch vụ của giao dịch độc lập có tính chất tương đồng;
+
+b) Chi phí dịch vụ không được trừ khi xác định thu nhập chịu thuế bao gồm: Chi phí phát sinh từ các dịch vụ được cung cấp chỉ nhằm mục đích phục vụ lợi ích hoặc tạo giá trị cho các bên liên kết khác; dịch vụ phục vụ lợi ích cổ đông của bên liên kết; dịch vụ tính phí trùng lặp do nhiều bên liên kết cung cấp cho cùng một loại dịch vụ, không xác định được giá trị gia tăng cho người nộp thuế; dịch vụ về bản chất là các lợi ích người nộp thuế nhận được do là thành viên của một tập đoàn và chi phí mà bên liên kết cộng thêm đối với dịch vụ do bên thứ ba cung cấp thông qua trung gian bên liên kết không đóng góp thêm giá trị cho dịch vụ,
+
+3. Tổng chi phí lãi vay được trừ khi xác định thu nhập chịu thuế thu nhập doanh nghiệp đối với doanh nghiệp có giao dịch liên kết:
+
+a) Tổng chi phí lãi vay sau khi trừ lãi tiền gửi và lãi cho vay phát sinh trong kỳ của người nộp thuế được trừ khi xác định thu nhập chịu thuế thu nhập doanh nghiệp không vượt quá 30% của tổng lợi nhuận thuần từ hoạt động kinh doanh trong kỳ cộng chi phí lãi vay sau khi trừ lãi tiền gửi và lãi cho vay phát sinh trong kỳ cộng chi phí khấu hao phát sinh trong kỳ của người nộp thuế;
+
+b) Phần chi phí lãi vay không được trừ theo quy định tại điểm a khoản này được chuyển sang kỳ tính thuế tiếp theo khi xác định tổng chi phí lãi vay được trừ trong trường hợp tổng chi phí lãi vay phát sinh được trừ của kỳ tính thuế tiếp theo thấp hơn mức quy định tại điểm a khoản này.
+
+Thời gian chuyển chi phí lãi vay tính liên tục không quá 05 năm kể từ năm tiếp sau năm phát sinh chi phí lãi vay không được trừ;

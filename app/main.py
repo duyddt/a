@@ -15,6 +15,8 @@ from fastapi import Depends, FastAPI, Form, HTTPException, Request
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from pydantic import BaseModel
+from sqlalchemy.orm import Session
 
 from app.api import get_catalog, load_or_404
 from app.api import router as api_router
@@ -143,6 +145,7 @@ def create_app(settings: Settings | None = None, catalog=None) -> FastAPI:
         selected = units.get(unit) if unit else None
         if unit and selected is None:
             raise HTTPException(status_code=404, detail="Không có đơn vị này")
+
         zoom = nearest_zoom(zoom)
         tree = build_tree(loaded.doc.legal_units, loaded.reviews)
         decorate_for_page(tree, document_id, unit, zoom)

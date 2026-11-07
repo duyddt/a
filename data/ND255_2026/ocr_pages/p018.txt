@@ -1,0 +1,33 @@
+PRINTED_PAGE: 18
+
+Phương pháp phân bổ lợi nhuận là phương pháp phân bổ tổng lợi nhuận thu được để xác định lợi nhuận của người nộp thuế tham gia vào chuỗi giao dịch. Phương pháp phân bổ lợi nhuận được áp dụng đối với: Tổng lợi nhuận thực tế và lợi nhuận tiềm năng thu được xác định bằng các số liệu tài chính trên cơ sở các chứng từ hợp lý, hợp lệ; giá trị và lợi nhuận của giao dịch phải được xác định theo cùng phương pháp kế toán trong toàn bộ thời gian áp dụng phương pháp phân bổ lợi nhuận.
+
+3. Phương pháp xác định:
+
+Lợi nhuận được điều chỉnh của người nộp thuế được phân bổ trên tổng lợi nhuận thu được, bao gồm lợi nhuận thực tế và lợi nhuận tiềm năng của các bên tham gia chuỗi giao dịch.
+
+Lợi nhuận được điều chỉnh của người nộp thuế là tổng lợi nhuận cơ bản và lợi nhuận phụ trội.
+
+Lợi nhuận cơ bản xác định theo phương pháp so sánh tỷ suất lợi nhuận quy định tại Điều 14 Nghị định này. Lợi nhuận phụ trội xác định theo tỷ lệ phân bổ dựa trên một hoặc một số yếu tố như doanh thu, chi phí, tài sản hoặc nhân lực của các bên liên kết tham gia giao dịch và phù hợp nguyên tắc giao dịch độc lập.
+
+Trường hợp không đủ thông tin, dữ liệu để phân bổ lợi nhuận được điều chỉnh theo quy định trên, việc phân bổ có thể dựa trên một hoặc một số yếu tố như doanh thu, chi phí, tài sản hoặc nhân lực của các bên liên kết tham gia giao dịch và phù hợp nguyên tắc giao dịch độc lập.
+
+4. Kết quả xác định lợi nhuận được điều chỉnh của người nộp thuế là căn cứ xác định thu nhập chịu thuế và số thuế thu nhập doanh nghiệp phải nộp, nhưng không làm giảm nghĩa vụ thuế phải nộp ngân sách nhà nước của người nộp thuế.
+
+Chương III
+
+XÁC ĐỊNH CHI PHÍ ĐỂ TÍNH THUẾ ĐỐI VỚI DOANH NGHIỆP CÓ GIAO DỊCH LIÊN KẾT;
+
+QUYỀN VÀ NGHĨA VỤ CỦA NGƯỜI NỘP THUẾ TRONG KÊ KHAI, LẬP HỒ SƠ XÁC ĐỊNH
+
+GIÁ GIAO DỊCH LIÊN KẾT; TRÁCH NHIỆM CỦA NGƯỜI NỘP THUẾ LIÊN QUAN ĐẾN
+
+BÁO CÁO LỢI NHUẬN LIÊN QUỐC GIA
+
+Điều 16. Xác định chi phí để tính thuế đối với doanh nghiệp có giao dịch liên kết
+
+1. Chi phí của giao dịch liên kết không phù hợp bản chất giao dịch độc lập hoặc không góp phần tạo ra doanh thu, thu nhập cho hoạt động sản xuất, kinh doanh của người nộp thuế không được tính vào chi phí được trừ khi xác định thu nhập chịu thuế thu nhập doanh nghiệp trong kỳ, bao gồm:
+
+a) Chi phí thanh toán cho bên liên kết không thực hiện bất kỳ hoạt động sản xuất, kinh doanh nào liên quan đến ngành nghề, hoạt động sản xuất, kinh doanh của người nộp thuế; không có quyền lợi, trách nhiệm liên quan đối với tài sản, hàng hóa, dịch vụ cung cấp cho người nộp thuế;
+
+b) Chi phí thanh toán cho bên liên kết có hoạt động sản xuất, kinh doanh nhưng quy mô tài sản, số lượng nhân viên và chức năng sản xuất, kinh doanh không tương xứng với giá trị giao dịch mà bên liên kết nhận được từ người nộp thuế;

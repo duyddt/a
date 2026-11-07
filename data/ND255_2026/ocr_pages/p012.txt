@@ -1,0 +1,17 @@
+PRINTED_PAGE: 12
+
+1. Xác định bản chất của giao dịch liên kết trước khi tiến hành phân tích tính tương đồng với các đối tượng so sánh độc lập.
+
+2. Phân tích, so sánh, tìm kiếm, lựa chọn các đối tượng so sánh độc lập tương đồng trên cơ sở xác định thời gian so sánh, đặc tính sản phẩm, điều kiện hợp đồng; phân tích ngành, thị trường, điều kiện kinh tế khi phát sinh giao dịch; phân tích giao dịch liên kết và người nộp thuế thực hiện giao dịch liên kết; nguồn cơ sở dữ liệu; phương pháp xác định giá giao dịch liên kết và điều chỉnh các khác biệt trọng yếu, cụ thể:
+
+a) Xác định phạm vi, nội dung và yếu tố so sánh bao gồm thời gian so sánh; thông tin phân tích về người nộp thuế đối với các yếu tố so sánh về chức năng, tài sản, rủi ro; đặc tính sản phẩm; điều kiện hợp đồng; điều kiện kinh tế khi phát sinh giao dịch, phân tích ngành, thị trường, hoàn cảnh hoạt động kinh doanh, giao dịch hàng hóa, dịch vụ và tài sản của các bên để lựa chọn bên liên kết cần thực hiện xác định giá giao dịch liên kết theo quy định tại Nghị định này;
+
+b) Đánh giá, tìm kiếm đối tượng so sánh gồm ưu tiên rà soát các đối tượng so sánh độc lập nội bộ trên cơ sở xác minh độ tin cậy và tính độc lập của các đối tượng này đảm bảo không phải là các giao dịch dàn xếp không theo nguyên tắc giao dịch độc lập; xây dựng các tiêu chí tìm kiếm và xác định các nguồn cơ sở dữ liệu tin cậy có thể sử dụng theo quy định tại Điều 17 Nghị định này để tiến hành tìm kiếm các đối tượng so sánh độc lập tương đồng. Trên cơ sở các thông tin đã phân tích và rà soát tính sẵn có đối với dữ liệu của đối tượng so sánh độc lập, lựa chọn phương pháp xác định giá giao dịch liên kết phù hợp với bản chất hoạt động kinh doanh, thương mại, tài chính, rủi ro của bên liên kết cần thực hiện xác định giá;
+
+c) Phân tích mức độ tương đồng và tin cậy của các đối tượng so sánh độc lập được lựa chọn trên cơ sở rà soát, sàng lọc các tiêu chí định tính và định lượng; phân tích thông tin kinh tế, ngành và số liệu tài chính của các đối tượng được chọn để xác minh mức độ tương đồng; xác định khác biệt trọng yếu và điều chỉnh khác biệt trọng yếu. Trên cơ sở kết quả lựa chọn các đối tượng so sánh độc lập tương đồng, sử dụng dữ liệu, số liệu tài chính của các đối tượng so sánh độc lập được lựa chọn để xác định căn cứ thực hiện điều chỉnh mức giá, tỷ suất lợi nhuận, tỷ lệ phân bổ lợi nhuận của người nộp thuế theo quy định tại Điều 8 Nghị định này.
+
+3. Xác định mức giá, tỷ suất lợi nhuận hoặc tỷ lệ phân bổ lợi nhuận căn cứ kết quả phân tích các đối tượng so sánh độc lập để làm cơ sở so sánh, áp dụng xác định nghĩa vụ thuế thu nhập doanh nghiệp phải nộp của người nộp thuế, không làm giảm nghĩa vụ thuế phải nộp ngân sách nhà nước. Phương pháp tính toán phải được áp dụng thống nhất trong chu kỳ, giai đoạn sản xuất kinh doanh phù hợp chức năng, mô hình kinh doanh theo quy định tại Điều 12, Điều 13, Điều 14, Điều 15 Nghị định này.
+
+Điều 12. Lựa chọn phương pháp xác định giá giao dịch liên kết
+
+Phương pháp so sánh xác định giá của giao dịch liên kết (viết tắt là phương pháp xác định giá giao dịch liên kết) được áp dụng phù hợp nguyên tắc giao dịch độc lập, bản chất giao dịch và chức năng của người nộp thuế trên cơ sở tính toán, áp dụng thống nhất trong toàn bộ chu kỳ, giai đoạn sản xuất kinh doanh; căn cứ dữ liệu tài chính của các đối tượng so sánh độc lập được lựa chọn theo các nguyên tắc phân tích, so sánh quy định tại Điều 6, Điều 7, Điều 8, Điều 9, Điều 10

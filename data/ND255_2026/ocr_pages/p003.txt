@@ -1,0 +1,25 @@
+PRINTED_PAGE: 3
+
+7. Khác biệt trọng yếu là khác biệt về các yếu tố hình thành giá có ảnh hưởng quan trọng hoặc đáng kể đến mức giá, tỷ suất lợi nhuận và tỷ lệ phân bổ lợi nhuận của các bên tham gia giao dịch.
+
+8. Khoảng giá trị giao dịch độc lập là tập hợp các giá trị về mức giá, tỷ suất lợi nhuận hoặc tỷ lệ phân bổ lợi nhuận của các đối tượng so sánh độc lập được cơ quan thuế hoặc người nộp thuế lựa chọn trên cơ sở dữ liệu quy định tại Điều 17 Nghị định này. Các giá trị thuộc tập hợp này có mức độ so sánh tin cậy tương đương nhau. Trong trường hợp cần thiết, áp dụng phương pháp xác suất thống kê để xác định khoảng giá trị giao dịch độc lập chuẩn và giá trị trung vị mang tính chất đại diện, phổ quát, phổ biến nhằm tăng độ tin cậy của tập hợp các đối tượng so sánh độc lập.
+
+9. Khoảng giá trị giao dịch độc lập chuẩn là tập hợp các giá trị từ bách phân vị thứ 35 đến bách phân vị thứ 75; trung vị của khoảng giá trị giao dịch độc lập chuẩn là giá trị bách phân vị thứ 50 theo hàm xác suất thống kê.
+
+10. Tổ chức thay mặt nộp Báo cáo lợi nhuận liên quốc gia là thành viên của tập đoàn đa quốc gia được Công ty mẹ tối cao chỉ định thay mặt Công ty mẹ tối cao lập và nộp Báo cáo lợi nhuận liên quốc gia tại quốc gia, vùng lãnh thổ nơi thành viên đó là đối tượng cư trú thuế.
+
+11. Hồ sơ quốc gia là thông tin về giao dịch liên kết, chính sách và phương pháp xác định giá đối với giao dịch liên kết của người nộp thuế tại Việt Nam.
+
+12. Hồ sơ toàn cầu là thông tin về hoạt động kinh doanh của tập đoàn đa quốc gia, chính sách và phương pháp xác định giá giao dịch liên kết của tập đoàn trên toàn cầu và chính sách phân bổ thu nhập và phân bổ các hoạt động, chức năng trong chuỗi giá trị của tập đoàn.
+
+13. Tình trạng không thực hiện trao đổi thông tin một cách hệ thống là trường hợp quốc gia hoặc vùng lãnh thổ đã có thỏa thuận trao đổi tự động Báo cáo lợi nhuận liên quốc gia đang có hiệu lực, nhưng tạm ngừng việc trao đổi vì các lý do không phù hợp với các điều kiện của thỏa thuận đó, hoặc liên tục không thực hiện việc trao đổi các Báo cáo lợi nhuận liên quốc gia mà quốc gia hoặc vùng lãnh thổ đó đang nắm giữ, dẫn đến việc cơ quan thuế Việt Nam không nhận được báo cáo theo quy định.
+
+Điều 5. Các bên có quan hệ liên kết
+
+1. Các bên có quan hệ liên kết (sau đây gọi là “bên liên kết”) thực hiện theo quy định tại khoản 17 Điều 4 Luật Quản lý thuế số 108/2025/QH15.
+
+2. Các bên có quan hệ liên kết gồm:
+
+a) Một doanh nghiệp nắm giữ trực tiếp hoặc gián tiếp ít nhất 25% vốn góp của chủ sở hữu của doanh nghiệp kia;
+
+b) Cả hai doanh nghiệp đều có ít nhất 25% vốn góp của chủ sở hữu do một bên thứ ba nắm giữ trực tiếp hoặc gián tiếp;

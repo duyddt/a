@@ -3,10 +3,47 @@
 {% block title %}Danh sách văn bản{% endblock %}
 {% block body %}
 <header class="topbar">
-  <h1>Thẩm định dữ liệu pháp lý</h1>
+  <div class="topbar-left">
+    <h1>⚖ Thẩm định dữ liệu pháp lý (Trợ lý AI Thuế – Kế toán)</h1>
+  </div>
+  <div class="topbar-right">
+    <button type="button" class="btn-theme-toggle" onclick="toggleTheme()" title="Chuyển đổi giao diện sáng / tối">
+      <span class="theme-icon">🌓</span>
+      <span class="theme-text">Chế độ tối</span>
+    </button>
+    <div class="user-badge" title="Chọn tài khoản để ghi nhận người thực hiện thẩm định">
+      <span>👤 Người soát:</span>
+      <select onchange="window.location.href='/switch-user/' + this.value">
+        {% for u in users %}
+        <option value="{{ u.username }}" {% if current_user and current_user.username == u.username %}selected{% endif %}>
+          {{ u.full_name }}
+        </option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
 </header>
+
 <main class="narrow">
-  <h2>Văn bản cần soát</h2>
+  <div class="guide-box">
+    <div class="guide-heading">
+      <strong>📌 Nhiệm vụ của người thẩm định:</strong> Đối chiếu từng đơn vị (Điều/Khoản/Điểm) với bản scan PDF gốc theo 4 tiêu chuẩn:
+    </div>
+    <ul class="guide-list">
+      <li><strong>1. Đúng chữ:</strong> Kiểm tra dấu tiếng Việt, con số. Có thể bấm <em>[✎ Sửa chữ]</em> để sửa tại chỗ (bản gốc luôn được lưu lại).</li>
+      <li><strong>2. Đúng ranh giới:</strong> Đơn vị bắt đầu và kết thúc chuẩn xác, không bị cắt dở hay dính đoạn văn khác.</li>
+      <li><strong>3. Đúng cấp & số:</strong> Đúng cấp Điều, Khoản, Điểm; số thứ tự không bị nhảy cóc.</li>
+      <li><strong>4. Không sót:</strong> Đối chiếu với trang scan PDF, đảm bảo không bị thiếu dòng/đoạn nào.</li>
+    </ul>
+    <div class="guide-tip">
+      💡 <em>Nếu chưa chắc chắn, hãy <strong>[Gắn cờ]</strong>. Nếu phát hiện sai cấu trúc (sai cấp/cần tách/cần gộp), hãy bấm <strong>[Báo lỗi cấu trúc]</strong> để chuyển nhóm kỹ thuật sửa parser.</em>
+    </div>
+  </div>
+
+  <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 24px;">
+    <h2>Danh sách văn bản cần soát</h2>
+  </div>
+
   {% if not items %}
   <p class="muted">Chưa có văn bản nào. Nhập bằng lệnh <code>python -m app.cli import-dir &lt;thư mục&gt;</code> hoặc qua API <code>POST /api/documents</code> (xem README).</p>
   {% else %}

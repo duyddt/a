@@ -1,0 +1,19 @@
+PRINTED_PAGE: 24
+
+Người nộp thuế không phải nộp Báo cáo lợi nhuận liên quốc gia theo quy định tại điểm b khoản này trong trường hợp Công ty mẹ tối cao không có nghĩa vụ lập và nộp Báo cáo lợi nhuận liên quốc gia tại quốc gia, vùng lãnh thổ nơi cư trú do doanh thu hợp nhất toàn cầu của tập đoàn theo Báo cáo tài chính hợp nhất của năm tài chính liền kề trước năm báo cáo thấp hơn ngưỡng phải nộp Báo cáo lợi nhuận liên quốc gia theo quy định của quốc gia, vùng lãnh thổ đó xuất phát từ sự khác biệt về ngưỡng doanh thu, đồng tiền quy đổi hoặc nguyên tắc xác định doanh thu giữa các quốc gia, vùng lãnh thổ.
+
+Việc yêu cầu nộp Báo cáo lợi nhuận liên quốc gia theo quy định tại điểm b khoản này chỉ được thực hiện khi Việt Nam đáp ứng các điều kiện về bảo mật thông tin, tính nhất quán và sử dụng thông tin đúng mục đích theo quy định tại điểm h khoản 2 Điều 30 Luật Quản lý thuế số 108/2025/QH15. Cơ quan thuế có trách nhiệm công khai việc đáp ứng các điều kiện này trên Trang thông tin điện tử của ngành thuế.
+
+Trường hợp tập đoàn đa quốc gia có nhiều hơn 01 người nộp thuế tại Việt Nam và Công ty mẹ tối cao có văn bản chỉ định một người nộp thuế tại Việt Nam nộp Báo cáo lợi nhuận liên quốc gia thì người nộp thuế được chỉ định có trách nhiệm nộp Thông báo về đối tượng nộp Báo cáo lợi nhuận liên quốc gia theo quy định tại điểm d khoản này kèm theo văn bản chỉ định và thực hiện nghĩa vụ nộp Báo cáo lợi nhuận liên quốc gia cho cơ quan thuế.
+
+c) Người nộp thuế tại Việt Nam được Công ty mẹ tối cao chỉ định là tổ chức thay mặt nộp Báo cáo lợi nhuận liên quốc gia có trách nhiệm lập và nộp Báo cáo lợi nhuận liên quốc gia theo Phụ lục IV ban hành kèm theo Nghị định này cho cơ quan thuế. Người nộp thuế được chỉ định có trách nhiệm nộp Thông báo về đối tượng nộp Báo cáo lợi nhuận liên quốc gia theo quy định tại điểm d khoản này kèm theo văn bản chỉ định.
+
+d) Người nộp thuế có nghĩa vụ nộp Thông báo về đối tượng nộp Báo cáo lợi nhuận liên quốc gia cho cơ quan thuế theo Mẫu số 01/TB-BCLN ban hành kèm theo Nghị định này.
+
+Trường hợp tập đoàn đa quốc gia có nhiều hơn 01 người nộp thuế tại Việt Nam và Công ty mẹ tối cao ở nước ngoài có văn bản chỉ định một người nộp thuế tại Việt Nam nộp Thông báo thì người nộp thuế được chỉ định có nghĩa vụ nộp Thông báo kèm theo văn bản chỉ định.
+
+Kể từ ngày Nghị định này có hiệu lực thi hành, người nộp thuế chỉ phải nộp Thông báo về đối tượng nộp Báo cáo lợi nhuận liên quốc gia 01 lần khi lần đầu phát sinh nghĩa vụ liên quan đến Báo cáo lợi nhuận liên quốc gia. Thời hạn nộp Thông báo chậm nhất là ngày kết thúc năm tài chính của Công ty mẹ tối cao của năm báo cáo. Trường hợp có thay đổi thông tin tại Thông báo về đối tượng nộp Báo cáo lợi nhuận liên quốc gia đã nộp gần nhất, bao gồm cả trường hợp chấm dứt nghĩa vụ nộp Báo cáo lợi nhuận liên quốc gia, người nộp thuế có trách nhiệm nộp Thông báo để cập nhật thông tin cho cơ quan thuế chậm nhất 90 ngày kể từ ngày phát sinh thay đổi.
+
+3. Thời hạn nộp Báo cáo lợi nhuận liên quốc gia chậm nhất là 12 tháng kể từ ngày kết thúc năm tài chính của Công ty mẹ tối cao của năm báo cáo.
+
+4. Báo cáo lợi nhuận liên quốc gia được nộp theo định dạng XML đã được mã hóa.

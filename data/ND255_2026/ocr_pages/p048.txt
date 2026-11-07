@@ -1,0 +1,37 @@
+PRINTED_PAGE: 48
+
+sản, nhân lực hoặc yếu tố khác phù hợp với bản chất hoạt động và ghi giá trị chi phí phân bổ vào các ô tương ứng (3), (4) và (5).
+
+- Chỉ tiêu “Doanh thu hoạt động tài chính”:
+
++ Cột (3), (4) và (5): Người nộp thuế để trống không kê khai.
+
++ Cột (6): Ghi tổng giá trị doanh thu hoạt động tài chính.
+
+- Chỉ tiêu “Lãi tiền gửi và lãi cho vay”: Ghi giá trị tiền lãi thu được từ hoạt động cho vay tính vào doanh thu hoạt động tài chính trong kỳ.
+
++ Cột (3), (4) và (5): Người nộp thuế để trống không kê khai.
+
++ Cột (6): Ghi tổng giá trị theo xác định tại Hồ sơ xác định giá giao dịch liên kết, theo APA đối với giao dịch phát sinh với các bên liên kết và giá trị ghi tại sổ kế toán đối với giao dịch phát sinh với các bên độc lập.
+
+- Chỉ tiêu “Chi phí tài chính”:
+
++ Cột (3), (4) và (5): Người nộp thuế để trống không kê khai.
+
++ Cột (6): Ghi tổng giá trị chi phí hoạt động tài chính.
+
+- Chỉ tiêu “Chi phí lãi tiền vay dùng cho hoạt động sản xuất, kinh doanh”: Ghi giá trị chi phí lãi vay tính vào chi phí tài chính trong kỳ.
+
++ Cột (3), (4) và (5): Người nộp thuế để trống không kê khai.
+
++ Cột (6): Ghi tổng giá trị theo xác định tại Hồ sơ xác định giá giao dịch liên kết, theo APA đối với giao dịch phát sinh với các bên liên kết và giá trị ghi tại sổ kế toán đối với giao dịch phát sinh với các bên độc lập.
+
+- Chỉ tiêu “Chi phí khấu hao phát sinh trong kỳ”:
+
++ Cột (3), (4) và (5): Người nộp thuế để trống không kê khai.
+
++ Cột (6): Ghi tổng giá trị chi phí khấu hao đã tính vào chi phí trong kỳ và được xác định bằng tổng giá trị chi phí khấu hao đã tính vào giá vốn hàng bán, chi phí bán hàng và chi phí quản lý doanh nghiệp.
+
+- Chỉ tiêu “Lợi nhuận thuần từ hoạt động sản xuất kinh doanh trong kỳ”:
+
++ Cột (3), (4) và (5): Người nộp thuế để trống không kê khai.

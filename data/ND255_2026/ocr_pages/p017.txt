@@ -1,0 +1,27 @@
+PRINTED_PAGE: 17
+
+Giá bán ra cho bên liên kết (hoặc doanh thu thuần) được điều chỉnh theo đối tượng so sánh độc lập là giá tính thuế, chi phí kê khai để xác định nghĩa vụ thuế thu nhập doanh nghiệp phải nộp của người nộp thuế.
+
+c) Phương pháp so sánh tỷ suất lợi nhuận thuần:
+
+Tỷ suất lợi nhuận thuần chưa trừ chi phí lãi vay và thuế thu nhập doanh nghiệp trên doanh thu, chi phí hoặc tài sản của người nộp thuế thực hiện giao dịch liên kết được điều chỉnh theo tỷ suất lợi nhuận thuần chưa trừ chi phí lãi vay trên doanh thu, chi phí hoặc tài sản của các đối tượng so sánh độc lập được chọn, trên cơ sở đó điều chỉnh, xác định nghĩa vụ thuế của người nộp thuế.
+
+Lợi nhuận thuần không bao gồm chênh lệch doanh thu và chi phí của hoạt động tài chính.
+
+Tỷ suất lợi nhuận thuần được lựa chọn là giá trị thuộc khoảng giao dịch độc lập chuẩn của tỷ suất lợi nhuận thuần của các đối tượng so sánh độc lập được chọn để điều chỉnh, xác định thu nhập chịu thuế và nghĩa vụ thuế phải nộp của người nộp thuế phù hợp với các nguyên tắc quy định tại Nghị định này.
+
+Các chỉ tiêu tỷ suất lợi nhuận thuần chưa trừ lãi vay và thuế thu nhập doanh nghiệp được xác định theo quy định của pháp luật về kế toán, quản lý thuế và thuế thu nhập doanh nghiệp.
+
+4. Kết quả xác định tỷ suất lợi nhuận được điều chỉnh của người nộp thuế là căn cứ xác định thu nhập chịu thuế và số thuế thu nhập doanh nghiệp phải nộp, nhưng không làm giảm nghĩa vụ thuế phải nộp ngân sách nhà nước của người nộp thuế.
+
+Điều 15. Phương pháp phân bổ lợi nhuận giữa các bên liên kết
+
+1. Các trường hợp áp dụng:
+
+a) Người nộp thuế tham gia thực hiện giao dịch liên kết, đặc thù, được tích hợp, khép kín trong tập đoàn, các hoạt động phát triển sản phẩm mới, sử dụng công nghệ độc quyền, tham gia vào chuỗi giá trị giao dịch độc quyền của tập đoàn hoặc quá trình phát triển, gia tăng, duy trì, bảo vệ và khai thác tài sản vô hình độc quyền, không có căn cứ để xác định giá giữa các bên liên kết hoặc các giao dịch có liên quan chặt chẽ, thực hiện đồng thời, các giao dịch tài chính phức tạp liên quan đến nhiều thị trường tài chính trên thế giới;
+
+b) Người nộp thuế tham gia các giao dịch kinh tế số, không có căn cứ để xác định giá giữa các bên liên kết hoặc tham gia việc tạo giá trị tăng thêm thu được từ hợp lực trong tập đoàn;
+
+c) Người nộp thuế thực hiện chức năng tự chủ đối với toàn bộ quá trình sản xuất, kinh doanh và không phải đối tượng áp dụng theo quy định tại khoản 1 Điều 13, khoản 1 Điều 14 Nghị định này.
+
+2. Nguyên tắc áp dụng:

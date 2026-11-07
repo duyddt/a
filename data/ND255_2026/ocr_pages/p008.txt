@@ -1,0 +1,23 @@
+PRINTED_PAGE: 8
+
+thuế để xác định nghĩa vụ thuế thu nhập doanh nghiệp của người nộp thuế không làm giảm nghĩa vụ thuế phải nộp ngân sách nhà nước.
+
+Điều 9. Mở rộng phạm vi phân tích, so sánh
+
+1. Đối với giao dịch liên kết mang tính đặc thù không tìm kiếm được đối tượng so sánh độc lập để so sánh thì thực hiện mở rộng phạm vi phân tích, so sánh về ngành, thị trường địa lý, thời gian so sánh để tìm kiếm đối tượng so sánh độc lập. Việc mở rộng phạm vi phân tích, so sánh được thực hiện như sau:
+
+a) Lựa chọn các đối tượng so sánh độc lập theo phân ngành kinh tế thống kê có tính tương đồng cao nhất với phân ngành hoạt động của người nộp thuế trong cùng thị trường địa bàn, cùng địa phương, trong nước;
+
+b) Mở rộng địa bàn so sánh sang các nước trong khu vực có điều kiện ngành và trình độ phát triển kinh tế tương đồng.
+
+2. Trường hợp mở rộng phạm vi phân tích lựa chọn đối tượng so sánh độc lập tại các địa bàn nêu trên, phải phân tích tính tương đồng và các khác biệt trọng yếu định tính và định lượng theo quy định tại khoản 6 Điều 10 và Điều 14 Nghị định này hoặc sử dụng số liệu, dữ liệu của các đối tượng so sánh độc lập trong niên độ trước và thực hiện điều chỉnh các khác biệt trọng yếu do yếu tố thời gian (nếu có).
+
+Thời gian mở rộng thu thập số liệu, dữ liệu của đối tượng so sánh độc lập không quá một năm tài chính so với năm tài chính của người nộp thuế nếu sử dụng phương pháp xác định giá giao dịch liên kết quy định tại Điều 14 Nghị định này.
+
+Điều 10. Các tiêu thức để phân tích, so sánh, điều chỉnh khác biệt trọng yếu
+
+1. Phân tích, so sánh áp dụng phương pháp đối chiếu, rà soát, điều chỉnh khác biệt trọng yếu đối với các yếu tố so sánh để lựa chọn các đối tượng so sánh độc lập gồm đặc tính sản phẩm của hàng hóa, dịch vụ, tài sản (sau đây viết tắt là đặc tính sản phẩm); chức năng hoạt động và tài sản, rủi ro sản xuất kinh doanh; điều kiện hợp đồng và điều kiện kinh tế khi phát sinh giao dịch.
+
+2. Đặc tính sản phẩm là các đặc tính có ảnh hưởng đến giá của sản phẩm bao gồm: đặc tính hàng hóa hữu hình như đặc tính vật lý, chủng loại sản phẩm, chất lượng, nhãn hiệu thương mại của sản phẩm, độ tin cậy, tính sẵn có và sản lượng cung cấp; đặc tính dịch vụ như bản chất, mức độ phức tạp, chuyên môn và phạm vi dịch vụ; đặc tính tài sản vô hình như hình thức chuyển giao, loại hình tài sản, hình thức sở hữu, thời hạn, mức độ bảo hộ sở hữu, thời gian chuyển giao, các quyền được chuyển giao và các lợi ích có thể thu được từ việc sử dụng tài sản vô hình.
+
+a) Phân tích tài sản vô hình và khả năng phân bổ lợi nhuận cho các bên liên kết không chỉ căn cứ vào quyền sở hữu pháp lý mà phải xem xét tất cả các hoạt động kiểm soát rủi ro và năng lực tài chính để quản lý rủi ro đối với toàn bộ quá trình phát triển, gia tăng, duy trì, bảo hộ và khai thác tài sản vô hình giữa các bên liên kết. Việc phân tích, so sánh căn cứ vào một số đặc điểm của tài sản vô hình như tính độc quyền; phạm vi và thời hạn bảo hộ pháp lý; các quyền xác lập theo văn
