@@ -1,59 +1,53 @@
-<div id="ocr-report-box" class="ocr-panel"{% if oob %} hx-swap-oob="true"{% endif %}>
-{% if can_review and progress and progress.ocr_report and progress.ocr_report.edited_units > 0 %}
-  <details class="ocr-card" open>
-    <summary>
-      📊 Bảng Phân Tích Lỗi Hệ Thống OCR &amp; Giải Pháp Cải Tiến Độ Chính Xác
-      (Đã ghi nhận {{ progress.ocr_report.edited_units }} đơn vị có lỗi OCR
-      {%- if progress.char_accuracy_percent is not none %} · Độ chính xác ký tự: {{ progress.char_accuracy_percent }}%{% endif %})
+<div id="ocr-report-box" style="padding: 6px 12px 0;"{% if oob %} hx-swap-oob="true"{% endif %}>
+{% if can_review and progress and progress.ocr_report and (progress.approved > 0 or progress.ocr_report.edited_units > 0) %}
+  {% set rep = progress.ocr_report %}
+  <details style="background:#fff; border:1px solid #94a3b8; border-radius:4px; padding:8px 12px;">
+    <summary style="cursor:pointer; font-weight:700; font-size:14px; color:#0f172a;">
+      📐 Thang Đo Độ Chính Xác Hệ Thống (Chuẩn ICDAR: CER/WER &amp; Đề Xuất Pháp Lý: UEM/SFI)
+      {%- if rep.composite_score is not none %} — Điểm tổng hợp: <strong style="color:#16a34a;">{{ rep.composite_score }}%</strong>{% endif %}
+      (Đã ghi nhận {{ rep.edited_units }} mục sửa lỗi OCR)
     </summary>
-    <div style="margin-top: 12px;">
-      {% if progress.ocr_report.common_substitutions %}
-      <p style="margin: 6px 0; font-weight: 700;">1. Thống kê các ký tự/cụm từ hệ thống đọc sai &amp; Giải pháp khắc phục:</p>
-      <table class="doclist" style="margin-bottom: 14px;">
+    <div style="margin-top:10px;">
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="m-title">1. Độ chính xác Ký tự (CAR)</div>
+          <div class="m-val">{{ rep.char_accuracy_percent if rep.char_accuracy_percent is not none else "—" }}%</div>
+          <div class="m-sub">CER = {{ rep.cer_percent if rep.cer_percent is not none else "—" }}% (Chuẩn UNLV/ICDAR)</div>
+        </div>
+        <div class="metric-card">
+          <div class="m-title">2. Độ chính xác Từ (WAR)</div>
+          <div class="m-val">{{ rep.word_accuracy_percent if rep.word_accuracy_percent is not none else "—" }}%</div>
+          <div class="m-sub">WER = {{ rep.wer_percent if rep.wer_percent is not none else "—" }}% (Đo sai dấu từ TV)</div>
+        </div>
+        <div class="metric-card">
+          <div class="m-title">3. Đơn vị nguyên vẹn (UEM)</div>
+          <div class="m-val">{{ rep.unit_accuracy_percent if rep.unit_accuracy_percent is not none else "—" }}%</div>
+          <div class="m-sub">{{ rep.exact_match_units }}/{{ rep.approved_units }} mục duyệt không cần sửa</div>
+        </div>
+        <div class="metric-card">
+          <div class="m-title">4. Toàn vẹn cấu trúc (SFI)</div>
+          <div class="m-val">{{ rep.structural_fidelity_percent if rep.structural_fidelity_percent is not none else "—" }}%</div>
+          <div class="m-sub">Đo độ chính xác tách Điều/Khoản/Điểm</div>
+        </div>
+        <div class="metric-card" style="border-left-color:#16a34a; background:#f0fdf4;">
+          <div class="m-title">5. Điểm Hệ Thống Đề Xuất</div>
+          <div class="m-val" style="color:#15803d;">{{ rep.composite_score if rep.composite_score is not none else "—" }}%</div>
+          <div class="m-sub">0.4·CAR + 0.3·WAR + 0.2·SFI + 0.1·UEM</div>
+        </div>
+      </div>
+
+      {% if rep.common_substitutions %}
+      <table class="doclist" style="margin-bottom:8px;">
         <thead>
-          <tr>
-            <th>Hệ thống đọc sai</th>
-            <th>Chữ đúng (Nhãn chuẩn)</th>
-            <th>Số lần lặp</th>
-            <th>Giải pháp cải tiến độ chính xác</th>
-          </tr>
+          <tr><th>Ký tự OCR đọc sai</th><th>Ký tự đúng</th><th>Số lần</th><th>Giải pháp cải tiến độ chính xác</th></tr>
         </thead>
         <tbody>
-        {% for item in progress.ocr_report.common_substitutions %}
+        {% for item in rep.common_substitutions %}
           <tr>
-            <td><del class="diff-del">{{ item.ocr_read or "(bỏ sót chữ)" }}</del></td>
-            <td><ins class="diff-ins">{{ item.corrected_to or "(xóa ký tự rác)" }}</ins></td>
+            <td><del class="diff-del">{{ item.ocr_read or "(bỏ sót)" }}</del></td>
+            <td><ins class="diff-ins">{{ item.corrected_to or "(ký tự thừa)" }}</ins></td>
             <td><strong>{{ item.count }}</strong></td>
             <td>{{ item.solution }}</td>
-          </tr>
-        {% endfor %}
-        </tbody>
-      </table>
-      {% endif %}
-
-      {% if progress.ocr_report.unit_errors %}
-      <p style="margin: 6px 0; font-weight: 700;">2. Danh sách vị trí sai chi tiết (Sai ở đâu · Tô màu chỗ sai · Lý do · Giải pháp):</p>
-      <table class="doclist">
-        <thead>
-          <tr>
-            <th style="width:160px;">Vị trí (Đơn vị / Trang)</th>
-            <th>Đối chiếu chỗ sai (Đỏ = Sai, Xanh = Đúng)</th>
-            <th style="width:220px;">Phân tích lý do sai</th>
-            <th style="width:280px;">Giải pháp cải tiến</th>
-          </tr>
-        </thead>
-        <tbody>
-        {% for uerr in progress.ocr_report.unit_errors %}
-          <tr>
-            <td>
-              <strong>{{ uerr.unit_id }}</strong><br>
-              <span class="muted small">Trang {{ uerr.pages|join(", ") }}</span>
-            </td>
-            <td>
-              <div class="diff-render" style="font-size:15px; max-height:140px; overflow:auto;">{{ uerr.diff_html|safe }}</div>
-            </td>
-            <td><strong>{{ uerr.reasons|join("; ") }}</strong></td>
-            <td>{{ uerr.solution }}</td>
           </tr>
         {% endfor %}
         </tbody>

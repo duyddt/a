@@ -3,9 +3,21 @@
 {% block title %}{{ doc.document_no }}{% endblock %}
 {% block body %}
 <header class="topbar">
-  <a href="/">&larr; Danh sách văn bản</a>
-  <h1>{{ doc.title }} <span class="muted">· {{ doc.document_no }}</span></h1>
+  <a href="/" class="button-link">&larr; Danh sách văn bản</a>
+  <h1>🗂 {{ doc.title }} <span class="muted">· {{ doc.document_no }}</span></h1>
   <div id="progress">{{ bar(progress) }}</div>
+
+  <!-- Quản lý tài khoản & lưu tiến trình cá nhân -->
+  <form class="account-bar" method="post" action="/account/login">
+    <input type="hidden" name="redirect_to" value="/documents/{{ doc.document_id }}">
+    <span>👤 Tài khoản:</span>
+    <input type="text" name="username" value="{{ reviewer }}" list="account-list" placeholder="Nhập tên tài khoản..." required>
+    <datalist id="account-list">
+      {% for acc in accounts %}<option value="{{ acc.username }}">{{ acc.display_name }}</option>{% endfor %}
+    </datalist>
+    <button type="submit">Lưu / Chuyển TK</button>
+  </form>
+
   {% if can_review %}<a class="button-link" href="/api/documents/{{ doc.document_id }}/export" download>⬇ Xuất JSON đã duyệt</a>{% endif %}
 </header>
 
@@ -14,16 +26,14 @@
 <div class="split">
   <section class="pane left" aria-label="Trang PDF gốc">
     <h2 class="pane-title">
-      <span>📄 Bản chụp PDF gốc (Đối chiếu bên trái)</span>
+      <span>📄 Bản gốc PDF Scan</span>
+      {% if reviewer %}<span class="muted small">Đang lưu tiến trình của: <strong>{{ reviewer }}</strong></span>{% endif %}
     </h2>
     {% include "partials/viewer.html" %}
   </section>
   <section class="pane right">
     <h2 class="pane-title">
-      <span>📑 Cây cấu trúc &amp; Nội dung đối chiếu (Bên phải)</span>
-      <button type="button" onclick="toggleTreePane()" style="padding:4px 10px; font-size:13px; border:1px solid #64748b; background:#fff; border-radius:4px;">
-        Ẩn/Hiện cây mục lục (Nhường chỗ đối chiếu)
-      </button>
+      <span>🗂 File Explorer: Cấu trúc Điều &rarr; Khoản &rarr; Điểm</span>
     </h2>
     {% include "partials/tree.html" %}
     <div id="detail" class="detail" aria-live="polite">
@@ -40,9 +50,21 @@
     root.style.setProperty("--compare-font-size", next + "px");
     localStorage.setItem("compareFontSize", next);
   }
-  function toggleTreePane() {
-    var tree = document.getElementById("tree");
-    if (tree) tree.classList.toggle("collapsed");
+  function enterSingleUnitEditMode() {
+    document.body.classList.add("editing-single-unit");
+    var readView = document.getElementById("read-only-view");
+    var editDetails = document.getElementById("inline-edit-details");
+    if (readView) readView.style.display = "none";
+    if (editDetails) editDetails.open = true;
+    var ta = document.getElementById("inline-edit-textarea");
+    if (ta) ta.focus();
+  }
+  function exitSingleUnitEditMode() {
+    document.body.classList.remove("editing-single-unit");
+    var readView = document.getElementById("read-only-view");
+    var editDetails = document.getElementById("inline-edit-details");
+    if (readView) readView.style.display = "block";
+    if (editDetails) editDetails.open = false;
   }
   window.addEventListener("DOMContentLoaded", function () {
     var savedSize = localStorage.getItem("compareFontSize");

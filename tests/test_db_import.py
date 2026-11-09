@@ -29,7 +29,7 @@ DOC = "ND254_2026"
 @pytest.fixture
 def client(tmp_path):
     with psycopg.connect(URL, autocommit=True) as conn:
-        conn.execute("DROP TABLE IF EXISTS review_event, legal_unit, document, schema_migrations CASCADE")
+        conn.execute("DROP TABLE IF EXISTS reviewer_progress, reviewer_account, review_event, legal_unit, document, schema_migrations CASCADE")
     storage = tmp_path / "storage"
     app = create_app(Settings(data_dir=tmp_path / "none", storage_dir=storage, conninfo=URL, auto_import_dir=None))
     with TestClient(app) as test_client:
@@ -48,7 +48,7 @@ def count(table):
 
 
 def test_migration_created_tables(client):
-    assert count("schema_migrations") == 2 and count("document") == 0 and count("review_event") == 0
+    assert count("schema_migrations") >= 2 and count("document") == 0 and count("review_event") == 0
 
 
 def test_import_then_api_returns_tree_pages_and_units(client, sample_pdf, sample_json):

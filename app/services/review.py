@@ -1,10 +1,9 @@
 """Thẩm định: quy tắc thuần Python (không phụ thuộc FastAPI hay DB).
 
-Mọi thao tác là một sự kiện ghi thêm (append-only). Trạng thái hiện tại của đơn vị được TÍNH từ chuỗi sự kiện:
-- approve / flag / structure_error / reset đặt trạng thái: approved / flagged / structure_error / unreviewed.
-- edit (sửa chữ) đổi nội dung hiển thị; không đổi trạng thái, trừ khi đang "approved": bản duyệt cũ không còn
-  đúng với chữ mới nên đơn vị về "unreviewed" và cần duyệt lại.
-- Nội dung gốc trong bảng legal_unit không bao giờ bị sửa; nội dung hiện hành = bản sửa gần nhất (nếu có).
+Bao gồm:
+- Lịch sử sự kiện thẩm định append-only (fold_events, decide, apply_edits).
+- Thang đo độ chính xác khoa học (CER/CAR, WER/WAR theo chuẩn ICDAR/UNLV ISRI, UEM, SFI và Composite Score).
+- Quản lý tiến trình duyệt theo từng tài khoản (resume_unit_id).
 """
 from __future__ import annotations
 
@@ -71,11 +70,11 @@ class ReviewEvent:
 @dataclass
 class UnitReview:
     status: str = "unreviewed"
-    original_content: str | None = None  # nội dung OCR gốc trước lần sửa đầu tiên
+    original_content: str | None = None
     edited_content: str | None = None
     edit_count: int = 0
-    edit_notes: list[str] | None = None  # lý do vì sao OCR sai ở các lần sửa
-    note: str | None = None  # ghi chú của lần gắn cờ / báo lỗi gần nhất còn hiệu lực
+    edit_notes: list[str] | None = None
+    note: str | None = None
     last: ReviewEvent | None = None
 
     @property
@@ -182,19 +181,35 @@ def progress(unit_ids: Iterable[str], reviews: dict[str, UnitReview]) -> dict:
     return {"total": total, **counts, "percent_approved": percent}
 
 
-def resume_unit_id(unit_ids: list[str], reviews: dict[str, UnitReview], events: Iterable[ReviewEvent] = ()) -> str | None:
-    """Tìm đơn vị cần nhảy tới khi mở lại văn bản (tiến độ hiện tại):
-    1. Nếu sự kiện mới nhất là 'edit' và đơn vị đó vẫn 'unreviewed' (đang sửa dở, chưa bấm Duyệt) -> nhảy tới đó.
-    2. Tìm đơn vị 'unreviewed' đầu tiên tính từ sau đơn vị vừa thao tác gần nhất (vòng lại từ đầu nếu cần).
-    3. Nếu tất cả đã soát -> trả về đơn vị thao tác gần nhất hoặc đơn vị đầu tiên.
+def resume_unit_id(
+    unit_ids: list[str],
+    reviews: dict[str, UnitReview],
+    events: Iterable[ReviewEvent] = (),
+    reviewer: str | None = None,
+    saved_unit_id: str | None = None,
+) -> str | None:
+    """Tìm đơn vị cần nhảy tới khi mở lại văn bản (ưu tiên tiến trình của tài khoản `reviewer` hiện tại):
+    1. Nếu tài khoản có `saved_unit_id` (lưu trong bảng tiến trình cá nhân) và đơn vị đó đang sửa dở -> mở ngay.
+    2. Tìm sự kiện mới nhất của chính `reviewer` đó (nếu chưa có thì xét sự kiện chung).
+    3. Nếu đơn vị vừa thao tác vẫn 'unreviewed' -> giữ nguyên; nếu đã duyệt xong -> nhảy tới đơn vị 'unreviewed' kế tiếp.
     """
     if not unit_ids:
         return None
     known = set(unit_ids)
-    last_unit = None
-    for ev in events:
-        if ev.unit_id in known:
-            last_unit = ev.unit_id
+
+    if saved_unit_id and saved_unit_id in known:
+        st = reviews.get(saved_unit_id)
+        if st is None or st.status == "unreviewed":
+            return saved_unit_id
+
+    all_events = [ev for ev in events if ev.unit_id in known]
+    user_events = [
+        ev for ev in all_events
+        if reviewer and ev.reviewer.strip().lower() == reviewer.strip().lower()
+    ]
+    target_events = user_events if user_events else all_events
+
+    last_unit = target_events[-1].unit_id if target_events else (saved_unit_id if saved_unit_id in known else None)
 
     if last_unit:
         last_state = reviews.get(last_unit)
@@ -210,6 +225,20 @@ def resume_unit_id(unit_ids: list[str], reviews: dict[str, UnitReview], events: 
         if st is None or st.status == "unreviewed":
             return uid
     return last_unit or unit_ids[0]
+
+
+def _edit_distance_seq(seq_a: list[str] | str, seq_b: list[str] | str) -> int:
+    """Tính khoảng cách chỉnh sửa (Số thao tác Insert + Delete + Substitute) từ opcodes của SequenceMatcher."""
+    matcher = SequenceMatcher(None, seq_a, seq_b)
+    edits = 0
+    for tag, i1, i2, j1, j2 in matcher.get_opcodes():
+        if tag == "replace":
+            edits += max(i2 - i1, j2 - j1)
+        elif tag == "delete":
+            edits += i2 - i1
+        elif tag == "insert":
+            edits += j2 - j1
+    return edits
 
 
 def extract_char_diffs(before: str, after: str) -> list[dict]:
@@ -228,31 +257,54 @@ def extract_char_diffs(before: str, after: str) -> list[dict]:
     return diffs
 
 
+def build_inline_diff_html(before: str, after: str) -> str:
+    """Tạo chuỗi HTML tô đỏ chỗ OCR đọc sai (<del>) và tô xanh chỗ đã sửa (<ins>) để đối chiếu trực quan."""
+    import html
+    before_norm = normalize_text(before)
+    after_norm = normalize_text(after)
+    matcher = SequenceMatcher(None, before_norm, after_norm)
+    parts: list[str] = []
+    for tag, i1, i2, j1, j2 in matcher.get_opcodes():
+        b_esc = html.escape(before_norm[i1:i2])
+        a_esc = html.escape(after_norm[j1:j2])
+        if tag == "equal":
+            parts.append(b_esc)
+        elif tag == "delete":
+            parts.append(f'<del class="diff-del" title="OCR đọc dư/sai">{b_esc}</del>')
+        elif tag == "insert":
+            parts.append(f'<ins class="diff-ins" title="Chữ đúng thêm vào">{a_esc}</ins>')
+        elif tag == "replace":
+            parts.append(f'<del class="diff-del" title="OCR đọc sai">{b_esc}</del><ins class="diff-ins" title="Đã sửa lại">{a_esc}</ins>')
+    return "".join(parts)
+
+
 def _suggest_solution(ocr_read: str, corrected_to: str, reason: str | None) -> str:
-    """Đưa ra giải pháp khắc phục dựa trên mẫu lỗi ký tự OCR và nguyên nhân ghi nhận."""
     reason_lower = (reason or "").lower()
     if "mờ" in reason_lower or "nhòe" in reason_lower or "scan" in reason_lower:
-        return "Tăng DPI khi tiền xử lý ảnh (300 DPI), khử nhiễu và nhị phân hóa thích nghi (adaptive thresholding) trước khi OCR."
+        return "Tiền xử lý ảnh ở 300 DPI, khử nhiễu Gaussian và nhị phân hóa thích nghi (Adaptive Thresholding)."
     if (ocr_read.lower() == "d" and corrected_to.lower() == "đ") or ("d" in ocr_read and "đ" in corrected_to):
-        return "Bổ sung quy tắc hậu xử lý từ điển tiếng Việt và kiểm tra thứ tự Điểm a, b, c, d, đ trong văn bản pháp luật."
+        return "Áp dụng luật thứ tự Điểm pháp lý Việt Nam (a, b, c, d, đ, e, g) và từ điển hậu xử lý."
     if any(c in ocr_read + corrected_to for c in ("0", "O", "1", "l", "I", "5", "S")):
-        return "Áp dụng ràng buộc ngữ cảnh số/chữ (regex kiểm tra số hiệu, ngày tháng, khoản/điểm) để phân biệt ký tự đồng형."
+        return "Ràng buộc ngữ cảnh số/chữ bằng Regex cho số hiệu văn bản, ngày tháng và Khoản/Điểm."
     if not ocr_read.strip() and corrected_to.strip():
-        return "Kiểm tra vùng cắt dòng (line segmentation) hoặc lề trang scan để tránh bỏ sót ký tự đầu/cuối dòng."
+        return "Mở rộng vùng cắt dòng (Line Segmentation Padding) để không mất ký tự sát lề."
     if ocr_read.strip() and not corrected_to.strip():
-        return "Lọc nhiễu vết bẩn/dấu mộc đỏ trên trang scan để OCR không nhận nhầm thành ký tự rác."
-    if "dấu" in reason_lower or (ocr_read.strip() and corrected_to.strip() and len(ocr_read) == len(corrected_to)):
-        return "Dùng mô hình ngôn ngữ/từ điển tiếng Việt (spell-check hậu xử lý) để sửa lỗi mất/nhầm dấu thanh và dấu mũ."
-    return "Cập nhật tập từ điển chuyên ngành Pháp lý - Thuế - Kế toán và bổ sung mẫu lỗi này vào bộ quy tắc hậu xử lý OCR."
+        return "Lọc kênh màu đỏ (HSV Masking) để loại bỏ con dấu mộc đè lên chữ."
+    return "Hậu xử lý bằng mô hình ngôn ngữ (Vietnamese Legal LM) và từ điển Thuế - Kế toán."
 
 
 def build_ocr_report(doc: LegalDocument, reviews: dict[str, UnitReview]) -> dict:
-    """Tính độ chính xác OCR (%) trên các đơn vị đã duyệt (nhãn chuẩn) và thống kê chi tiết lỗi ký tự OCR."""
+    """Tính bộ thang đo độ chính xác khoa học (CER/CAR, WER/WAR, UEM, SFI, Composite Score) và thống kê lỗi."""
     approved_units = 0
+    reviewed_units = 0
+    structure_error_units = 0
     exact_match_units = 0
-    total_chars = 0
-    matched_chars = 0.0
     edited_units_count = 0
+
+    total_gt_chars = 0
+    total_char_edits = 0
+    total_gt_words = 0
+    total_word_edits = 0
 
     pair_counter: Counter[tuple[str, str]] = Counter()
     reason_counter: Counter[str] = Counter()
@@ -262,6 +314,11 @@ def build_ocr_report(doc: LegalDocument, reviews: dict[str, UnitReview]) -> dict
         state = reviews.get(unit.unit_id)
         current_text = normalize_text(unit.content)
         orig_text = normalize_text(state.original_content) if (state and state.original_content is not None) else current_text
+
+        if state and state.status != "unreviewed":
+            reviewed_units += 1
+            if state.status == "structure_error":
+                structure_error_units += 1
 
         if state and state.edit_count > 0:
             edited_units_count += 1
@@ -287,21 +344,30 @@ def build_ocr_report(doc: LegalDocument, reviews: dict[str, UnitReview]) -> dict
 
         if state and state.status == "approved":
             approved_units += 1
+            gt_chars = max(len(current_text), 1)
+            gt_words_list = current_text.split()
+            gt_words = max(len(gt_words_list), 1)
+            total_gt_chars += gt_chars
+            total_gt_words += gt_words
+
             if state.edit_count == 0 or orig_text == current_text:
                 exact_match_units += 1
-                char_len = max(len(current_text), 1)
-                total_chars += char_len
-                matched_chars += char_len
             else:
-                ratio = SequenceMatcher(None, orig_text, current_text).ratio()
-                char_len = max(len(current_text), len(orig_text), 1)
-                total_chars += char_len
-                matched_chars += ratio * char_len
+                total_char_edits += _edit_distance_seq(orig_text, current_text)
+                total_word_edits += _edit_distance_seq(orig_text.split(), gt_words_list)
 
-    char_accuracy = round(100.0 * matched_chars / total_chars, 2) if total_chars > 0 else None
-    unit_accuracy = round(100.0 * exact_match_units / approved_units, 2) if approved_units > 0 else None
+    cer = round(100.0 * total_char_edits / total_gt_chars, 2) if total_gt_chars > 0 else None
+    car = round(max(0.0, 100.0 - cer), 2) if cer is not None else None
+    wer = round(100.0 * total_word_edits / total_gt_words, 2) if total_gt_words > 0 else None
+    war = round(max(0.0, 100.0 - wer), 2) if wer is not None else None
+    uem = round(100.0 * exact_match_units / approved_units, 2) if approved_units > 0 else None
+    sfi = round(100.0 * (1.0 - structure_error_units / reviewed_units), 2) if reviewed_units > 0 else None
 
-    common_Substitutions = [
+    composite = None
+    if car is not None and war is not None and uem is not None and sfi is not None:
+        composite = round(0.4 * car + 0.3 * war + 0.2 * sfi + 0.1 * uem, 2)
+
+    common_substitutions = [
         {
             "ocr_read": k[0],
             "corrected_to": k[1],
@@ -313,13 +379,19 @@ def build_ocr_report(doc: LegalDocument, reviews: dict[str, UnitReview]) -> dict
 
     return {
         "approved_units": approved_units,
+        "reviewed_units": reviewed_units,
         "total_units": len(doc.legal_units),
         "edited_units": edited_units_count,
         "exact_match_units": exact_match_units,
-        "char_accuracy_percent": char_accuracy,
-        "unit_accuracy_percent": unit_accuracy,
+        "cer_percent": cer,
+        "char_accuracy_percent": car,
+        "wer_percent": wer,
+        "word_accuracy_percent": war,
+        "unit_accuracy_percent": uem,
+        "structural_fidelity_percent": sfi,
+        "composite_score": composite,
         "reasons_summary": [{"reason": r, "count": c} for r, c in reason_counter.most_common()],
-        "common_substitutions": common_Substitutions,
+        "common_substitutions": common_substitutions,
         "unit_errors": unit_errors,
     }
 
@@ -337,24 +409,3 @@ def build_export(doc: LegalDocument, reviews: dict[str, UnitReview]) -> tuple[di
         "parent_not_exported": orphans,
     }
     return data, stats
-
-
-def build_inline_diff_html(before: str, after: str) -> str:
-    """Tạo chuỗi HTML tô đỏ chỗ OCR đọc sai (<del>) và tô xanh chỗ đã sửa (<ins>) để đối chiếu trực quan."""
-    import html
-    before_norm = normalize_text(before)
-    after_norm = normalize_text(after)
-    matcher = SequenceMatcher(None, before_norm, after_norm)
-    parts: list[str] = []
-    for tag, i1, i2, j1, j2 in matcher.get_opcodes():
-        b_esc = html.escape(before_norm[i1:i2])
-        a_esc = html.escape(after_norm[j1:j2])
-        if tag == "equal":
-            parts.append(b_esc)
-        elif tag == "delete":
-            parts.append(f'<del class="diff-del" title="OCR đọc dư/sai">{b_esc}</del>')
-        elif tag == "insert":
-            parts.append(f'<ins class="diff-ins" title="Chữ đúng thêm vào">{a_esc}</ins>')
-        elif tag == "replace":
-            parts.append(f'<del class="diff-del" title="OCR đọc sai">{b_esc}</del><ins class="diff-ins" title="Đã sửa lại">{a_esc}</ins>')
-    return "".join(parts)

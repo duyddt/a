@@ -1,10 +1,10 @@
-{#- Cây Điều → Khoản → Điểm. Nút có con là <details> (thu gọn/mở được, không cần JavaScript); bấm dòng thì HTMX nạp chi tiết
-    và nhảy trang khung trái. Dòng đang chọn đổi highlight bằng một dòng JS nhỏ để không phải vẽ lại cả cây (giữ trạng thái đóng/mở). -#}
+{#- Cây thư mục kiểu Windows File Explorer -#}
 {% macro row(n) -%}
 <button type="button" class="row{% if n.selected %} selected{% endif %}"{% if n.selected %} aria-current="true"{% endif %}
         hx-get="{{ n.url }}" hx-target="#detail" hx-swap="innerHTML"
-        hx-on:click="document.querySelectorAll('#tree .row.selected').forEach(function (e) { e.classList.remove('selected'); e.removeAttribute('aria-current'); }); this.classList.add('selected'); this.setAttribute('aria-current', 'true');">
+        hx-on:click="document.body.classList.remove('editing-single-unit'); document.querySelectorAll('#tree .row.selected').forEach(function (e) { e.classList.remove('selected'); e.removeAttribute('aria-current'); }); this.classList.add('selected'); this.setAttribute('aria-current', 'true');">
   <span id="dot-{{ n.unit_id }}" class="dot st-{{ n.review_status }}" title="{{ n.review_status_label }}" role="img" aria-label="{{ n.review_status_label }}"></span>
+  <span aria-hidden="true">{% if n.children %}📁{% else %}📄{% endif %}</span>
   <span class="label">{{ n.label }}</span>
   <span class="snippet">{{ n.snippet }}</span>
   {% if not n.is_confident %}<span class="tag warn">Không chắc</span>{% endif %}
@@ -22,16 +22,19 @@
 {% endif %}
 {%- endmacro %}
 
-<div class="tree-actions">
-  <button type="button" onclick="document.querySelectorAll('#tree details').forEach(function (d) { d.open = true; })">Mở hết</button>
-  <button type="button" onclick="document.querySelectorAll('#tree details').forEach(function (d) { d.open = false; })">Thu hết</button>
-</div>
-<div id="tree" class="tree">
-  {% for root in tree %}{{ node(root) }}{% endfor %}
-</div>
-<div class="legend">
-  <span><span class="dot st-unreviewed"></span>Chưa soát</span>
-  <span><span class="dot st-approved"></span>Đã duyệt</span>
-  <span><span class="dot st-flagged"></span>Gắn cờ</span>
-  <span><span class="dot st-structure_error"></span>Lỗi cấu trúc</span>
+<div id="explorer-tree-panel">
+  <div class="tree-actions">
+    <strong class="small" style="margin-right:auto;">📂 Cây thư mục pháp lý:</strong>
+    <button type="button" onclick="document.querySelectorAll('#tree details').forEach(function (d) { d.open = true; })">⊞ Mở hết</button>
+    <button type="button" onclick="document.querySelectorAll('#tree details').forEach(function (d) { d.open = false; })">⊟ Thu hết</button>
+  </div>
+  <div id="tree" class="tree">
+    {% for root in tree %}{{ node(root) }}{% endfor %}
+  </div>
+  <div class="legend">
+    <span><span class="dot st-unreviewed"></span>Chưa soát</span>
+    <span><span class="dot st-approved"></span>Đã duyệt</span>
+    <span><span class="dot st-flagged"></span>Gắn cờ</span>
+    <span><span class="dot st-structure_error"></span>Lỗi cấu trúc</span>
+  </div>
 </div>

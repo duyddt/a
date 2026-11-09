@@ -152,3 +152,52 @@ def get_events_of_existing_units(conn) -> list[dict]:
         "JOIN document d ON d.document_id = e.document_id "
         "JOIN legal_unit u ON u.document_pk = d.id AND u.unit_id = e.unit_id ORDER BY e.id"
     ).fetchall()
+
+
+# ---- tài khoản người soát & tiến trình cá nhân ----
+
+def upsert_account(conn, username: str, display_name: str, password_hash: str = "") -> dict:
+    return conn.execute(
+        "INSERT INTO reviewer_account (username, display_name, password_hash) "
+        "VALUES (%s, %s, %s) "
+        "ON CONFLICT (username) DO UPDATE SET display_name = EXCLUDED.display_name "
+        "RETURNING username, display_name, created_at",
+        (username.strip(), (display_name or username).strip(), password_hash),
+    ).fetchone()
+
+
+def list_accounts(conn) -> list[dict]:
+    return conn.execute(
+        "SELECT username, display_name, created_at FROM reviewer_account ORDER BY created_at DESC"
+    ).fetchall()
+
+
+def save_reviewer_progress(conn, username: str, document_id: str, unit_id: str, page: int) -> None:
+    if not username or not username.strip():
+        return
+    conn.execute(
+        "INSERT INTO reviewer_progress (username, document_id, last_unit_id, last_page, updated_at) "
+        "VALUES (%s, %s, %s, %s, now()) "
+        "ON CONFLICT (username, document_id) DO UPDATE SET "
+        "last_unit_id = EXCLUDED.last_unit_id, last_page = EXCLUDED.last_page, updated_at = now()",
+        (username.strip(), document_id, unit_id, page),
+    )
+
+
+def get_reviewer_progress(conn, username: str, document_id: str) -> dict | None:
+    if not username or not username.strip():
+        return None
+    return conn.execute(
+        "SELECT username, document_id, last_unit_id, last_page, updated_at "
+        "FROM reviewer_progress WHERE username = %s AND document_id = %s",
+        (username.strip(), document_id),
+    ).fetchone()
+
+
+def list_reviewer_progress(conn, username: str) -> list[dict]:
+    if not username or not username.strip():
+        return []
+    return conn.execute(
+        "SELECT document_id, last_unit_id, last_page, updated_at FROM reviewer_progress WHERE username = %s",
+        (username.strip(),),
+    ).fetchall()

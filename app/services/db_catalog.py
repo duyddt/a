@@ -106,3 +106,24 @@ class DbCatalog:
             prior = [_event(r) for r in repository.get_unit_events(conn, document_id, unit_id)]
             fields = decide(original, prior, action, reviewer, note, content)
             return _event(repository.insert_event(conn, document_id, unit_id, fields))
+
+    def upsert_account(self, username: str, display_name: str = "") -> dict:
+        with self.pool.connection() as conn:
+            return repository.upsert_account(conn, username, display_name or username)
+
+    def list_accounts(self) -> list[dict]:
+        with self.pool.connection() as conn:
+            return repository.list_accounts(conn)
+
+    def save_progress(self, username: str, document_id: str, unit_id: str, page: int) -> None:
+        if not username or not username.strip():
+            return
+        with self.pool.connection() as conn:
+            repository.upsert_account(conn, username, username)
+            repository.save_reviewer_progress(conn, username, document_id, unit_id, page)
+
+    def get_user_progress(self, username: str, document_id: str) -> dict | None:
+        if not username or not username.strip():
+            return None
+        with self.pool.connection() as conn:
+            return repository.get_reviewer_progress(conn, username, document_id)
