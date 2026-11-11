@@ -193,16 +193,3 @@ $env:TEST_DATABASE_URL = "postgresql://postgres:<mật_khẩu>@localhost:5432/re
 python -m pytest tests/test_db_import.py
 
 ```
-
----
-
-### Cách lưu vào file `README.md` và đẩy lên GitHub
-
-Bạn mở file `README.md` trong VS Code (hoặc Notepad), dán toàn bộ nội dung phía trên vào và lưu lại, sau đó chạy 3 lệnh này trong PowerShell để cập nhật lên GitHub:
-
-```powershell
-git add README.md
-git commit -m "docs: update README with full architecture, RBAC auth, Explorer UI and OCR metrics"
-git push origin main
-
-```

@@ -6,7 +6,7 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 from urllib.parse import quote, unquote
 
-from fastapi import Depends, FastAPI, Form, HTTPException, Request
+from fastapi import Depends, FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -437,8 +437,48 @@ def create_app(settings: Settings | None = None, catalog=None) -> FastAPI:
 
     # ---- CÁC TRANG CHÍNH ----
 
+
+    @app.post("/documents/upload", include_in_schema=False)
+    def upload_document_ui(
+        request: Request,
+        pdf: UploadFile = File(...),
+        document: UploadFile = File(...),
+        replace: bool = Form(False),
+    ):
+        from app.api import MAX_UPLOAD_BYTES
+        from app.services.importer import AlreadyImported
+
+        importer = request.app.state.importer
+        if importer is None:
+            return RedirectResponse(url="/?err=Cần+kết+nối+PostgreSQL+để+thêm+văn+bản", status_code=303)
+        pdf_bytes = pdf.file.read(MAX_UPLOAD_BYTES + 1)
+        json_bytes = document.file.read(MAX_UPLOAD_BYTES + 1)
+        try:
+            res = importer.import_bytes(pdf_bytes, json_bytes, replace=replace)
+        except AlreadyImported as exc:
+            return RedirectResponse(
+                url=f"/?err=Văn+bản+{quote(exc.document_id)}+đã+tồn+tại+(tích+vào+'Ghi+đè'+nếu+muốn+thay+thế)",
+                status_code=303,
+            )
+        except ImportProblem as exc:
+            msg = "; ".join(exc.problems[:3])
+            return RedirectResponse(url=f"/?err={quote(msg)}", status_code=303)
+        return RedirectResponse(url=f"/documents/{quote(res.document_id)}", status_code=303)
+
+    @app.post("/documents/{document_id}/delete", include_in_schema=False)
+    def delete_document_ui(request: Request, document_id: str, catalog=Depends(get_catalog)):
+        user = _current_user_info(request, catalog)
+        if not user or user.get("role") != "admin":
+            return RedirectResponse(url="/?err=Chỉ+Admin+mới+có+quyền+xóa+văn+bản", status_code=303)
+        if hasattr(catalog, "pool"):
+            from app import repository
+            with catalog.pool.connection() as conn:
+                repository.delete_document(conn, document_id)
+            shutil.rmtree(catalog.storage_dir / document_id, ignore_errors=True)
+        return RedirectResponse(url="/?msg=Đã+xóa+văn+bản", status_code=303)
+
     @app.get("/", include_in_schema=False)
-    def document_list(request: Request, guest: int = 0, catalog=Depends(get_catalog)):
+    def document_list(request: Request, guest: int = 0, msg: str = '', err: str = '', catalog=Depends(get_catalog)):
         user = _current_user_info(request, catalog)
         ua = request.headers.get("user-agent", "")
         # Khi người dùng mở trình duyệt thật vào trang chủ mà chưa đăng nhập -> chuyển tới /login
@@ -461,7 +501,7 @@ def create_app(settings: Settings | None = None, catalog=None) -> FastAPI:
                 "current_user": user,
                 "reviewer": current_username,
                 "accounts": _list_accounts(catalog),
-                "user_progress_map": user_progress_map,
+                "user_progress_map": user_progress_map, "msg": msg, "err": err, "can_upload": request.app.state.importer is not None,
             },
         )
 
