@@ -442,17 +442,22 @@ def create_app(settings: Settings | None = None, catalog=None) -> FastAPI:
     def upload_document_ui(
         request: Request,
         pdf: UploadFile = File(...),
-        document: UploadFile = File(...),
+        document: UploadFile | None = File(None),
         replace: bool = Form(False),
     ):
         from app.api import MAX_UPLOAD_BYTES
         from app.services.importer import AlreadyImported
+        from app.services.pdf_parser import auto_build_json_from_pdf
 
         importer = request.app.state.importer
         if importer is None:
             return RedirectResponse(url="/?err=Cần+kết+nối+PostgreSQL+để+thêm+văn+bản", status_code=303)
         pdf_bytes = pdf.file.read(MAX_UPLOAD_BYTES + 1)
-        json_bytes = document.file.read(MAX_UPLOAD_BYTES + 1)
+        json_bytes = b""
+        if document is not None and getattr(document, "filename", ""):
+            json_bytes = document.file.read(MAX_UPLOAD_BYTES + 1)
+        if not json_bytes.strip():
+            json_bytes = auto_build_json_from_pdf(pdf_bytes, pdf.filename or "document.pdf")
         try:
             res = importer.import_bytes(pdf_bytes, json_bytes, replace=replace)
         except AlreadyImported as exc:

@@ -113,14 +113,17 @@ def import_document(
     request: Request,
     response: Response,
     pdf: UploadFile = File(..., description="PDF gốc"),
-    document: UploadFile = File(..., description="document.json theo LegalDocument"),
+    document: UploadFile | None = File(None, description="document.json (nếu bỏ trống sẽ tự trích xuất từ PDF)"),
     replace: bool = Form(False, description="Thay bản cũ nếu đã có cùng document_id"),
 ):
     importer = request.app.state.importer
     if importer is None:
         raise HTTPException(status_code=501, detail="Nhập văn bản cần PostgreSQL (đặt POSTGRES_HOST hoặc DATABASE_URL)")
     pdf_bytes = pdf.file.read(MAX_UPLOAD_BYTES + 1)
-    json_bytes = document.file.read(MAX_UPLOAD_BYTES + 1)
+    from app.services.pdf_parser import auto_build_json_from_pdf
+    json_bytes = document.file.read(MAX_UPLOAD_BYTES + 1) if (document and document.filename) else b''
+    if not json_bytes.strip():
+        json_bytes = auto_build_json_from_pdf(pdf_bytes, pdf.filename or 'document.pdf')
     if len(pdf_bytes) > MAX_UPLOAD_BYTES or len(json_bytes) > MAX_UPLOAD_BYTES:
         raise HTTPException(status_code=413, detail="Tệp quá lớn (tối đa 50 MB mỗi tệp)")
     try:
