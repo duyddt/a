@@ -107,6 +107,22 @@ class DbCatalog:
             fields = decide(original, prior, action, reviewer, note, content)
             return _event(repository.insert_event(conn, document_id, unit_id, fields))
 
+    def get_account(self, username: str) -> dict | None:
+        with self.pool.connection() as conn:
+            return repository.get_account(conn, username)
+
+    def create_account(self, username: str, display_name: str, password_hash: str, role: str = "viewer", is_approved: bool = False) -> dict:
+        with self.pool.connection() as conn:
+            return repository.create_account(conn, username, display_name, password_hash, role, is_approved)
+
+    def update_account_permission(self, username: str, role: str, is_approved: bool) -> dict | None:
+        with self.pool.connection() as conn:
+            return repository.update_account_permission(conn, username, role, is_approved)
+
+    def update_account_password(self, username: str, password_hash: str) -> None:
+        with self.pool.connection() as conn:
+            repository.update_account_password(conn, username, password_hash)
+
     def upsert_account(self, username: str, display_name: str = "") -> dict:
         with self.pool.connection() as conn:
             return repository.upsert_account(conn, username, display_name or username)
@@ -119,7 +135,6 @@ class DbCatalog:
         if not username or not username.strip():
             return
         with self.pool.connection() as conn:
-            repository.upsert_account(conn, username, username)
             repository.save_reviewer_progress(conn, username, document_id, unit_id, page)
 
     def get_user_progress(self, username: str, document_id: str) -> dict | None:

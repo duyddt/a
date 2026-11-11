@@ -4,24 +4,35 @@
 {% block body %}
 <header class="topbar">
   <h1>🗂 Hệ thống Thẩm định Dữ liệu Pháp lý (File Explorer)</h1>
-  <form class="account-bar" method="post" action="/account/login">
-    <input type="hidden" name="redirect_to" value="/">
-    <span>👤 Tài khoản người soát:</span>
-    <input type="text" name="username" value="{{ reviewer }}" list="account-list" placeholder="Nhập tên để lưu tiến trình..." required>
-    <datalist id="account-list">
-      {% for acc in accounts %}<option value="{{ acc.username }}">{{ acc.display_name }}</option>{% endfor %}
-    </datalist>
-    <button type="submit">{% if reviewer %}Đổi tài khoản{% else %}Đăng nhập / Tạo TK{% endif %}</button>
-  </form>
+  <div style="margin-left:auto; display:flex; align-items:center; gap:8px;">
+    {% if current_user %}
+      <span>👤 <strong>{{ current_user.display_name or current_user.username }}</strong> (<code>{{ current_user.username }}</code>)</span>
+      {% if current_user.role == 'admin' %}
+        <span class="tag edited" style="background:#dcfce7; color:#14532d; border-color:#16a34a;">🛡 Admin</span>
+        <a href="/admin/users" class="button-link" style="background:#dbeafe; border-color:#2563eb; color:#1e3a8a;">⚙ Quản lý &amp; Cấp quyền tài khoản</a>
+      {% elif current_user.is_approved %}
+        <span class="tag edited">✓ Đã cấp quyền soát</span>
+      {% else %}
+        <span class="tag warn">👁 Chế độ Chỉ xem (Chờ Admin duyệt quyền)</span>
+      {% endif %}
+      <form method="post" action="/account/logout" style="margin:0;">
+        <button type="submit" class="button-link">Đăng xuất</button>
+      </form>
+    {% else %}
+      <span class="tag warn">👁 Khách (Chỉ xem)</span>
+      <a href="/login" class="button-link" style="background:#0078d4; color:#fff; border-color:#005a9e;">🔐 Đăng nhập / Đăng ký</a>
+    {% endif %}
+  </div>
 </header>
 <main class="narrow">
+  {% if current_user and not current_user.is_approved and current_user.role != 'admin' %}
+  <div style="padding:12px 16px; background:#fffbeb; border:1px solid #f59e0b; color:#92400e; border-radius:6px; margin-bottom:16px;">
+    🔒 <strong>Tài khoản <code>{{ current_user.username }}</code> đang chờ cấp quyền:</strong> Bạn hiện chỉ có thể mở văn bản ở <strong>Chế độ Chỉ xem</strong>. Vui lòng nhờ Admin đăng nhập vào mục <em>Quản lý &amp; Cấp quyền tài khoản</em> để bật quyền soát cho bạn.
+  </div>
+  {% endif %}
+
   <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
     <h2 style="margin:0;">📂 Thư mục Văn bản cần soát</h2>
-    {% if reviewer %}
-      <span class="tag edited" style="font-size:14px; padding:4px 10px;">
-        Đang làm việc dưới tài khoản: <strong>{{ reviewer }}</strong> (Tự động nhảy tới mục đang duyệt dở khi mở văn bản)
-      </span>
-    {% endif %}
   </div>
   {% if not items %}
   <p class="muted">Chưa có văn bản nào. Nhập bằng lệnh <code>python -m app.cli import-dir &lt;thư mục&gt;</code> hoặc qua API <code>POST /api/documents</code> (xem README).</p>

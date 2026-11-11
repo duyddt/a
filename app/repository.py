@@ -154,21 +154,59 @@ def get_events_of_existing_units(conn) -> list[dict]:
     ).fetchall()
 
 
-# ---- tài khoản người soát & tiến trình cá nhân ----
+# ---- tài khoản người soát, phân quyền & tiến trình cá nhân ----
+
+def get_account(conn, username: str) -> dict | None:
+    return conn.execute(
+        "SELECT username, display_name, password_hash, role, is_approved, created_at "
+        "FROM reviewer_account WHERE username = %s",
+        (username.strip(),),
+    ).fetchone()
+
+
+def create_account(conn, username: str, display_name: str, password_hash: str, role: str = "viewer", is_approved: bool = False) -> dict:
+    return conn.execute(
+        "INSERT INTO reviewer_account (username, display_name, password_hash, role, is_approved) "
+        "VALUES (%s, %s, %s, %s, %s) "
+        "ON CONFLICT (username) DO UPDATE SET "
+        "display_name = EXCLUDED.display_name, "
+        "password_hash = CASE WHEN EXCLUDED.password_hash <> '' THEN EXCLUDED.password_hash ELSE reviewer_account.password_hash END, "
+        "role = EXCLUDED.role, "
+        "is_approved = EXCLUDED.is_approved "
+        "RETURNING username, display_name, role, is_approved, created_at",
+        (username.strip(), (display_name or username).strip(), password_hash, role, is_approved),
+    ).fetchone()
+
 
 def upsert_account(conn, username: str, display_name: str, password_hash: str = "") -> dict:
     return conn.execute(
         "INSERT INTO reviewer_account (username, display_name, password_hash) "
         "VALUES (%s, %s, %s) "
         "ON CONFLICT (username) DO UPDATE SET display_name = EXCLUDED.display_name "
-        "RETURNING username, display_name, created_at",
+        "RETURNING username, display_name, role, is_approved, created_at",
         (username.strip(), (display_name or username).strip(), password_hash),
     ).fetchone()
 
 
+def update_account_permission(conn, username: str, role: str, is_approved: bool) -> dict | None:
+    return conn.execute(
+        "UPDATE reviewer_account SET role = %s, is_approved = %s WHERE username = %s "
+        "RETURNING username, display_name, role, is_approved, created_at",
+        (role, is_approved, username.strip()),
+    ).fetchone()
+
+
+def update_account_password(conn, username: str, password_hash: str) -> None:
+    conn.execute(
+        "UPDATE reviewer_account SET password_hash = %s WHERE username = %s",
+        (password_hash, username.strip()),
+    )
+
+
 def list_accounts(conn) -> list[dict]:
     return conn.execute(
-        "SELECT username, display_name, created_at FROM reviewer_account ORDER BY created_at DESC"
+        "SELECT username, display_name, role, is_approved, created_at "
+        "FROM reviewer_account ORDER BY (role = 'admin') DESC, is_approved ASC, created_at DESC"
     ).fetchall()
 
 
@@ -192,12 +230,3 @@ def get_reviewer_progress(conn, username: str, document_id: str) -> dict | None:
         "FROM reviewer_progress WHERE username = %s AND document_id = %s",
         (username.strip(), document_id),
     ).fetchone()
-
-
-def list_reviewer_progress(conn, username: str) -> list[dict]:
-    if not username or not username.strip():
-        return []
-    return conn.execute(
-        "SELECT document_id, last_unit_id, last_page, updated_at FROM reviewer_progress WHERE username = %s",
-        (username.strip(),),
-    ).fetchall()

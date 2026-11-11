@@ -123,7 +123,13 @@
 {% else %}
 <pre class="content">{{ unit.content }}</pre>
 <div class="muted small">{{ unit.unit_id }}</div>
+{% if db_ready is defined and not db_ready %}
 <p class="muted small">Chế độ xem thư mục file: chưa lưu được thao tác thẩm định (cần PostgreSQL, xem README).</p>
+{% elif current_user and not current_user.is_approved and current_user.role != 'admin' %}
+<p class="note">🔒 <strong>Chế độ Chỉ xem:</strong> Tài khoản <code>{{ current_user.username }}</code> chưa được Admin cấp quyền soát nên không thể bấm Duyệt / Sửa chữ. Hãy liên hệ Admin để được cấp quyền.</p>
+{% else %}
+<p class="muted small">Chế độ xem thư mục file: chưa lưu được thao tác thẩm định (cần PostgreSQL, xem README). <a href="/login">Đăng nhập tài khoản có quyền soát</a>.</p>
+{% endif %}
 {% endif %}
 {% else %}
 <p class="muted">Văn bản chưa có đơn vị nào.</p>

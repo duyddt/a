@@ -1,4 +1,3 @@
--- Tài khoản người soát và lưu vị trí tiến trình duyệt theo từng người
 CREATE TABLE IF NOT EXISTS reviewer_account (
     username     text        PRIMARY KEY CHECK (length(btrim(username)) > 0),
     display_name text        NOT NULL,

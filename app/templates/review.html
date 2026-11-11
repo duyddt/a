@@ -3,22 +3,28 @@
 {% block title %}{{ doc.document_no }}{% endblock %}
 {% block body %}
 <header class="topbar">
-  <a href="/" class="button-link">&larr; Danh sách văn bản</a>
+  <a href="/?guest=1" class="button-link">&larr; Danh sách văn bản</a>
   <h1>🗂 {{ doc.title }} <span class="muted">· {{ doc.document_no }}</span></h1>
   <div id="progress">{{ bar(progress) }}</div>
 
-  <!-- Quản lý tài khoản & lưu tiến trình cá nhân -->
-  <form class="account-bar" method="post" action="/account/login">
-    <input type="hidden" name="redirect_to" value="/documents/{{ doc.document_id }}">
-    <span>👤 Tài khoản:</span>
-    <input type="text" name="username" value="{{ reviewer }}" list="account-list" placeholder="Nhập tên tài khoản..." required>
-    <datalist id="account-list">
-      {% for acc in accounts %}<option value="{{ acc.username }}">{{ acc.display_name }}</option>{% endfor %}
-    </datalist>
-    <button type="submit">Lưu / Chuyển TK</button>
-  </form>
-
-  {% if can_review %}<a class="button-link" href="/api/documents/{{ doc.document_id }}/export" download>⬇ Xuất JSON đã duyệt</a>{% endif %}
+  <div style="margin-left:auto; display:flex; align-items:center; gap:8px;">
+    {% if current_user %}
+      <span class="small">👤 <strong>{{ current_user.username }}</strong></span>
+      {% if current_user.role == 'admin' %}
+        <a href="/admin/users" class="button-link" style="background:#dbeafe; border-color:#2563eb; color:#1e3a8a;">⚙ Cấp quyền TK</a>
+      {% elif not current_user.is_approved %}
+        <span class="tag warn">🔒 Chỉ xem (Chờ Admin duyệt)</span>
+      {% else %}
+        <span class="tag edited">✓ Quyền soát</span>
+      {% endif %}
+      <form method="post" action="/account/logout" style="margin:0;">
+        <button type="submit" class="button-link">Đăng xuất</button>
+      </form>
+    {% else %}
+      <a href="/login?next=/documents/{{ doc.document_id }}" class="button-link" style="background:#0078d4; color:#fff;">🔐 Đăng nhập</a>
+    {% endif %}
+    {% if can_review %}<a class="button-link" href="/api/documents/{{ doc.document_id }}/export" download>⬇ Xuất JSON đã duyệt</a>{% endif %}
+  </div>
 </header>
 
 {% include "partials/ocr_report.html" %}
@@ -27,7 +33,7 @@
   <section class="pane left" aria-label="Trang PDF gốc">
     <h2 class="pane-title">
       <span>📄 Bản gốc PDF Scan</span>
-      {% if reviewer %}<span class="muted small">Đang lưu tiến trình của: <strong>{{ reviewer }}</strong></span>{% endif %}
+      {% if reviewer %}<span class="muted small">Tài khoản: <strong>{{ reviewer }}</strong></span>{% endif %}
     </h2>
     {% include "partials/viewer.html" %}
   </section>
@@ -53,7 +59,7 @@
   function enterSingleUnitEditMode() {
     document.body.classList.add("editing-single-unit");
     var readView = document.getElementById("read-only-view");
-    var editDetails = document.getElementById("inline-edit-details");
+    var editDetails = document.querySelector("details.edit-box");
     if (readView) readView.style.display = "none";
     if (editDetails) editDetails.open = true;
     var ta = document.getElementById("inline-edit-textarea");
@@ -62,7 +68,7 @@
   function exitSingleUnitEditMode() {
     document.body.classList.remove("editing-single-unit");
     var readView = document.getElementById("read-only-view");
-    var editDetails = document.getElementById("inline-edit-details");
+    var editDetails = document.querySelector("details.edit-box");
     if (readView) readView.style.display = "block";
     if (editDetails) editDetails.open = false;
   }
