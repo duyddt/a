@@ -1,133 +1,208 @@
-# Web app thẩm định dữ liệu pháp lý
+# Web app thẩm định dữ liệu pháp lý & Phân tích lỗi OCR
 
-Web app thẩm định: nhập một văn bản (PDF gốc + JSON `LegalDocument`), lưu vào PostgreSQL, render ảnh từng trang, trả API, và màn hình hai khung (ảnh trang PDF bên trái, cây Điều → Khoản → Điểm bên phải; bấm một đơn vị thì khung trái nhảy tới trang chứa nó). Người soát có thể Duyệt, Sửa chữ, Gắn cờ, Báo lỗi cấu trúc; mọi thao tác được lưu lại và xuất được thành JSON.
+Hệ thống thẩm định dữ liệu pháp lý (*Human-in-the-loop*) thuộc dự án **Trợ lý AI Pháp lý Thuế – Kế toán**. Ứng dụng cho phép nhập văn bản pháp luật (**PDF gốc + JSON `LegalDocument**`), lưu trữ vào PostgreSQL, render ảnh từng trang PDF, cung cấp REST API và **giao diện đối chiếu hai khung kiểu File Explorer**:
 
-Công nghệ: FastAPI + PostgreSQL + Jinja2 + HTMX. Ảnh trang render bằng `pypdfium2` ngay lúc nhập.
+* **Khung trái (Bản gốc PDF Scan):** Hiển thị ảnh trang PDF gốc sắc nét, tự động nhảy tới trang chứa đơn vị đang chọn, hỗ trợ phóng to/thu nhỏ và chuyển trang nhanh.
+* **Khung phải (File Explorer & Đối chiếu trực tiếp):** Hiển thị cây thư mục pháp lý `Điều → Khoản → Điểm` kèm thanh đường dẫn (*Breadcrumb*) và thanh công cụ *Ribbon* phẳng.
+* **Chế độ Sửa 1 mục tập trung (Inline Focus Mode):** Khi bấm **Sửa chữ**, hệ thống tự động thu ẩn toàn bộ cây cấu trúc để chỉ giữ lại đúng mục đang sửa nằm ngang hàng 1-1 với trang PDF gốc (không dùng cửa sổ pop-up), kèm nút phóng to/thu nhỏ cỡ chữ (`A-` / `A+`) giúp đối chiếu từng dòng dễ dàng.
+* **Tô màu vị trí lỗi (Visual Diff) & Phân tích nguyên nhân OCR:** Tự động đối sánh văn bản bằng thuật toán `SequenceMatcher`, tô đỏ gạch ngang ký tự hệ thống OCR đọc sai và tô xanh ký tự đã sửa đúng ngay trên câu; thống kê tần suất lỗi, nguyên nhân sai và đề xuất giải pháp cải tiến độ chính xác.
+* **Thang đo độ chính xác khoa học:** Đánh giá tự động trên tập nhãn chuẩn đã duyệt (*Ground Truth*) theo chuẩn quốc tế UNLV/ICDAR (**CER/CAR**, **WER/WAR**) kết hợp chỉ số chuyên biệt cho văn bản pháp luật (**UEM**, **SFI**, **Composite Score**).
+* **Quản lý Tài khoản, Phân quyền Admin & Lưu tiến trình cá nhân:** Đăng nhập có mật khẩu (`PBKDF2-HMAC-SHA256`), người dùng tự tạo tài khoản mặc định ở chế độ **Chỉ xem (`viewer`)** cho đến khi được **Admin cấp quyền soát (`reviewer`)**. Tự động lưu vị trí đơn vị và trang đang duyệt của từng tài khoản để khi tắt máy mở lại sẽ nhảy thẳng đến tiến độ hiện tại.
 
-## Chạy bằng Docker Compose (một lệnh)
+**Công nghệ:** Python, FastAPI, PostgreSQL (`psycopg` 3 + `psycopg_pool`), Jinja2, HTMX (tích hợp sẵn `/static/htmx.min.js` chạy offline) và `pypdfium2`.
+
+---
+
+## 1. Chạy bằng Docker Compose (Một lệnh)
 
 ```powershell
-Copy-Item .env.example .env        # rồi mở .env và đặt POSTGRES_PASSWORD (file .env không lên Git)
+Copy-Item .env.example .env        # Mở .env và đặt POSTGRES_PASSWORD (file .env không đưa lên Git)
 docker compose up --build
+
 ```
 
-Mở http://127.0.0.1:8000. Lần đầu API tự chạy migration và nhập mọi văn bản trong `./data` (hiện có Nghị định 254/2026/NĐ-CP, 55 trang, mất khoảng vài chục giây để render ảnh). Khởi động lại thì nhập lại cùng văn bản sẽ bị bỏ qua, không tạo bản trùng. Muốn tắt nhập tự động, đặt `AUTO_IMPORT_DIR=` (rỗng) trong `.env`.
+Mở `[http://127.0.0.1:8000](http://127.0.0.1:8000)`. Lần đầu khởi động, ứng dụng tự động chạy toàn bộ các file migration (`001` đến `004`) và nhập các văn bản trong thư mục `./data` (bao gồm Nghị định `254/2026/NĐ-CP` gồm 55 trang scan). Khi khởi động lại, văn bản có cùng mã băm SHA-256 sẽ được bỏ qua để không tạo bản trùng.
 
-Trang `/docs` liệt kê và cho thử từng endpoint của API. Xóa sạch dữ liệu để làm lại: `docker compose down -v`.
+* Xem và thử nghiệm trực tiếp toàn bộ REST API tại: `[http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)`.
+* Xóa sạch dữ liệu container để khởi tạo lại từ đầu: `docker compose down -v`.
 
-## Nhập một văn bản
+---
 
-Một văn bản = `source.pdf` (PDF gốc) + `document.json` (theo `LegalDocument`/`LegalUnit`, mỗi đơn vị có `source_pages`; mô tả đầy đủ ở `docs/input-format.md` của repo thiết kế).
+## 2. Chạy trực tiếp trên máy (Không cần Docker)
 
-Dòng lệnh (trong container đang chạy):
+### Chế độ đầy đủ chức năng (Có PostgreSQL)
+
+Yêu cầu đã tạo database `review` trong PostgreSQL (`CREATE DATABASE review;`). Mở PowerShell tại thư mục gốc của dự án và chạy:
 
 ```powershell
-docker compose exec api python -m app.cli import --pdf /seed/ND254_2026/source.pdf --json /seed/ND254_2026/document.json
-docker compose exec api python -m app.cli import-dir /seed/ND254_2026
-docker compose exec api python -m app.cli import-all /seed
+$env:DATABASE_URL = "postgresql://postgres:<mật_khẩu>@localhost:5432/review"
+$env:STORAGE_DIR = "storage"
+$env:AUTO_IMPORT_DIR = "data"
+python -m uvicorn app.main:app --reload --port 8080
+
 ```
 
-Thêm `--replace` để thay bản cũ khi đã có cùng `document_id` nhưng nội dung khác. Thư mục `./data` được gắn vào container ở `/seed` (chỉ đọc); để nhập văn bản mới, đặt nó vào `data/<document_id>/` rồi chạy `import-dir`.
+Mở trình duyệt tại: `http://localhost:8080`.
 
-Qua API:
+### Chế độ xem nhanh (Thư mục file – Không cần PostgreSQL)
+
+Nếu không đặt biến môi trường `DATABASE_URL` hoặc `POSTGRES_HOST`, ứng dụng tự động đọc trực tiếp từ `data/<document_id>/{source.pdf,document.json}`. Ở chế độ này, người dùng xem được cây cấu trúc và ảnh trang PDF nhưng không lưu được thao tác thẩm định vào DB.
+
+---
+
+## 3. Cơ chế Tài khoản, Phân quyền (RBAC) & Lưu tiến trình
+
+| Cấp độ quyền (`role`) | Quyền hạn trên hệ thống | Cách cấp quyền |
+| --- | --- | --- |
+| **Khách / Chỉ xem (`viewer`)** | Xem danh sách văn bản, mở cây Điều/Khoản/Điểm, lật trang và phóng to ảnh PDF. Toàn bộ nút *Duyệt / Sửa chữ / Gắn cờ* bị khóa. | Mặc định khi người dùng mới tự đăng ký tại `/login` hoặc chọn *Vào xem nhanh*. |
+| **Người soát (`reviewer`)** | Toàn quyền thực hiện *Duyệt, Sửa chữ, Gắn cờ, Báo lỗi cấu trúc, Bỏ đánh dấu*, ghi nhận nguyên nhân lỗi OCR, xuất JSON đã duyệt và lưu tiến trình cá nhân. | Do **Admin** tạo trực tiếp hoặc bấm **✓ Cấp quyền soát** trong trang Quản trị. |
+| **Quản trị viên (`admin`)** | Toàn quyền của Người soát + Truy cập trang **Quản lý & Cấp quyền tài khoản (`/admin/users`)** để tạo tài khoản mới, cấp quyền soát hoặc thu hồi quyền về Chỉ xem. | Tài khoản quản trị hệ thống. |
+
+* **Lưu tiến trình tự động (`reviewer_progress`):** Mỗi khi người soát chọn đơn vị hoặc thực hiện thao tác thẩm định, hệ thống tự động lưu lại `last_unit_id` và `last_page` gắn với tài khoản đó. Khi tắt máy hoặc đăng nhập lại, hàm `resume_unit_id` tự động mở đúng đơn vị đang sửa dở hoặc đơn vị *"Chưa soát"* kế tiếp.
+
+---
+
+## 4. Thao tác Thẩm định trên Giao diện File Explorer
+
+Khi chọn một đơn vị trong cây cấu trúc, khung trái tự động nhảy tới `source_pages[0]` của đơn vị đó và khung phải hiển thị thanh công cụ phẳng (*Explorer Ribbon*):
+
+| Nút thao tác | Chức năng thực hiện | Trạng thái đơn vị sau thao tác |
+| --- | --- | --- |
+| **✓ Duyệt** | Xác nhận nội dung văn bản, số hiệu và cấp độ cấu trúc khớp hoàn toàn với ảnh PDF gốc. | `Đã duyệt` (Chấm xanh lá) |
+| **✎ Sửa chữ (Chỉ hiện mục này)** | Ẩn toàn bộ cây cấu trúc để tập trung sửa nội dung của riêng mục đang chọn; chọn nguyên nhân lỗi OCR và lưu bản sửa. | Nếu đang `Đã duyệt` sẽ chuyển về `Chưa soát` (để duyệt lại chữ mới); các trạng thái khác giữ nguyên. |
+| **⚑ Gắn cờ** | Đánh dấu đơn vị có điểm nghi ngờ cần kiểm tra thêm (bắt buộc nhập lý do). | `Gắn cờ` (Chấm cam) |
+| **⚠ Báo lỗi cấu trúc** | Báo lỗi tách sai cấp (Khoản thành Điểm...), nhảy số thứ tự hoặc gộp nhầm (bắt buộc nhập lý do). | `Lỗi cấu trúc` (Chấm đỏ) |
+| **↺ Bỏ đánh dấu** | Đưa trạng thái đơn vị về lại trạng thái chưa kiểm tra. | `Chưa soát` (Chấm xám) |
+
+* **Lịch sử bất biến (Append-only):** Mọi sự kiện được ghi thêm vào bảng `review_event`. Trigger `review_event_no_update_delete` trong PostgreSQL chặn mọi lệnh `UPDATE` và `DELETE`. Văn bản gốc trong bảng `legal_unit` được giữ nguyên vẹn 100%.
+
+---
+
+## 5. Thang đo Độ chính xác Hệ thống & Phân tích Lỗi OCR
+
+Tuân thủ nguyên tắc **"Không đoán"**, hệ thống chỉ tính toán độ chính xác trên các đơn vị **đã được người soát duyệt (`approved`)** — đóng vai trò là nhãn chuẩn (*Ground Truth*):
+
+1. **CAR & CER (Character Accuracy / Error Rate – Chuẩn UNLV ISRI & ICDAR):**
+
+$$\text{CER} = \frac{S + D + I}{N_{\text{GT}}}, \quad \text{CAR} = \max(0, 100\% - \text{CER})$$
+
+
+
+*(Trong đó $S, D, I$ là số ký tự thay thế, xóa, thêm giữa bản OCR gốc và bản chuẩn đã duyệt; $N_{\text{GT}}$ là tổng số ký tự bản chuẩn).*
+2. **WAR & WER (Word Accuracy / Error Rate):** Đo tỷ lệ chính xác và tỷ lệ lỗi ở cấp độ từ/tiếng (đặc biệt nhạy với lỗi mất dấu hoặc sai dấu thanh trong tiếng Việt).
+3. **UEM (Unit Exact Match):** Tỷ lệ % đơn vị pháp lý được trích xuất chính xác hoàn toàn ngay từ đầu (được bấm *Duyệt* mà không cần qua bước *Sửa chữ*).
+4. **SFI (Structural Fidelity Index):** Chỉ số toàn vẹn cấu trúc phân cấp `Điều → Khoản → Điểm` (tỷ lệ đơn vị đã soát không bị lỗi cấu trúc).
+5. **Điểm tổng hợp hệ thống (Composite Legal-OCR Score):**
+
+$$\text{Score} = 0.4 \times \text{CAR} + 0.3 \times \text{WAR} + 0.2 \times \text{SFI} + 0.1 \times \text{UEM}$$
+
+
+
+---
+
+## 6. Nhập văn bản mới (CLI & API)
+
+Mỗi văn bản gồm 2 tệp: `source.pdf` và `document.json`.
+
+**Qua dòng lệnh (CLI):**
 
 ```powershell
-curl.exe -F "pdf=@data/ND254_2026/source.pdf" -F "document=@data/ND254_2026/document.json" http://127.0.0.1:8000/api/documents
+python -m app.cli import --pdf data/ND254_2026/source.pdf --json data/ND254_2026/document.json
+python -m app.cli import-dir data/ND254_2026
+python -m app.cli import-all data
+
 ```
 
-Kết quả: `201` đã tạo (`created`/`replaced`), `200` văn bản y hệt đã có (`unchanged`), `409` cùng `document_id` nhưng nội dung khác (gửi thêm `-F replace=true` để thay), `422` JSON hoặc PDF sai, kèm danh sách lỗi cụ thể (sai `unit_id`, thiếu `source_pages`, số trang ngoài PDF, đơn vị cha không có trong file...). Mã băm tính trên PDF và JSON đã chuẩn hóa, nên đổi định dạng JSON (thụt lề, thứ tự khóa) không làm thành bản mới.
+*(Thêm cờ `--replace` nếu muốn ghi đè văn bản đã có cùng `document_id` nhưng khác nội dung).*
 
-## API
-
-| Endpoint | Trả về |
-|---|---|
-| `GET /api/documents` | Danh sách văn bản: số hiệu, tên, số trang, số đơn vị |
-| `GET /api/documents/{document_id}` | Chi tiết kèm `tree`: cây Điều → Khoản → Điểm dựng theo `parent_unit_id`, giữ đúng thứ tự trong file. Mỗi nút có `label` (Điều 9, Khoản 1, Điểm a), `title`, `snippet`, `is_confident`, `review_status`, `source_pages`, `children` |
-| `GET /api/documents/{document_id}/units/{unit_id}` | Một đơn vị đủ nội dung (`LegalUnit`) |
-| `GET /api/documents/{document_id}/pages/{n}` | Ảnh PNG trang thứ n (đếm từ 1) |
-| `POST /api/documents` | Nhập văn bản (xem trên) |
-| `GET/POST /api/documents/{document_id}/units/{unit_id}/reviews` | Lịch sử / ghi một thao tác thẩm định (xem mục Thẩm định) |
-| `GET /api/documents/{document_id}/progress` | Số đơn vị theo trạng thái |
-| `GET /api/documents/{document_id}/export` | Tải JSON các đơn vị đã duyệt |
-
-Khung trái nhảy tới `source_pages[0]` của đơn vị được bấm. `review_status` (`unreviewed`, `approved`, `flagged`, `structure_error`) tính từ lịch sử thẩm định.
-
-## Thẩm định
-
-Mở một văn bản, bấm một dòng trong cây thì khung trái nhảy tới trang, khung chi tiết bên phải hiện nội dung và các nút:
-
-| Nút | Việc làm | Trạng thái sau đó |
-|---|---|---|
-| Duyệt | Chữ, ranh giới, số hiệu đều đúng | Đã duyệt (xanh) |
-| Gắn cờ | Nghi ngờ, cần người khác xem; bắt buộc ghi lý do | Gắn cờ (cam) |
-| Báo lỗi cấu trúc | Sai cấp (Khoản thành Điểm...), thiếu hoặc thừa đơn vị; bắt buộc ghi lý do | Lỗi cấu trúc (đỏ) |
-| Sửa chữ | Sửa nội dung cho đúng ảnh trang; bản trước khi sửa nằm trong lịch sử | Nếu đang "Đã duyệt" thì về "Chưa soát" (chữ đã đổi, cần duyệt lại); trạng thái khác giữ nguyên |
-| Bỏ đánh dấu | Đưa về chưa soát | Chưa soát (xám) |
-
-- Ô "Người soát" bắt buộc, được nhớ trong trình duyệt (cookie `reviewer`). Chưa có đăng nhập: tên do người soát tự gõ.
-- **Lịch sử chỉ ghi thêm.** Mỗi thao tác là một dòng ở bảng `review_event`; trigger trong PostgreSQL từ chối UPDATE và DELETE. Trạng thái hiện tại của đơn vị luôn được tính lại từ lịch sử. Bản gốc trong `legal_unit` không bao giờ bị sửa; nội dung hiển thị và xuất ra là bản sửa gần nhất.
-- Tải lại trang hoặc khởi động lại container vẫn còn (dữ liệu nằm trong volume của PostgreSQL).
-- Thanh tiến độ ở đầu màn hình soát và ở danh sách: đã duyệt / tổng số đơn vị, kèm số gắn cờ và lỗi cấu trúc.
-- **Xuất JSON:** nút "Xuất JSON đã duyệt" hoặc `GET /api/documents/{id}/export`. Tệp chỉ gồm đơn vị đang ở trạng thái "Đã duyệt", cùng các trường như `LegalDocument`, nội dung là bản hiện hành. Nếu một đơn vị đã duyệt mà đơn vị cha chưa duyệt thì `parent_unit_id` trỏ tới đơn vị không có trong tệp; số trường hợp này nằm ở header `X-Export-Parent-Missing`.
-
-API: `POST /api/documents/{id}/units/{unit_id}/reviews` với `{"action": "approve|edit|flag|structure_error|reset", "reviewer": "Duy", "note": "...", "content": "..."}`; `GET` cùng đường dẫn trả lịch sử (mới nhất trước); `GET /api/documents/{id}/progress`; `GET /api/documents/{id}/export`.
-
-## Chạy không cần Docker
-
-Không đặt `POSTGRES_HOST` hay `DATABASE_URL` thì app chạy ở chế độ xem nhanh: đọc thư mục `data/<document_id>/{source.pdf,document.json}` trực tiếp, không cần PostgreSQL (không nhập được văn bản và không lưu được thao tác thẩm định; các nút thẩm định ẩn đi).
+**Qua REST API:**
 
 ```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements-dev.txt
-uvicorn app.main:app --reload
+curl.exe -F "pdf=@data/ND254_2026/source.pdf" -F "document=@data/ND254_2026/document.json" http://127.0.0.1:8080/api/documents
+
 ```
 
-Muốn dùng PostgreSQL có sẵn: đặt `DATABASE_URL=postgresql://user:matkhau@host:5432/dbname` (hoặc `POSTGRES_HOST/PORT/USER/PASSWORD/DB`) và `STORAGE_DIR` (nơi lưu PDF và ảnh trang).
+---
 
-## Test
+## 7. Danh sách Endpoint REST API (`/api`)
+
+| Phương thức & Đường dẫn | Mô tả chức năng |
+| --- | --- |
+| `GET /api/documents` | Danh sách văn bản kèm số trang, số đơn vị và tiến độ thẩm định. |
+| `GET /api/documents/{document_id}` | Chi tiết văn bản kèm cây `tree` (`Điều → Khoản → Điểm`) giữ đúng thứ tự trong file. |
+| `GET /api/documents/{document_id}/units/{unit_id}` | Thông tin và nội dung hiện hành của một đơn vị (`LegalUnit`). |
+| `GET /api/documents/{document_id}/pages/{page}` | Ảnh PNG của trang PDF thứ `page` (đếm từ 1). |
+| `POST /api/documents` | Tải lên và nhập một văn bản mới (`pdf` + `document` + `replace`). |
+| `GET /api/documents/{document_id}/progress` | Thống kê số lượng đơn vị theo từng trạng thái thẩm định. |
+| `GET /api/documents/{document_id}/ocr-report` | Báo cáo chi tiết độ chính xác (`CAR, WAR, UEM, SFI, Score`), danh sách lỗi ký tự OCR và giải pháp khắc phục. |
+| `GET /api/documents/{document_id}/units/{unit_id}/reviews` | Lịch sử các sự kiện thẩm định của một đơn vị (mới nhất xếp trước). |
+| `POST /api/documents/{document_id}/units/{unit_id}/reviews` | Ghi nhận một thao tác thẩm định (`approve`, `edit`, `flag`, `structure_error`, `reset`). |
+| `GET /api/documents/{document_id}/export` | Xuất tệp JSON chuẩn `LegalDocument` chỉ gồm các đơn vị **Đã duyệt** kèm nội dung đã sửa mới nhất. |
+
+---
+
+## 8. Cấu trúc thư mục dự án
+
+```text
+review-app/
+├── docker-compose.yml, Dockerfile, .env.example
+├── migrations/
+│   ├── 001_init.sql               # Bảng document, legal_unit
+│   ├── 002_review.sql             # Bảng review_event (chỉ ghi thêm, trigger chặn UPDATE/DELETE)
+│   ├── 003_accounts.sql           # Bảng reviewer_account & reviewer_progress (lưu tiến trình)
+│   └── 004_auth_roles.sql         # Phân quyền role ('admin', 'reviewer', 'viewer') & is_approved
+├── app/
+│   ├── main.py                    # FastAPI app, routes giao diện File Explorer & xác thực RBAC
+│   ├── api.py, schemas.py         # REST API JSON (/api) và Pydantic schemas (/docs)
+│   ├── config.py, db.py           # Cấu hình biến môi trường, connection pool & auto-migration
+│   ├── repository.py              # Toàn bộ truy vấn SQL thuần (psycopg 3)
+│   ├── cli.py                     # Công cụ dòng lệnh nhập văn bản (import / import-dir / import-all)
+│   ├── contracts/                 # Model LegalDocument, LegalUnit & quy ước định danh
+│   ├── services/
+│   │   ├── auth.py                # Băm mật khẩu PBKDF2-HMAC-SHA256 & ký session token
+│   │   ├── review.py              # Luật thẩm định, Visual Diff, thang đo CER/WER/UEM/SFI, xuất JSON
+│   │   ├── importer.py            # Kiểm tra đầu vào, SHA-256 hash, staging & render PDF
+│   │   ├── db_catalog.py          # Nguồn dữ liệu PostgreSQL
+│   │   ├── store.py               # Nguồn dữ liệu chế độ thư mục file
+│   │   └── tree.py, views.py, render_pdf.py, models.py
+│   ├── templates/                 # Giao diện Jinja2 (login, admin_users, list, review, partials/)
+│   └── static/                    # CSS File Explorer (style.css) & htmx.min.js nội bộ
+├── data/ND254_2026/               # Dữ liệu Nghị định 254/2026/NĐ-CP (source.pdf, document.json, ocr_pages/)
+├── scripts/
+│   ├── build_legal_document.py    # Script dựng document.json từ ocr_pages/*.txt
+│   └── make_sample_pdf.py         # Script tạo PDF mẫu cho kiểm thử
+└── tests/                         # Bộ kiểm thử tự động pytest
+
+```
+
+---
+
+## 9. Kiểm thử (Testing)
+
+Chạy toàn bộ các bài kiểm thử đơn vị và kiểm thử route (không yêu cầu DB):
 
 ```powershell
-pytest
+python -m pytest
+
 ```
 
-Phần không cần DB chạy luôn: model, kiểm tra đầu vào khi nhập, mã băm, ghi và render tệp, dựng cây, template, chế độ thư mục file và các route/API (nếu đã cài `fastapi`, `httpx`). Test với PostgreSQL thật (`tests/test_db_import.py`: nhập, nhập lại, xung đột, thay thế, từ chối dữ liệu sai, API, CLI) tự bỏ qua nếu không đặt `TEST_DATABASE_URL`. Test đó (nay gồm cả luồng thẩm định: các thao tác, lịch sử không sửa được, sửa chữ, nhập lại, xuất JSON) XÓA các bảng `review_event`, `document`, `legal_unit`, `schema_migrations` của DB trỏ tới, nên dùng một DB riêng:
+Để chạy thêm bộ kiểm thử tích hợp trên PostgreSQL thật (`tests/test_db_import.py`), trỏ biến `TEST_DATABASE_URL` vào một database dành riêng cho việc test (lưu ý: test sẽ xóa các bảng trong DB đó để kiểm tra lại từ đầu):
 
 ```powershell
-$env:TEST_DATABASE_URL = "postgresql://review:<mật khẩu>@localhost:5432/review_test"
-pytest tests/test_db_import.py
-```
-
-## 2. Tiêu chuẩn Thẩm định và 4 Thao tác trên Giao diện
+$env:TEST_DATABASE_URL = "postgresql://postgres:<mật_khẩu>@localhost:5432/review_test"
+python -m pytest tests/test_db_import.py
 
 ```
-docker-compose.yml, Dockerfile, .env.example
-migrations/001_init.sql    # bảng document, legal_unit (áp dụng tự động khi API khởi động)
-migrations/002_review.sql  # bảng review_event (chỉ ghi thêm)
-app/
-  main.py                  # FastAPI: giao diện (Jinja2 + HTMX) và gắn router API
-  api.py, schemas.py       # API JSON và định dạng response (hiện ở /docs)
-  config.py, db.py         # cấu hình từ biến môi trường, kết nối + migration
-  repository.py            # mọi câu SQL
-  cli.py                   # lệnh nhập
-  contracts/               # model TỐI GIẢN, TẠM THỜI theo docs/contracts.md
-  services/
-    importer.py            # kiểm tra, mã băm, render, lưu (idempotent)
-    db_catalog.py, store.py  # nguồn dữ liệu: PostgreSQL / thư mục file
-    review.py              # quy tắc thẩm định: trạng thái tính từ lịch sử, kiểm tra thao tác, tiến độ, xuất
-    tree.py, views.py, render_pdf.py, models.py
-  templates/, static/
-data/ND254_2026/           # Nghị định 254: source.pdf, document.json (BẢN NHÁP), ocr_pages/
-scripts/build_legal_document.py   # ocr_pages/*.txt -> document.json
-tests/
+
+---
+
+### Cách lưu vào file `README.md` và đẩy lên GitHub
+
+Bạn mở file `README.md` trong VS Code (hoặc Notepad), dán toàn bộ nội dung phía trên vào và lưu lại, sau đó chạy 3 lệnh này trong PowerShell để cập nhật lên GitHub:
+
+```powershell
+git add README.md
+git commit -m "docs: update README with full architecture, RBAC auth, Explorer UI and OCR metrics"
+git push origin main
+
 ```
-
-## Lưu ý
-
-- **`app/contracts/` là bản tạm.** Khi có repo chính, thay cả thư mục này bằng bản sao nguyên văn `backend/app/contracts/`. Trường `source_pages` là trường đề xuất thêm, cần PR riêng vào repo chính.
-- **`data/ND254_2026/document.json` là bản nháp**, dựng từ bản chép chữ ảnh scan, chưa ai đối chiếu từng chữ. Ngày ban hành, hiệu lực và `status` lấy từ chính văn bản, chưa xác minh với nguồn chính thức. Phụ lục (trang 48 đến 55) là một đơn vị chưa tách cấu trúc; các tầng a.1), a.2.1) nằm trong nội dung của Điểm cha. Đây là thứ người soát cần kiểm tra bằng app. Dựng lại sau khi sửa bản chép: `python scripts/build_legal_document.py --pages-dir data/ND254_2026/ocr_pages --out data/ND254_2026/document.json`.
-- **`--replace` sau khi đã thẩm định:** lịch sử thẩm định được giữ (khớp theo `unit_id`, không bị xóa), nên một đơn vị đã duyệt vẫn hiện "Đã duyệt" và bản sửa chữ vẫn được áp dụng dù nội dung nhập lại đã khác. App chưa phát hiện việc này. Sau khi nhập lại văn bản đã soát, cần xem lại các đơn vị đổi nội dung. Tốt nhất đừng `--replace` khi việc soát đã bắt đầu.
-- Chưa có đăng nhập; tên người soát do người dùng tự gõ, nên không dùng làm bằng chứng ai đã làm gì.
-- Sửa chữ một Điều không tự sửa nội dung các Khoản con (và ngược lại); mỗi đơn vị được sửa riêng.
-- HTMX nạp từ `unpkg.com`; máy demo cần có mạng, hoặc tải `htmx.min.js` về `app/static/` và sửa `base.html`.
-- Cây có hai dòng JavaScript nhỏ: đổi highlight dòng đang chọn (để giữ trạng thái đóng/mở của cây) và nút "Mở hết / Thu hết".
