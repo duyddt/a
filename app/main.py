@@ -1,3 +1,4 @@
+import shutil
 ﻿"""FastAPI: API JSON (/api, xem /docs) và giao diện kiểu File Explorer có Xác thực & Phân quyền Admin."""
 from __future__ import annotations
 
@@ -475,12 +476,20 @@ def create_app(settings: Settings | None = None, catalog=None) -> FastAPI:
         user = _current_user_info(request, catalog)
         if not user or user.get("role") != "admin":
             return RedirectResponse(url="/?err=Chỉ+Admin+mới+có+quyền+xóa+văn+bản", status_code=303)
-        if hasattr(catalog, "pool"):
-            from app import repository
-            with catalog.pool.connection() as conn:
-                repository.delete_document(conn, document_id)
-            shutil.rmtree(catalog.storage_dir / document_id, ignore_errors=True)
-        return RedirectResponse(url="/?msg=Đã+xóa+văn+bản", status_code=303)
+        try:
+            if hasattr(catalog, "pool"):
+                from app import repository
+                with catalog.pool.connection() as conn:
+                    repository.delete_document(conn, document_id)
+                    conn.execute("DELETE FROM reviewer_progress WHERE document_id = %s", (document_id,))
+                shutil.rmtree(catalog.storage_dir / document_id, ignore_errors=True)
+            elif hasattr(catalog, "data_dir"):
+                shutil.rmtree(catalog.data_dir / document_id, ignore_errors=True)
+                if hasattr(catalog, "_cache"):
+                    catalog._cache.pop(document_id, None)
+        except Exception as exc:
+            log.warning("Lỗi khi xóa thư mục văn bản %s: %s", document_id, exc)
+        return RedirectResponse(url=f"/?msg=Đã+xóa+văn+bản+{quote(document_id)}", status_code=303)
 
     @app.get("/", include_in_schema=False)
     def document_list(request: Request, guest: int = 0, msg: str = '', err: str = '', catalog=Depends(get_catalog)):
