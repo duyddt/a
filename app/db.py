@@ -10,9 +10,20 @@ MIGRATIONS_DIR = Path(__file__).resolve().parent.parent / "migrations"
 _MIGRATION_LOCK = 727274  # khóa tư vấn: hai tiến trình khởi động cùng lúc không chạy migration song song
 
 
-def create_pool(conninfo: str, wait_seconds: int = 30) -> ConnectionPool:
-    pool = ConnectionPool(conninfo, min_size=1, max_size=5, kwargs={"row_factory": dict_row}, open=False)
-    pool.open(wait=True, timeout=wait_seconds)
+def create_pool(conninfo: str, wait_seconds: float = 30) -> ConnectionPool:
+    """Mở pool và chờ tối đa `wait_seconds` cho kết nối đầu tiên. Lỗi thì đóng pool (không để luồng nền thử lại mãi)."""
+    pool = ConnectionPool(
+        conninfo,
+        min_size=1,
+        max_size=5,
+        kwargs={"row_factory": dict_row, "connect_timeout": max(1, int(wait_seconds))},
+        open=False,
+    )
+    try:
+        pool.open(wait=True, timeout=wait_seconds)
+    except Exception:
+        pool.close()
+        raise
     return pool
 
 

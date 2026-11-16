@@ -15,7 +15,7 @@ CREATE TABLE review_event (
 
 CREATE INDEX review_event_unit_idx ON review_event (document_id, unit_id, id);
 
-CREATE FUNCTION review_event_append_only() RETURNS trigger AS $$
+CREATE OR REPLACE FUNCTION review_event_append_only() RETURNS trigger AS $$
 BEGIN
     RAISE EXCEPTION 'review_event chỉ được ghi thêm, không sửa hay xóa';
 END;
