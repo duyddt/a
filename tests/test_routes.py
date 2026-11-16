@@ -22,9 +22,14 @@ def client(data_dir, tmp_path):
 
 
 def test_list_page(client):
-    response = client.get("/")
+    response = client.get("/?guest=1")
     assert response.status_code == 200
     assert "Văn bản mẫu" in response.text and f"/documents/{DOC}" in response.text
+
+
+def test_list_page_sends_anonymous_users_to_login(client):
+    response = client.get("/", follow_redirects=False)
+    assert response.status_code == 303 and response.headers["location"].startswith("/login")
 
 
 def test_review_page_has_both_panes_and_nested_tree(client):
@@ -130,10 +135,10 @@ def test_openapi_documents_every_endpoint(client):
 def test_file_mode_has_no_review_buttons_and_review_api_is_501(client):
     page = client.get(f"/documents/{DOC}")
     assert "Duyệt" not in page.text and "Xuất JSON đã duyệt" not in page.text and "PostgreSQL" in page.text
-    body = {"action": "approve", "reviewer": "Duy"}
+    body = {"action": "approve"}
     assert client.post(f"/api/documents/{DOC}/units/ND254_2026_D9/reviews", json=body).status_code == 501
     assert client.get(f"/api/documents/{DOC}/export").status_code == 501
-    form = client.post(f"/documents/{DOC}/units/ND254_2026_D9/review", data={"action": "approve", "reviewer": "Duy"})
+    form = client.post(f"/documents/{DOC}/units/ND254_2026_D9/review", data={"action": "approve"})
     assert form.status_code == 200 and "PostgreSQL" in form.text
 
 

@@ -49,9 +49,9 @@
 
   <!-- Hàng thuộc tính phẳng (Tài khoản người soát + Lý do lỗi) -->
   <div class="ribbon-inputs">
-    <label class="field">👤 Tài khoản người soát
-      <input type="text" name="reviewer" value="{{ reviewer }}" maxlength="100" autocomplete="name" placeholder="Tên tài khoản" required>
-    </label>
+    <div class="field">👤 Tài khoản người soát
+      <span class="reviewer-name" title="Thao tác được ghi nhận theo tài khoản đang đăng nhập"><strong>{{ reviewer }}</strong></span>
+    </div>
     <label class="field">🏷 Phân loại nguyên nhân OCR sai
       <select name="ocr_reason">
         <option value="">-- Chọn loại lỗi OCR (nếu sửa chữ) --</option>
@@ -123,12 +123,12 @@
 {% else %}
 <pre class="content">{{ unit.content }}</pre>
 <div class="muted small">{{ unit.unit_id }}</div>
-{% if db_ready is defined and not db_ready %}
+{% if db_ready is not defined or not db_ready %}
 <p class="muted small">Chế độ xem thư mục file: chưa lưu được thao tác thẩm định (cần PostgreSQL, xem README).</p>
-{% elif current_user and not current_user.is_approved and current_user.role != 'admin' %}
+{% elif current_user %}
 <p class="note">🔒 <strong>Chế độ Chỉ xem:</strong> Tài khoản <code>{{ current_user.username }}</code> chưa được Admin cấp quyền soát nên không thể bấm Duyệt / Sửa chữ. Hãy liên hệ Admin để được cấp quyền.</p>
 {% else %}
-<p class="muted small">Chế độ xem thư mục file: chưa lưu được thao tác thẩm định (cần PostgreSQL, xem README). <a href="/login">Đăng nhập tài khoản có quyền soát</a>.</p>
+<p class="muted small">🔐 <a href="/login?next={{ ('/documents/' ~ doc.document_id ~ '?unit=' ~ unit.unit_id)|urlencode }}">Đăng nhập</a> bằng tài khoản có quyền soát để Duyệt / Sửa chữ.</p>
 {% endif %}
 {% endif %}
 {% else %}

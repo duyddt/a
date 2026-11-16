@@ -25,6 +25,13 @@
   </div>
 </header>
 <main class="narrow">
+  {% if db_error %}
+    <div style="padding:10px 14px; background:#fffbeb; border:1px solid #f59e0b; color:#92400e; border-radius:4px; margin-bottom:14px;">
+      ⚠ <strong>Chưa kết nối được PostgreSQL</strong> — hệ thống đang ở chế độ <strong>chỉ xem</strong> (không thêm văn bản, không lưu thẩm định).
+      Hãy bật PostgreSQL, kiểm tra <code>DATABASE_URL</code> / <code>POSTGRES_*</code> trong tệp <code>.env</code> rồi khởi động lại ứng dụng.
+      <br><span class="muted">{{ db_error }}</span>
+    </div>
+  {% endif %}
   {% if err %}
     <div style="padding:10px 14px; background:#fef2f2; border:1px solid #dc2626; color:#991b1b; border-radius:4px; margin-bottom:14px; font-weight:600;">⚠ {{ err }}</div>
   {% endif %}
@@ -49,9 +56,11 @@
       <label class="field" style="flex:1 1 260px;">🗂 Tệp JSON có sẵn <span class="muted">(Tùy chọn — bỏ trống sẽ tự tách từ PDF)</span>
         <input type="file" name="document" accept=".json,application/json">
       </label>
+      {% if can_replace %}
       <label style="display:flex; align-items:center; gap:5px; font-size:13px; padding-bottom:6px; cursor:pointer;">
         <input type="checkbox" name="replace" value="true"> Ghi đè nếu đã có
       </label>
+      {% endif %}
       <button type="submit" class="ribbon-btn save" style="height:36px;">⬆ Tải lên &amp; Mở văn bản</button>
     </form>
   </section>
@@ -64,7 +73,13 @@
   {% if not items %}
   <div class="pane" style="padding:28px; text-align:center;">
     <p style="font-size:16px; font-weight:600; margin:0 0 6px;">📭 Hệ thống hiện đang trống (chưa có văn bản nào được nạp).</p>
+    {% if can_upload %}
     <p class="muted" style="margin:0;">Hãy chọn tệp <code>source.pdf</code> và <code>document.json</code> ở khung <strong>➕ Thêm văn bản mới</strong> phía trên (ví dụ trong thư mục <code>data/ND254_2026/</code>) để bắt đầu đọc và thẩm định.</p>
+    {% elif current_user %}
+    <p class="muted" style="margin:0;">Nhờ Admin hoặc người soát đã được cấp quyền thêm văn bản vào hệ thống.</p>
+    {% else %}
+    <p class="muted" style="margin:0;"><a href="/login">Đăng nhập</a> bằng tài khoản có quyền soát để thêm văn bản.</p>
+    {% endif %}
   </div>
   {% else %}
   <table class="doclist">
@@ -101,7 +116,7 @@
         </td>
         {% if current_user and current_user.role == 'admin' %}
         <td>
-          <form method="post" action="/documents/{{ item.document_id }}/delete" style="margin:0;" onsubmit="return confirm('Xóa văn bản {{ item.document_id }} khỏi hệ thống?');">
+          <form method="post" action="/documents/{{ item.document_id|urlencode }}/delete" style="margin:0;" data-confirm="Xóa văn bản {{ item.document_id }} khỏi hệ thống?" onsubmit="return confirm(this.dataset.confirm);">
             <button type="submit" class="ribbon-btn structure" style="min-height:28px; padding:0 8px; font-size:12px;">🗑 Xóa</button>
           </form>
         </td>

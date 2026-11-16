@@ -168,11 +168,7 @@ def create_account(conn, username: str, display_name: str, password_hash: str, r
     return conn.execute(
         "INSERT INTO reviewer_account (username, display_name, password_hash, role, is_approved) "
         "VALUES (%s, %s, %s, %s, %s) "
-        "ON CONFLICT (username) DO UPDATE SET "
-        "display_name = EXCLUDED.display_name, "
-        "password_hash = CASE WHEN EXCLUDED.password_hash <> '' THEN EXCLUDED.password_hash ELSE reviewer_account.password_hash END, "
-        "role = EXCLUDED.role, "
-        "is_approved = EXCLUDED.is_approved "
+        "ON CONFLICT (username) DO NOTHING "  # không bao giờ ghi đè tài khoản đã có (mật khẩu, quyền)
         "RETURNING username, display_name, role, is_approved, created_at",
         (username.strip(), (display_name or username).strip(), password_hash, role, is_approved),
     ).fetchone()

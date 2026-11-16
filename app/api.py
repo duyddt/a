@@ -1,5 +1,7 @@
-﻿"""API JSON dưới /api. Mở /docs để xem và thử từng endpoint."""
+"""API JSON dưới /api. Mở /docs để xem và thử từng endpoint."""
 from __future__ import annotations
+
+import logging
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, Response, UploadFile
 from fastapi.responses import FileResponse, JSONResponse
@@ -8,11 +10,15 @@ from app.contracts import LegalUnit
 from app.schemas import (
     DocumentOut, DocumentSummaryOut, ImportResultOut, ProgressOut, ReviewEventOut, ReviewRequest, ReviewResultOut,
 )
+from app.services.accounts import is_admin
 from app.services.importer import AlreadyImported
+from app.services.models import ImportProblem
 from app.services.review import ReviewProblem, build_export, build_ocr_report, progress
 from app.services.tree import build_tree
+from app.web_auth import require_reviewer
 
 MAX_UPLOAD_BYTES = 50 * 1024 * 1024
+log = logging.getLogger("review-app")
 
 router = APIRouter(prefix="/api", tags=["api"])
 
@@ -92,8 +98,9 @@ def get_page_image(document_id: str, page: int, catalog=Depends(get_catalog)):
         raise HTTPException(status_code=404, detail=f"Văn bản có {loaded.page_count} trang")
     try:
         image = loaded.page_image(page)
-    except Exception as exc:  # thiếu source.pdf, PDF hỏng, thiếu quyền ghi...
-        raise HTTPException(status_code=500, detail=f"Không render được trang {page}: {exc}")
+    except Exception:  # thiếu source.pdf, PDF hỏng, thiếu quyền ghi...
+        log.exception("Không render được trang %s của %s", page, document_id)
+        raise HTTPException(status_code=500, detail=f"Không render được trang {page}")
     return FileResponse(image, media_type="image/png")
 
 
@@ -119,13 +126,20 @@ def import_document(
     importer = request.app.state.importer
     if importer is None:
         raise HTTPException(status_code=501, detail="Nhập văn bản cần PostgreSQL (đặt POSTGRES_HOST hoặc DATABASE_URL)")
+    user = require_reviewer(request)
+    if replace and not is_admin(user):
+        raise HTTPException(status_code=403, detail="Chỉ Admin mới được ghi đè văn bản đã có (replace=true)")
     pdf_bytes = pdf.file.read(MAX_UPLOAD_BYTES + 1)
-    from app.services.pdf_parser import auto_build_json_from_pdf
     json_bytes = document.file.read(MAX_UPLOAD_BYTES + 1) if (document and document.filename) else b''
-    if not json_bytes.strip():
-        json_bytes = auto_build_json_from_pdf(pdf_bytes, pdf.filename or 'document.pdf')
     if len(pdf_bytes) > MAX_UPLOAD_BYTES or len(json_bytes) > MAX_UPLOAD_BYTES:
         raise HTTPException(status_code=413, detail="Tệp quá lớn (tối đa 50 MB mỗi tệp)")
+    if not json_bytes.strip():
+        from app.services.pdf_parser import auto_build_json_from_pdf
+
+        try:
+            json_bytes = auto_build_json_from_pdf(pdf_bytes, pdf.filename or "document.pdf")
+        except Exception as exc:
+            raise ImportProblem(pdf.filename or "document", [f"Không tự tách được cấu trúc từ PDF: {type(exc).__name__}"])
     try:
         result = importer.import_bytes(pdf_bytes, json_bytes, replace=replace)
     except AlreadyImported as exc:
@@ -168,11 +182,13 @@ def get_unit_reviews(document_id: str, unit_id: str, catalog=Depends(get_catalog
         501: {"description": "Cần PostgreSQL để lưu thao tác"},
     },
 )
-def post_review(document_id: str, unit_id: str, body: ReviewRequest, catalog=Depends(get_catalog)):
+def post_review(request: Request, document_id: str, unit_id: str, body: ReviewRequest, catalog=Depends(get_catalog)):
+    """Người soát được ghi nhận là tài khoản đã xác thực (trường `reviewer` trong body bị bỏ qua)."""
     if not hasattr(catalog, "record_review"):
         raise HTTPException(status_code=501, detail="Thẩm định cần PostgreSQL (đặt POSTGRES_HOST hoặc DATABASE_URL)")
+    user = require_reviewer(request)
     try:
-        event = catalog.record_review(document_id, unit_id, body.action, body.reviewer, body.note, body.content)
+        event = catalog.record_review(document_id, unit_id, body.action, user["username"], body.note, body.content)
     except KeyError:
         raise HTTPException(status_code=404, detail="Không có văn bản hoặc đơn vị này")
     loaded = catalog.get(document_id)

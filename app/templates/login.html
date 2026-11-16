@@ -17,7 +17,7 @@
     </div>
   {% endif %}
 
-  <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 20px;">
+  <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr)); gap: 20px;">
     <!-- Cột 1: Đăng nhập -->
     <section class="pane" style="padding: 20px;">
       <h2 style="margin-top:0; font-size:18px; border-bottom:1px solid var(--border); padding-bottom:10px;">🔐 Đăng nhập tài khoản</h2>
@@ -41,13 +41,13 @@
       <form method="post" action="/account/register">
         <input type="hidden" name="redirect_to" value="{{ next or '/' }}">
         <label class="field" style="margin-bottom:10px;">Tên đăng nhập
-          <input type="text" name="username" required maxlength="64" placeholder="Nhập tên đăng nhập">
+          <input type="text" name="username" required minlength="3" maxlength="64" pattern="[A-Za-z0-9_.\-]{3,64}" title="3–64 ký tự: chữ không dấu, số, dấu chấm, gạch dưới, gạch ngang" placeholder="Ví dụ: nguyen_van_a" autocomplete="username">
         </label>
         <label class="field" style="margin-bottom:10px;">Họ và tên hiển thị
           <input type="text" name="display_name" maxlength="100" placeholder="Nhập họ và tên hiển thị">
         </label>
-        <label class="field" style="margin-bottom:16px;">Mật khẩu (tối thiểu 4 ký tự)
-          <input type="password" name="password" required minlength="4" placeholder="Nhập mật khẩu">
+        <label class="field" style="margin-bottom:16px;">Mật khẩu (tối thiểu 8 ký tự)
+          <input type="password" name="password" required minlength="8" placeholder="Nhập mật khẩu" autocomplete="new-password">
         </label>
         <button type="submit" class="ribbon-btn edit-toggle" style="width:100%; justify-content:center; min-height:40px;">
           Tạo tài khoản

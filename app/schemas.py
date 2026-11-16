@@ -70,7 +70,7 @@ ReviewAction = Literal["approve", "edit", "flag", "structure_error", "reset"]
 
 class ReviewRequest(BaseModel):
     action: ReviewAction = Field(description="approve = Duyệt; edit = Sửa chữ; flag = Gắn cờ; structure_error = Báo lỗi cấu trúc; reset = Bỏ đánh dấu")
-    reviewer: str = Field(description="Tên người soát", examples=["Duy"])
+    reviewer: str | None = Field(default=None, description="Không dùng nữa: người soát là tài khoản đã xác thực (cookie phiên hoặc HTTP Basic)")
     note: str | None = Field(default=None, description="Lý do. Bắt buộc với flag và structure_error")
     content: str | None = Field(default=None, description="Nội dung mới. Bắt buộc với edit")
 

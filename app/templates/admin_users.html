@@ -25,13 +25,13 @@
     <h2 style="margin:0 0 12px; font-size:16px;">➕ Tạo tài khoản mới (Được cấp quyền ngay)</h2>
     <form method="post" action="/admin/users/create" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:10px; align-items:end;">
       <label class="field">Tên đăng nhập
-        <input type="text" name="username" required placeholder="Ví dụ: duy_reviewer">
+        <input type="text" name="username" required minlength="3" maxlength="64" pattern="[A-Za-z0-9_.\-]{3,64}" title="3–64 ký tự: chữ không dấu, số, dấu chấm, gạch dưới, gạch ngang" placeholder="Ví dụ: duy_reviewer">
       </label>
       <label class="field">Tên hiển thị
         <input type="text" name="display_name" placeholder="Ví dụ: Nguyễn Đức Duy">
       </label>
       <label class="field">Mật khẩu
-        <input type="password" name="password" required minlength="4" placeholder="Mật khẩu (>= 4 ký tự)">
+        <input type="password" name="password" required minlength="8" placeholder="Mật khẩu (>= 8 ký tự)" autocomplete="new-password">
       </label>
       <label class="field">Quyền hạn
         <select name="role">

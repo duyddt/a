@@ -190,7 +190,8 @@ def test_detail_shows_status_note_history_and_edit_marker(env, doc):
     html = render_detail(env, doc, review=review, history=list(reversed(events)), reviewer="Duy")
     assert "Gắn cờ" in html and "lệch với trang 1" in html and "Đã sửa chữ (1 lần)" in html
     assert "Bỏ đánh dấu" in html and "Lịch sử thao tác (2)" in html and "Dũng" in html
-    assert "31/10/2026 07:45" in html and 'value="Duy"' in html
+    assert "31/10/2026 07:45" in html and 'class="reviewer-name"' in html
+    assert 'name="reviewer"' not in html  # người soát là tài khoản đăng nhập, không còn ô tự gõ tên
 
 
 def test_detail_escapes_user_text_and_keeps_form_values_after_error(env, doc):
@@ -202,6 +203,14 @@ def test_detail_escapes_user_text_and_keeps_form_values_after_error(env, doc):
 def test_detail_without_database_has_no_buttons(env, doc):
     html = render_detail(env, doc, can_review=False)
     assert "Duyệt" not in html and "PostgreSQL" in html
+
+
+def test_detail_read_only_messages_depend_on_login(env, doc):
+    anonymous = render_detail(env, doc, can_review=False, db_ready=True, current_user=None)
+    assert 'href="/login?next=' in anonymous and "PostgreSQL" not in anonymous and 'hx-post' not in anonymous
+    viewer = {"username": "khach", "role": "viewer", "is_approved": False}
+    pending = render_detail(env, doc, can_review=False, db_ready=True, current_user=viewer)
+    assert "Chế độ Chỉ xem" in pending and "khach" in pending and 'hx-post' not in pending
 
 
 def test_progress_bar_and_review_response_render(env, doc):

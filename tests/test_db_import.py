@@ -24,22 +24,37 @@ from app.config import Settings  # noqa: E402
 from app.main import create_app  # noqa: E402
 
 DOC = "ND254_2026"
+ADMIN_PW = "admin-pass-for-tests"
+USER_PW = "user-pass-for-tests"
 
 
 @pytest.fixture
 def client(tmp_path):
+    # Hàm review_event_append_only() KHÔNG bị xóa ở đây: migration phải chạy lại được khi hàm đã có sẵn.
     with psycopg.connect(URL, autocommit=True) as conn:
         conn.execute("DROP TABLE IF EXISTS reviewer_progress, reviewer_account, review_event, legal_unit, document, schema_migrations CASCADE")
     storage = tmp_path / "storage"
-    app = create_app(Settings(data_dir=tmp_path / "none", storage_dir=storage, conninfo=URL, auto_import_dir=None))
+    app = create_app(Settings(data_dir=tmp_path / "none", storage_dir=storage, conninfo=URL, auto_import_dir=None,
+                              admin_password=ADMIN_PW))
     with TestClient(app) as test_client:
         test_client.storage = storage
+        test_client.auth = ("admin", ADMIN_PW)  # mặc định gọi API bằng HTTP Basic của admin
         yield test_client
 
 
-def upload(client, pdf, js, replace=False):
+def add_account(client, username, display_name=None, role="reviewer", approved=True):
+    client.app.state.accounts.create(username, display_name or username, USER_PW, role=role, is_approved=approved)
+    return username, USER_PW
+
+
+def login(client, username, password):
+    return client.post("/account/login", data={"username": username, "password": password}, follow_redirects=False)
+
+
+def upload(client, pdf, js, replace=False, **kwargs):
     data = {"replace": "true"} if replace else {}
-    return client.post("/api/documents", files={"pdf": ("source.pdf", pdf), "document": ("document.json", js)}, data=data)
+    return client.post("/api/documents", files={"pdf": ("source.pdf", pdf), "document": ("document.json", js)}, data=data,
+                       **kwargs)
 
 
 def count(table):
@@ -143,8 +158,13 @@ UNIT = "ND254_2026_D9_K1_a"
 REVIEWS = f"/api/documents/{DOC}/units/{UNIT}/reviews"
 
 
-def review(client, action, reviewer="Duy", unit=UNIT, **extra):
-    return client.post(f"/api/documents/{DOC}/units/{unit}/reviews", json={"action": action, "reviewer": reviewer, **extra})
+_CLIENT_AUTH = object()
+
+
+def review(client, action, unit=UNIT, auth=_CLIENT_AUTH, **extra):
+    """Gửi thao tác thẩm định; `auth` = (tài khoản, mật khẩu), None = không xác thực, mặc định = auth của client."""
+    kwargs = {} if auth is _CLIENT_AUTH else {"auth": auth}
+    return client.post(f"/api/documents/{DOC}/units/{unit}/reviews", json={"action": action, **extra}, **kwargs)
 
 
 @pytest.fixture
@@ -178,10 +198,11 @@ def test_review_actions_update_status_progress_and_tree(loaded):
 
 def test_review_is_append_only_and_history_is_newest_first(loaded):
     client = loaded
-    review(client, "flag", reviewer="Dũng", note="nghi sai")
-    review(client, "approve", reviewer="Duy")
+    dung, duy = add_account(client, "dung", "Dũng"), add_account(client, "duy", "Duy")
+    review(client, "flag", auth=dung, note="nghi sai")
+    review(client, "approve", auth=duy)
     history = client.get(REVIEWS).json()
-    assert [(h["action"], h["reviewer"]) for h in history] == [("approve", "Duy"), ("flag", "Dũng")]
+    assert [(h["action"], h["reviewer"]) for h in history] == [("approve", "duy"), ("flag", "dung")]
     assert history[1]["note"] == "nghi sai" and history[0]["created_at"]
     assert count("review_event") == 2
     with psycopg.connect(URL) as conn:
@@ -210,7 +231,6 @@ def test_review_rejects_bad_requests(loaded):
     client = loaded
     assert review(client, "flag").status_code == 422  # thiếu lý do
     assert "cần ghi chú" in " ".join(review(client, "structure_error").json()["problems"])
-    assert review(client, "approve", reviewer="  ").status_code == 422
     assert review(client, "edit").status_code == 422  # thiếu nội dung
     original = client.get(f"/api/documents/{DOC}/units/{UNIT}").json()["content"]
     assert review(client, "edit", content=original).status_code == 422  # không đổi gì
@@ -253,15 +273,86 @@ def test_export_contains_only_approved_units_with_edited_text(loaded):
 
 def test_html_review_flow(loaded):
     client = loaded
+    add_account(client, "dung", "Dũng")
+    client.auth = None  # giao diện web: chỉ dùng cookie phiên sau khi đăng nhập
     url = f"/documents/{DOC}/units/{UNIT}/review"
-    bad = client.post(url, data={"action": "flag", "reviewer": "Duy", "note": ""})
+    anonymous = client.post(url, data={"action": "approve", "reviewer": "admin", "note": ""})
+    assert anonymous.status_code == 200 and "Đăng nhập</a> bằng tài khoản có quyền soát" in anonymous.text
+    assert "hx-post" not in anonymous.text and count("review_event") == 0
+
+    assert login(client, "dung", USER_PW).status_code == 303
+    bad = client.post(url, data={"action": "flag", "note": ""})
     assert bad.status_code == 200 and "cần ghi chú" in bad.text and count("review_event") == 0
 
-    good = client.post(url, data={"action": "approve", "reviewer": "Dũng", "note": ""})
+    good = client.post(url, data={"action": "approve", "reviewer": "admin", "note": ""})  # tên tự khai bị bỏ qua
     assert good.status_code == 200
     assert f'id="dot-{UNIT}"' in good.text and "st-approved" in good.text and 'id="progress"' in good.text
-    assert "reviewer=" in good.headers["set-cookie"]
+    assert "reviewer=" not in good.headers.get("set-cookie", "")
+    assert client.get(REVIEWS).json()[0]["reviewer"] == "dung"
 
     page = client.get(f"/documents/{DOC}?unit={UNIT}")
-    assert "Đã duyệt" in page.text and "Dũng" in page.text and "Xuất JSON đã duyệt" in page.text
+    assert "Đã duyệt" in page.text and "dung" in page.text and "Xuất JSON đã duyệt" in page.text
     assert client.get("/").text.count("Đã duyệt 1/7") == 1
+
+
+# ---- bảo mật ----
+
+def test_api_writes_require_an_approved_account(client, sample_pdf, sample_json):
+    assert upload(client, sample_pdf, sample_json, auth=None).status_code == 401
+    viewer = add_account(client, "khach", role="viewer", approved=False)
+    assert upload(client, sample_pdf, sample_json, auth=viewer).status_code == 403
+    reviewer = add_account(client, "duy")
+    assert upload(client, sample_pdf, sample_json, auth=reviewer).status_code == 201
+
+    raw = json.loads(sample_json)
+    raw["legal_units"][0]["content"] = "nội dung khác"
+    changed = json.dumps(raw, ensure_ascii=False).encode("utf-8")
+    assert upload(client, sample_pdf, changed, replace=True, auth=reviewer).status_code == 403  # chỉ Admin được ghi đè
+    assert client.get(f"/api/documents/{DOC}/units/ND254_2026_D9").json()["content"] != "nội dung khác"
+
+    assert review(client, "approve", auth=None).status_code == 401
+    assert review(client, "approve", auth=viewer).status_code == 403
+    forged = client.post(REVIEWS, json={"action": "approve", "reviewer": "admin"}, headers={"cookie": "reviewer=admin"},
+                         auth=None)
+    assert forged.status_code == 401 and count("review_event") == 0
+    accepted = review(client, "approve", auth=reviewer, reviewer="admin")
+    assert accepted.status_code == 201 and accepted.json()["event"]["reviewer"] == "duy"
+
+
+def test_html_upload_and_delete_permissions(client, sample_pdf, sample_json):
+    files = {"pdf": ("source.pdf", sample_pdf), "document": ("document.json", sample_json)}
+    anonymous = client.post("/documents/upload", files=files, auth=None, follow_redirects=False)
+    assert anonymous.status_code == 303 and anonymous.headers["location"].startswith("/login") and count("document") == 0
+    uploaded = client.post("/documents/upload", files=files, follow_redirects=False)
+    assert uploaded.status_code == 303 and uploaded.headers["location"] == f"/documents/{DOC}" and count("document") == 1
+
+    reviewer = add_account(client, "duy")
+    denied = client.post(f"/documents/{DOC}/delete", auth=reviewer, follow_redirects=False)
+    assert "err=" in denied.headers["location"] and count("document") == 1
+    traversal = client.post("/documents/%2E%2E/delete", follow_redirects=False)
+    assert traversal.status_code == 404 and (client.storage / DOC / "source.pdf").is_file()
+
+    deleted = client.post(f"/documents/{DOC}/delete", follow_redirects=False)
+    assert deleted.status_code == 303 and "msg=" in deleted.headers["location"]
+    assert count("document") == 0 and not (client.storage / DOC).exists() and client.storage.is_dir()
+
+
+def test_register_cannot_take_over_existing_accounts(client):
+    client.auth = None
+    taken = client.post("/account/register", data={"username": "admin", "password": "hijack-password"},
+                        follow_redirects=False)
+    assert taken.status_code == 400
+    assert login(client, "admin", "hijack-password").status_code == 401
+    assert login(client, "admin", ADMIN_PW).status_code == 303
+
+
+def test_legacy_admin123_password_is_replaced_on_startup(client, tmp_path):
+    from app.services.auth import hash_password
+
+    with psycopg.connect(URL) as conn:
+        conn.execute("UPDATE reviewer_account SET password_hash = %s WHERE username = 'admin'", (hash_password("admin123"),))
+    storage = tmp_path / "storage2"
+    app = create_app(Settings(data_dir=tmp_path / "none", storage_dir=storage, conninfo=URL, auto_import_dir=None))
+    with TestClient(app) as second:
+        assert login(second, "admin", "admin123").status_code == 401
+        assert (storage / "initial_admin_password.txt").is_file()
