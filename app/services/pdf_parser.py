@@ -17,7 +17,14 @@ import pypdfium2 as pdfium
 from app.contracts import LegalDocument, LegalUnit, make_unit_id
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
-DATA_DIR = BASE_DIR / "data"
+
+
+def _seed_dir() -> Path:
+    """Thư mục dữ liệu mẫu (biến DATA_DIR trong .env / môi trường; mặc định <dự án>/data)."""
+    from app.config import load_settings
+
+    return load_settings().data_dir
+
 
 _SAFE_ID = re.compile(r"[^A-Za-z0-9_-]+")
 _ARTICLE_RE = re.compile(r"(?m)^\s*Điều\s+(\d+)\s*[\.\:\-]?\s*(.*)$")
@@ -28,13 +35,14 @@ _POINT_RE = re.compile(r"(?m)^\s*([a-eđghiklmnopqrstuvxy])\)\s+(.*)$")
 def _find_matching_seed_json(pdf_bytes: bytes, page_count: int) -> bytes | None:
     """Nếu người dùng chỉ chọn 1 file source.pdf (nằm trong data/* hoặc trùng nội dung/số trang với bộ OCR có sẵn),
     tự động lấy document.json hoặc dựng từ ocr_pages/*.txt tương ứng."""
-    if not DATA_DIR.is_dir():
+    data_dir = _seed_dir()
+    if not data_dir.is_dir():
         return None
 
     pdf_sha = hashlib.sha256(pdf_bytes).hexdigest()
 
     # 1. Khớp chính xác theo SHA-256 của file PDF
-    for folder in sorted(DATA_DIR.iterdir()):
+    for folder in sorted(data_dir.iterdir()):
         if not folder.is_dir():
             continue
         seed_pdf = folder / "source.pdf"
@@ -52,7 +60,7 @@ def _find_matching_seed_json(pdf_bytes: bytes, page_count: int) -> bytes | None:
                     pass
 
     # 2. Khớp theo số lượng trang (ví dụ 55 trang -> ND254_2026) nếu PDF là bản scan cùng số trang
-    for folder in sorted(DATA_DIR.iterdir()):
+    for folder in sorted(data_dir.iterdir()):
         if not folder.is_dir():
             continue
         ocr_dir = folder / "ocr_pages"
@@ -88,7 +96,9 @@ def _ocr_page_image(pil_image) -> str:
     except Exception:
         pass
 
-    api_key = os.environ.get("GEMINI_API_KEY", "").strip()
+    from app.config import read_env_file
+
+    api_key = (os.environ.get("GEMINI_API_KEY") or read_env_file().get("GEMINI_API_KEY") or "").strip()
     if api_key:
         try:
             import base64
@@ -96,7 +106,8 @@ def _ocr_page_image(pil_image) -> str:
             buf = io.BytesIO()
             pil_image.save(buf, format="PNG")
             b64_img = base64.b64encode(buf.getvalue()).decode("ascii")
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
+            # Khóa gửi qua header (không đặt trong URL để không lộ trong log của proxy/máy chủ trung gian)
+            url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
             payload = {
                 "contents": [{
                     "parts": [
@@ -108,7 +119,7 @@ def _ocr_page_image(pil_image) -> str:
             req = urllib.request.Request(
                 url,
                 data=json.dumps(payload).encode("utf-8"),
-                headers={"Content-Type": "application/json"},
+                headers={"Content-Type": "application/json", "x-goog-api-key": api_key},
                 method="POST",
             )
             with urllib.request.urlopen(req, timeout=30) as resp:
