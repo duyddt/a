@@ -13,40 +13,58 @@ Hệ thống thẩm định dữ liệu pháp lý (*Human-in-the-loop*) thuộc 
 
 ---
 
-## 1. Chạy bằng Docker Compose (Một lệnh)
+## 1. Chạy bằng Docker Compose (khuyên dùng cho máy mới)
+
+Chỉ cần cài **Docker Desktop** (Windows/macOS) hoặc Docker Engine + Compose (Linux); không cần cài Python hay PostgreSQL.
 
 ```powershell
-Copy-Item .env.example .env        # Mở .env và đặt POSTGRES_PASSWORD (file .env không đưa lên Git)
-docker compose up --build
-
+Copy-Item .env.example .env        # macOS/Linux: cp .env.example .env
+# Mở .env, đặt POSTGRES_PASSWORD (và ADMIN_PASSWORD nếu muốn tự chọn mật khẩu admin). File .env không đưa lên Git.
+docker compose up --build -d
+docker compose logs api            # lần đầu: tìm dòng "Đã tạo tài khoản admin. Đăng nhập: admin / ..."
 ```
 
-Mở `[http://127.0.0.1:8000](http://127.0.0.1:8000)`. Lần đầu khởi động, ứng dụng tự động chạy toàn bộ các file migration (`001` đến `004`) và nhập các văn bản trong thư mục `./data` (bao gồm Nghị định `254/2026/NĐ-CP` gồm 55 trang scan). Khi khởi động lại, văn bản có cùng mã băm SHA-256 sẽ được bỏ qua để không tạo bản trùng.
+Mở <http://127.0.0.1:8080>. Lần đầu khởi động, ứng dụng tự chạy các file migration (`001` đến `004`), tạo tài khoản `admin` và nhập các văn bản trong thư mục `./data`. Khi khởi động lại, văn bản có cùng mã băm SHA-256 được bỏ qua để không tạo bản trùng.
 
-* Xem và thử nghiệm trực tiếp toàn bộ REST API tại: `[http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)`.
-* Xóa sạch dữ liệu container để khởi tạo lại từ đầu: `docker compose down -v`.
+* REST API và tài liệu thử trực tiếp: <http://127.0.0.1:8080/docs>.
+* Mật khẩu admin lần đầu cũng được lưu trong volume: `docker compose exec api cat /storage/initial_admin_password.txt`.
+* Cổng 8080 đã bị chiếm: đặt `APP_PORT=8090` trong `.env`. Cho máy khác trong mạng LAN truy cập: `APP_BIND=0.0.0.0`.
+* Nâng cấp từ bản cũ (container từng chạy bằng root) mà gặp lỗi ghi `/storage`: `docker compose run --rm --user root api chown -R 1000:1000 /storage`.
+* Xóa sạch dữ liệu để khởi tạo lại từ đầu: `docker compose down -v`.
 
 ---
 
-## 2. Chạy trực tiếp trên máy (Không cần Docker)
+## 2. Chạy trực tiếp trên máy (không dùng Docker cho app)
 
-### Chế độ đầy đủ chức năng (Có PostgreSQL)
-
-Yêu cầu đã tạo database `review` trong PostgreSQL (`CREATE DATABASE review;`). Mở PowerShell tại thư mục gốc của dự án và chạy:
+Yêu cầu Python 3.12 trở lên. Ứng dụng tự đọc file `.env` ở thư mục gốc dự án nên không cần đặt biến môi trường theo cú pháp riêng của từng shell (biến môi trường đặt trực tiếp vẫn được ưu tiên hơn `.env`).
 
 ```powershell
-$env:DATABASE_URL = "postgresql://postgres:<mật_khẩu>@localhost:5432/review"
-$env:STORAGE_DIR = "storage"
-$env:AUTO_IMPORT_DIR = "data"
-python -m uvicorn app.main:app --reload --port 8080
-
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1           # macOS/Linux: source .venv/bin/activate
+pip install -r requirements.txt
+Copy-Item .env.example .env            # sửa POSTGRES_PASSWORD / POSTGRES_HOST hoặc DATABASE_URL
+python -m uvicorn app.main:app --port 8080
 ```
 
-Mở trình duyệt tại: `http://localhost:8080`.
+Mở <http://127.0.0.1:8080>. Mật khẩu admin lần đầu được in ra console và lưu ở `storage/initial_admin_password.txt`.
 
-### Chế độ xem nhanh (Thư mục file – Không cần PostgreSQL)
+### Chế độ đầy đủ chức năng (có PostgreSQL)
 
-Nếu không đặt biến môi trường `DATABASE_URL` hoặc `POSTGRES_HOST`, ứng dụng tự động đọc trực tiếp từ `data/<document_id>/{source.pdf,document.json}`. Ở chế độ này, người dùng xem được cây cấu trúc và ảnh trang PDF nhưng không lưu được thao tác thẩm định vào DB.
+Cần một PostgreSQL đang chạy và database trùng với `.env`. Nếu chưa cài PostgreSQL, có thể chạy tạm bằng Docker:
+
+```powershell
+docker run -d --name review-db -e POSTGRES_USER=review -e POSTGRES_PASSWORD=<mật_khẩu> -e POSTGRES_DB=review -p 127.0.0.1:5432:5432 postgres:16
+```
+
+Đặt `AUTO_IMPORT_DIR=data` trong `.env` nếu muốn tự nhập các văn bản trong `data/` khi khởi động. Nếu PostgreSQL chưa chạy hoặc sai mật khẩu, sau `DB_CONNECT_TIMEOUT` giây (mặc định 10) ứng dụng vẫn khởi động ở **chế độ chỉ xem** và hiện cảnh báo trên trang danh sách thay vì dừng hẳn.
+
+### Chế độ xem nhanh (thư mục file, không cần PostgreSQL)
+
+Bỏ trống cả `DATABASE_URL` và `POSTGRES_HOST`: ứng dụng đọc trực tiếp từ `data/<document_id>/{source.pdf,document.json}`. Ở chế độ này người dùng xem được cây cấu trúc và ảnh trang PDF nhưng không lưu được thao tác thẩm định; tài khoản chỉ nằm trong bộ nhớ (mất khi tắt app).
+
+### Công cụ tùy chọn
+
+Chỉ cần khi tải lên PDF **scan mới** (không có lớp chữ và không khớp dữ liệu mẫu trong `data/`): cài `pytesseract` + Tesseract OCR có gói tiếng Việt (`vie`), hoặc đặt `GEMINI_API_KEY` trong `.env`. Không có các công cụ này, các tính năng còn lại vẫn chạy bình thường.
 
 ---
 
@@ -56,7 +74,16 @@ Nếu không đặt biến môi trường `DATABASE_URL` hoặc `POSTGRES_HOST`,
 | --- | --- | --- |
 | **Khách / Chỉ xem (`viewer`)** | Xem danh sách văn bản, mở cây Điều/Khoản/Điểm, lật trang và phóng to ảnh PDF. Toàn bộ nút *Duyệt / Sửa chữ / Gắn cờ* bị khóa. | Mặc định khi người dùng mới tự đăng ký tại `/login` hoặc chọn *Vào xem nhanh*. |
 | **Người soát (`reviewer`)** | Toàn quyền thực hiện *Duyệt, Sửa chữ, Gắn cờ, Báo lỗi cấu trúc, Bỏ đánh dấu*, ghi nhận nguyên nhân lỗi OCR, xuất JSON đã duyệt và lưu tiến trình cá nhân. | Do **Admin** tạo trực tiếp hoặc bấm **✓ Cấp quyền soát** trong trang Quản trị. |
-| **Quản trị viên (`admin`)** | Toàn quyền của Người soát + Truy cập trang **Quản lý & Cấp quyền tài khoản (`/admin/users`)** để tạo tài khoản mới, cấp quyền soát hoặc thu hồi quyền về Chỉ xem. | Tài khoản quản trị hệ thống. |
+| **Quản trị viên (`admin`)** | Toàn quyền của Người soát + Truy cập trang **Quản lý & Cấp quyền tài khoản (`/admin/users`)** để tạo tài khoản mới, cấp quyền soát hoặc thu hồi quyền về Chỉ xem; ghi đè (`replace`) và xóa văn bản. | Tạo tự động lần đầu chạy (xem bên dưới). |
+
+### Đăng nhập & bảo mật
+
+* **Không có mật khẩu mặc định.** Lần đầu chạy, tài khoản `ADMIN_USERNAME` (mặc định `admin`) được tạo với mật khẩu ngẫu nhiên, in ra log và lưu ở `<STORAGE_DIR>/initial_admin_password.txt`. Muốn tự chọn mật khẩu thì đặt `ADMIN_PASSWORD` trong `.env`. **Quên mật khẩu admin:** đặt `ADMIN_PASSWORD` mới rồi khởi động lại. Tài khoản còn dùng mật khẩu cũ `admin123` sẽ tự được đổi sang mật khẩu ngẫu nhiên.
+* Tên tài khoản dài 3–64 ký tự (chữ không dấu, số, `.`, `_`, `-`); mật khẩu tối thiểu 8 ký tự. Đăng ký không bao giờ ghi đè tài khoản đã có.
+* Phiên đăng nhập là cookie `HttpOnly`, ký HMAC bằng `SECRET_KEY` (để trống thì tự sinh và lưu ở `<STORAGE_DIR>/.secret_key`) và hết hạn sau `SESSION_DAYS` ngày. Đổi khóa hoặc xóa file này sẽ đăng xuất mọi người.
+* Sai mật khẩu 10 lần trong 15 phút: tạm khóa đăng nhập theo (địa chỉ IP, tài khoản).
+* Mọi thao tác ghi (nhập văn bản, thẩm định) cần tài khoản `reviewer` đã được cấp quyền hoặc `admin`. Người soát được ghi nhận theo **tài khoản đang đăng nhập** (không còn ô tự gõ tên).
+* REST API dùng cookie phiên (trình duyệt) hoặc HTTP Basic cho công cụ dòng lệnh: `curl.exe -u <tài_khoản>:<mật_khẩu> ...`.
 
 * **Lưu tiến trình tự động (`reviewer_progress`):** Mỗi khi người soát chọn đơn vị hoặc thực hiện thao tác thẩm định, hệ thống tự động lưu lại `last_unit_id` và `last_page` gắn với tài khoản đó. Khi tắt máy hoặc đăng nhập lại, hàm `resume_unit_id` tự động mở đúng đơn vị đang sửa dở hoặc đơn vị *"Chưa soát"* kế tiếp.
 
@@ -115,11 +142,10 @@ python -m app.cli import-all data
 
 *(Thêm cờ `--replace` nếu muốn ghi đè văn bản đã có cùng `document_id` nhưng khác nội dung).*
 
-**Qua REST API:**
+**Qua REST API** (cần tài khoản có quyền soát; `replace=true` chỉ dành cho Admin):
 
 ```powershell
-curl.exe -F "pdf=@data/ND254_2026/source.pdf" -F "document=@data/ND254_2026/document.json" http://127.0.0.1:8080/api/documents
-
+curl.exe -u admin:<mật_khẩu> -F "pdf=@data/ND254_2026/source.pdf" -F "document=@data/ND254_2026/document.json" http://127.0.0.1:8080/api/documents
 ```
 
 ---
@@ -132,11 +158,11 @@ curl.exe -F "pdf=@data/ND254_2026/source.pdf" -F "document=@data/ND254_2026/docu
 | `GET /api/documents/{document_id}` | Chi tiết văn bản kèm cây `tree` (`Điều → Khoản → Điểm`) giữ đúng thứ tự trong file. |
 | `GET /api/documents/{document_id}/units/{unit_id}` | Thông tin và nội dung hiện hành của một đơn vị (`LegalUnit`). |
 | `GET /api/documents/{document_id}/pages/{page}` | Ảnh PNG của trang PDF thứ `page` (đếm từ 1). |
-| `POST /api/documents` | Tải lên và nhập một văn bản mới (`pdf` + `document` + `replace`). |
+| `POST /api/documents` | Tải lên và nhập một văn bản mới (`pdf` + `document` + `replace`). Cần đăng nhập (người soát/Admin). |
 | `GET /api/documents/{document_id}/progress` | Thống kê số lượng đơn vị theo từng trạng thái thẩm định. |
 | `GET /api/documents/{document_id}/ocr-report` | Báo cáo chi tiết độ chính xác (`CAR, WAR, UEM, SFI, Score`), danh sách lỗi ký tự OCR và giải pháp khắc phục. |
 | `GET /api/documents/{document_id}/units/{unit_id}/reviews` | Lịch sử các sự kiện thẩm định của một đơn vị (mới nhất xếp trước). |
-| `POST /api/documents/{document_id}/units/{unit_id}/reviews` | Ghi nhận một thao tác thẩm định (`approve`, `edit`, `flag`, `structure_error`, `reset`). |
+| `POST /api/documents/{document_id}/units/{unit_id}/reviews` | Ghi nhận một thao tác thẩm định (`approve`, `edit`, `flag`, `structure_error`, `reset`). Cần đăng nhập; người soát là tài khoản đã xác thực. |
 | `GET /api/documents/{document_id}/export` | Xuất tệp JSON chuẩn `LegalDocument` chỉ gồm các đơn vị **Đã duyệt** kèm nội dung đã sửa mới nhất. |
 
 ---
@@ -153,13 +179,15 @@ review-app/
 │   └── 004_auth_roles.sql         # Phân quyền role ('admin', 'reviewer', 'viewer') & is_approved
 ├── app/
 │   ├── main.py                    # FastAPI app, routes giao diện File Explorer & xác thực RBAC
+│   ├── web_auth.py                # Xác định người dùng (cookie phiên / HTTP Basic), chặn open redirect
 │   ├── api.py, schemas.py         # REST API JSON (/api) và Pydantic schemas (/docs)
-│   ├── config.py, db.py           # Cấu hình biến môi trường, connection pool & auto-migration
+│   ├── config.py, db.py           # Cấu hình (.env + biến môi trường), connection pool & auto-migration
 │   ├── repository.py              # Toàn bộ truy vấn SQL thuần (psycopg 3)
 │   ├── cli.py                     # Công cụ dòng lệnh nhập văn bản (import / import-dir / import-all)
 │   ├── contracts/                 # Model LegalDocument, LegalUnit & quy ước định danh
 │   ├── services/
-│   │   ├── auth.py                # Băm mật khẩu PBKDF2-HMAC-SHA256 & ký session token
+│   │   ├── auth.py                # Băm mật khẩu PBKDF2-HMAC-SHA256, token phiên có hạn, khóa ký, giới hạn đăng nhập sai
+│   │   ├── accounts.py            # Tài khoản, phân quyền, admin khởi tạo, vị trí đang soát
 │   │   ├── review.py              # Luật thẩm định, Visual Diff, thang đo CER/WER/UEM/SFI, xuất JSON
 │   │   ├── importer.py            # Kiểm tra đầu vào, SHA-256 hash, staging & render PDF
 │   │   ├── db_catalog.py          # Nguồn dữ liệu PostgreSQL
@@ -186,10 +214,13 @@ python -m pytest
 
 ```
 
-Để chạy thêm bộ kiểm thử tích hợp trên PostgreSQL thật (`tests/test_db_import.py`), trỏ biến `TEST_DATABASE_URL` vào một database dành riêng cho việc test (lưu ý: test sẽ xóa các bảng trong DB đó để kiểm tra lại từ đầu):
+`tests/test_security.py` là bộ test hồi quy cho các lỗi bảo mật đã sửa (giả mạo cookie, path traversal khi xóa, open redirect, mật khẩu mặc định...).
+
+Để chạy thêm bộ kiểm thử tích hợp trên PostgreSQL thật (`tests/test_db_import.py`), trỏ biến `TEST_DATABASE_URL` vào một database dành riêng cho việc test (lưu ý: test sẽ xóa các bảng trong DB đó để kiểm tra lại từ đầu). Ví dụ dùng một container tạm ở cổng riêng:
 
 ```powershell
-$env:TEST_DATABASE_URL = "postgresql://postgres:<mật_khẩu>@localhost:5432/review_test"
-python -m pytest tests/test_db_import.py
-
+docker run -d --name review-test-db -e POSTGRES_USER=review -e POSTGRES_PASSWORD=review_test_pw -e POSTGRES_DB=review_test -p 127.0.0.1:55432:5432 postgres:16
+$env:TEST_DATABASE_URL = "postgresql://review:review_test_pw@127.0.0.1:55432/review_test"
+python -m pytest
+docker rm -f review-test-db
 ```
