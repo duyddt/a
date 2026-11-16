@@ -5,5 +5,8 @@
 venv/
 .env
 storage/
+# Bí mật app tự sinh (phòng khi STORAGE_DIR trỏ ra ngoài storage/)
+.secret_key
+initial_admin_password.txt
 *.zip
 *.rar

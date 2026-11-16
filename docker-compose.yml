@@ -1,8 +1,10 @@
-# Một lệnh khởi động cả PostgreSQL và API:  docker compose up --build
+# Một lệnh khởi động cả PostgreSQL và web app:  docker compose up --build   ->  http://127.0.0.1:8080
 # Trước đó: sao chép .env.example thành .env và đặt POSTGRES_PASSWORD (file .env không được đưa lên Git).
+# Lần đầu chạy, mật khẩu tài khoản admin được in ra log:  docker compose logs api
 services:
   db:
     image: postgres:16
+    restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-review}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Hãy sao chép .env.example thành .env và đặt POSTGRES_PASSWORD}
@@ -17,22 +19,34 @@ services:
 
   api:
     build: .
+    restart: unless-stopped
     depends_on:
       db:
         condition: service_healthy
     environment:
       POSTGRES_HOST: db
+      POSTGRES_PORT: "5432"
       POSTGRES_USER: ${POSTGRES_USER:-review}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB:-review}
       STORAGE_DIR: /storage
-      # Khi khởi động, nhập mọi văn bản trong ./data (đã nhập rồi thì bỏ qua). Đặt AUTO_IMPORT_DIR= (rỗng) trong .env để tắt.
-      AUTO_IMPORT_DIR: ${AUTO_IMPORT_DIR-/seed}
+      DATA_DIR: /seed
+      # Khóa ký phiên đăng nhập: để trống thì tự sinh và lưu trong volume storage
+      SECRET_KEY: ${SECRET_KEY:-}
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+      # Để trống: lần đầu tạo admin với mật khẩu ngẫu nhiên (xem log). Có giá trị: admin dùng mật khẩu này.
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+      SESSION_DAYS: ${SESSION_DAYS:-14}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      # Khi khởi động, nhập mọi văn bản trong ./data (đã nhập rồi thì bỏ qua).
+      # Đặt DOCKER_AUTO_IMPORT_DIR= (rỗng) trong .env để tắt.
+      AUTO_IMPORT_DIR: ${DOCKER_AUTO_IMPORT_DIR-/seed}
     volumes:
       - storage:/storage
       - ./data:/seed:ro
     ports:
-      - "8080:8000"
+      # Mặc định chỉ mở trên máy này. Muốn máy khác trong mạng LAN truy cập: đặt APP_BIND=0.0.0.0 trong .env
+      - "${APP_BIND:-127.0.0.1}:${APP_PORT:-8080}:8000"
 
 volumes:
   pgdata:
