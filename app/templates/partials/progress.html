@@ -7,7 +7,7 @@
   </div>
   <span class="progress-text">
     Đã duyệt {{ p.approved }}/{{ p.total }} ({{ p.percent_approved }}%)
-    {%- if p.char_accuracy_percent is not none %} · <strong>Độ chính xác OCR: {{ p.char_accuracy_percent }}%</strong> (ký tự) / {{ p.unit_accuracy_percent }}% (đơn vị nguyên vẹn){% endif -%}
+    {%- if p.char_accuracy_percent is defined and p.char_accuracy_percent is not none %} · <strong>Độ chính xác OCR: {{ p.char_accuracy_percent }}%</strong> (ký tự) / {{ p.unit_accuracy_percent }}% (đơn vị nguyên vẹn){% endif -%}
     {%- if p.flagged %} · gắn cờ {{ p.flagged }}{% endif -%}
     {%- if p.structure_error %} · lỗi cấu trúc {{ p.structure_error }}{% endif -%}
   </span>

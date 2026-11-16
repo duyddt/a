@@ -4,11 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{% block title %}Thẩm định dữ liệu pháp lý{% endblock %}</title>
+<link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/static/style.css">
 <script>
   /* Áp dụng theme tức thì ngay khi nạp để tránh chớp màn hình */
   (function() {
-    var saved = localStorage.getItem('law_theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    var saved = null; try { saved = localStorage.getItem('law_theme'); } catch (e) {}
+    saved = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
     document.documentElement.setAttribute('data-theme', saved);
   })();
 </script>
@@ -40,7 +42,7 @@
     var current = document.documentElement.getAttribute('data-theme') || 'light';
     var next = current === 'dark' ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', next);
-    localStorage.setItem('law_theme', next);
+    try { localStorage.setItem('law_theme', next); } catch (e) {}
     updateThemeUI();
   }
 
