@@ -101,7 +101,16 @@ code { background: #e2e8f0; padding: 2px 6px; border-radius: 3px; font-size: 0.9
 .chips { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 6px 10px; font-size: 13px; background: #f0f9ff; border-bottom: 1px solid #bae6fd; }
 .chip.current { background: #0078d4; border-color: #005a9e; color: #fff; font-weight: 700; }
 .page-scroll { height: 80vh; overflow: auto; padding: 10px; background: #475569; text-align: center; }
-.page-scroll img { display: block; margin: 0 auto; max-width: none; background: #fff; box-shadow: 0 3px 10px rgba(0,0,0,0.35); }
+.page-frame { position: relative; margin: 0 auto; box-shadow: 0 3px 10px rgba(0,0,0,0.35); }
+.page-scroll img { display: block; width: 100%; max-width: none; background: #fff; }
+/* Vùng tô sáng nội dung của đơn vị đang chọn trên ảnh trang (toạ độ % theo ảnh) */
+.page-highlight { position: absolute; pointer-events: none; border-radius: 3px; background: rgba(250, 204, 21, 0.3); outline: 2px solid rgba(202, 138, 4, 0.9); outline-offset: 1px; mix-blend-mode: multiply; animation: highlight-pulse 1.4s ease-out 1; }
+.page-highlight.approximate { outline-style: dashed; }
+@keyframes highlight-pulse { 0% { box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.75); } 100% { box-shadow: 0 0 0 16px rgba(234, 179, 8, 0); } }
+@media (prefers-reduced-motion: reduce) { .page-highlight { animation: none; } }
+.highlight-legend { display: inline-flex; align-items: center; gap: 6px; margin-left: auto; color: #334155; }
+.highlight-swatch { display: inline-block; width: 14px; height: 14px; border-radius: 2px; background: rgba(250, 204, 21, 0.45); outline: 2px solid rgba(202, 138, 4, 0.9); }
+.highlight-legend.approximate .highlight-swatch { outline-style: dashed; }
 
 /* CÂY THƯ MỤC FILE EXPLORER */
 .tree-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 6px 10px; border-bottom: 1px solid var(--border); background: #f8fafc; }

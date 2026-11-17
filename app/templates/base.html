@@ -48,6 +48,28 @@
 
   document.addEventListener('DOMContentLoaded', updateThemeUI);
   document.addEventListener('htmx:afterSwap', updateThemeUI);
+
+  /* Cuộn khung xem trang tới vùng tô sáng của đơn vị vừa chọn (mỗi khung xem mới chỉ cuộn một lần) */
+  function revealHighlight() {
+    var viewer = document.getElementById('viewer');
+    if (!viewer || viewer.getAttribute('data-revealed')) return;
+    viewer.setAttribute('data-revealed', '1');
+    var box = viewer.querySelector('.page-highlight');
+    var scroller = viewer.querySelector('.page-scroll');
+    var img = viewer.querySelector('.page-frame img');
+    if (!box || !scroller || !img) return;
+    function go() {
+      var area = scroller.getBoundingClientRect();
+      var rect = box.getBoundingClientRect();
+      scroller.scrollTop += rect.top - area.top - Math.min(48, area.height * 0.1);
+      if (rect.left < area.left || rect.right > area.right) {
+        scroller.scrollLeft += rect.left - area.left - 24;
+      }
+    }
+    if (img.complete && img.naturalHeight) go(); else img.addEventListener('load', go, { once: true });
+  }
+  document.addEventListener('DOMContentLoaded', revealHighlight);
+  document.addEventListener('htmx:afterSettle', revealHighlight);
 </script>
 </body>
 </html>

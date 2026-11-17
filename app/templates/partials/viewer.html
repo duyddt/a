@@ -22,9 +22,20 @@
     {% for chip in v.chips %}
     <button type="button" class="chip{% if chip.current %} current{% endif %}" hx-get="{{ chip.url }}" hx-target="#viewer" hx-swap="outerHTML">{{ chip.page }}</button>
     {% endfor %}
+    {% if v.highlights %}
+    <span class="highlight-legend{% if v.highlight_approximate %} approximate{% endif %}">
+      <span class="highlight-swatch" aria-hidden="true"></span>
+      {% if v.highlight_approximate %}Vùng tô vàng: vị trí ước lượng trên bản scan{% else %}Vùng tô vàng: nội dung đơn vị trên trang này{% endif %}
+    </span>
+    {% endif %}
   </div>
   {% endif %}
   <div class="page-scroll">
-    <img src="{{ v.image_url }}" alt="Trang {{ v.page }} của {{ v.page_count }}" style="width: {{ v.zoom }}%">
+    <div class="page-frame" style="width: {{ v.zoom }}%">
+      <img src="{{ v.image_url }}" alt="Trang {{ v.page }} của {{ v.page_count }}">
+      {% for h in v.highlights %}
+      <div class="page-highlight{% if v.highlight_approximate %} approximate{% endif %}" style="left: {{ h.left }}%; top: {{ h.top }}%; width: {{ h.width }}%; height: {{ h.height }}%" aria-hidden="true"></div>
+      {% endfor %}
+    </div>
   </div>
 </div>

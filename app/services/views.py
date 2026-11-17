@@ -6,6 +6,7 @@ from urllib.parse import quote
 
 from app.contracts import LegalUnit
 
+from .highlight import NO_HIGHLIGHT, locate
 from .models import LoadedDocument
 
 VN_TIME = timezone(timedelta(hours=7))  # cố định UTC+7, không cần cơ sở dữ liệu múi giờ của hệ điều hành
@@ -33,6 +34,13 @@ def viewer_context(loaded: LoadedDocument, page: int, zoom: int, unit_id: str | 
     unit = loaded.units_by_id.get(unit_id) if unit_id else None
     chips = [{"page": p, "url": url(p, zoom), "current": p == page} for p in (unit.source_pages if unit else [])]
     zoom_index = ZOOMS.index(zoom)
+    mark = locate(loaded, unit.unit_id, page) if unit else NO_HIGHLIGHT
+    highlights = [
+        # phần trăm theo kích thước ảnh trang, để khung tô co giãn theo mức phóng to
+        {"left": round(left * 100, 2), "top": round(top * 100, 2),
+         "width": round((right - left) * 100, 2), "height": round((bottom - top) * 100, 2)}
+        for left, top, right, bottom in mark.rects
+    ]
     return {
         "base": base,
         "document_id": document_id,
@@ -47,6 +55,8 @@ def viewer_context(loaded: LoadedDocument, page: int, zoom: int, unit_id: str | 
         "zoom_in_url": url(page, ZOOMS[zoom_index + 1]) if zoom_index < len(ZOOMS) - 1 else None,
         "fit_url": url(page, DEFAULT_ZOOM),
         "chips": chips,
+        "highlights": highlights,
+        "highlight_approximate": mark.method == "layout",  # bản scan không có lớp chữ: vị trí ước lượng
     }
 
 
