@@ -2,27 +2,45 @@
 
 Bao gồm:
 - Lịch sử sự kiện thẩm định append-only (fold_events, decide, apply_edits).
+- Bản riêng của từng người (fold_tracks): mỗi người chỉnh sửa (role reviewer) có bản `editor` của riêng mình, độc lập
+  với người khác; người phê duyệt và Admin cùng làm trên bản chốt `final` (chọn bản, duyệt, gắn cờ; Admin sửa được chữ).
+  Bản OCR gốc là nội dung trong bảng legal_unit, không bao giờ bị sửa.
 - Thang đo độ chính xác khoa học (CER/CAR, WER/WAR theo chuẩn ICDAR/UNLV ISRI, UEM, SFI và Composite Score).
 - Quản lý tiến trình duyệt theo từng tài khoản (resume_unit_id).
 """
 from __future__ import annotations
 
 from collections import Counter
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 from difflib import SequenceMatcher
 from typing import Iterable
 
 from app.contracts import LegalDocument, LegalUnit
 
-ACTIONS = ("approve", "edit", "flag", "structure_error", "reset")
+ACTIONS = ("approve", "edit", "flag", "structure_error", "reset", "adopt")
 ACTION_LABELS = {
     "approve": "Duyệt",
     "edit": "Sửa chữ",
     "flag": "Gắn cờ",
     "structure_error": "Báo lỗi cấu trúc",
     "reset": "Bỏ đánh dấu",
+    "adopt": "Chọn bản",
 }
+TEXT_ACTIONS = ("edit", "adopt")  # thao tác đổi chữ của đơn vị (content_before / content_after)
+FINAL = "final"  # bản chốt (người phê duyệt + Admin)
+EDITOR = "editor"  # bản riêng của từng người chỉnh sửa
+ROLE_ACTIONS = {
+    "reviewer": ("approve", "edit", "flag", "structure_error", "reset"),
+    "approver": ("approve", "flag", "structure_error", "reset", "adopt"),  # duyệt và ghi chú, không sửa chữ
+    "admin": ACTIONS,
+}
+ROLE_NAMES = {"reviewer": "Người chỉnh sửa", "approver": "Người phê duyệt", "admin": "Admin"}
+
+
+def track_of(role: str) -> str:
+    """Bản mà thao tác của `role` được ghi vào."""
+    return EDITOR if role == "reviewer" else FINAL
 STATUS_LABELS = {
     "unreviewed": "Chưa soát",
     "approved": "Đã duyệt",
@@ -61,6 +79,7 @@ class ReviewEvent:
     content_before: str | None = None
     content_after: str | None = None
     created_at: datetime | None = None
+    track: str = FINAL  # "editor": bản riêng của `reviewer`; "final": bản chốt
 
     @property
     def action_label(self) -> str:
@@ -93,7 +112,7 @@ def fold_events(events: Iterable[ReviewEvent]) -> dict[str, UnitReview]:
     for event in events:
         state = result.setdefault(event.unit_id, UnitReview())
         state.last = event
-        if event.action == "edit":
+        if event.action in TEXT_ACTIONS:
             if state.original_content is None and event.content_before is not None:
                 state.original_content = event.content_before
             state.edited_content = event.content_after
@@ -110,6 +129,50 @@ def fold_events(events: Iterable[ReviewEvent]) -> dict[str, UnitReview]:
     return result
 
 
+@dataclass
+class Tracks:
+    """Trạng thái thẩm định theo từng bản: `final` (bản chốt) và `editors[tên]` (bản riêng của từng người chỉnh sửa).
+    `people`: người chỉnh sửa theo thứ tự lần thao tác đầu tiên (để gán màu)."""
+
+    final: dict[str, UnitReview] = field(default_factory=dict)
+    editors: dict[str, dict[str, UnitReview]] = field(default_factory=dict)
+    final_events: list[ReviewEvent] = field(default_factory=list)
+    editor_events: dict[str, list[ReviewEvent]] = field(default_factory=dict)
+
+    @property
+    def people(self) -> list[str]:
+        return list(self.editor_events)
+
+    def events_of(self, version: str) -> list[ReviewEvent]:
+        return self.final_events if version == FINAL else self.editor_events.get(version, [])
+
+    def reviews_of(self, version: str) -> dict[str, UnitReview]:
+        return self.final if version == FINAL else self.editors.get(version, {})
+
+
+def version_for(viewer: dict | None, requested: str | None, people: Iterable[str]) -> str:
+    """Bản mà `viewer` đang xem. Người chỉnh sửa luôn xem bản của chính mình (các bản độc lập với nhau); người phê duyệt
+    và Admin xem bản chốt, hoặc bản của một người chỉnh sửa nếu hỏi đúng tên (`requested`)."""
+    if viewer and viewer.get("role") == "reviewer":
+        return viewer["username"]
+    if requested and (requested == FINAL or requested in set(people)):
+        return requested
+    return FINAL
+
+
+def fold_tracks(events: Iterable[ReviewEvent]) -> Tracks:
+    """Tách lịch sử theo bản rồi tính trạng thái từng bản (fold_events). `events` theo thứ tự thời gian."""
+    tracks = Tracks()
+    for event in events:
+        if event.track == EDITOR:
+            tracks.editor_events.setdefault(event.reviewer, []).append(event)
+        else:
+            tracks.final_events.append(event)
+    tracks.final = fold_events(tracks.final_events)
+    tracks.editors = {name: fold_events(evs) for name, evs in tracks.editor_events.items()}
+    return tracks
+
+
 def decide(
     original_content: str,
     prior_events: Iterable[ReviewEvent],
@@ -117,13 +180,22 @@ def decide(
     reviewer: str,
     note: str | None = None,
     content: str | None = None,
+    role: str = "admin",
+    source_content: str | None = None,
 ) -> dict:
-    """Kiểm tra một thao tác mới; trả các cột của sự kiện cần ghi. ReviewProblem nếu không hợp lệ."""
+    """Kiểm tra một thao tác mới; trả các cột của sự kiện cần ghi (kể cả `track`). ReviewProblem nếu không hợp lệ.
+
+    `prior_events`: lịch sử của đơn vị trên ĐÚNG bản sẽ ghi (bản riêng của người chỉnh sửa này, hoặc bản chốt).
+    `role`: reviewer ghi vào bản riêng; approver / admin ghi vào bản chốt. Người phê duyệt không sửa chữ.
+    `source_content`: với "adopt" (chọn bản), chữ của bản được chọn do server tự lấy (OCR gốc hoặc bản của một người)."""
     problems: list[str] = []
     reviewer = (reviewer or "").strip()
     note = (note or "").strip() or None
     if action not in ACTIONS:
         problems.append(f"Thao tác không hợp lệ: {action!r} (chỉ nhận {', '.join(ACTIONS)})")
+    elif action not in ROLE_ACTIONS.get(role, ()):
+        verb = {"edit": "sửa chữ", "adopt": "chọn bản"}.get(action, ACTION_LABELS[action].lower())
+        problems.append(f"{ROLE_NAMES.get(role, role)} không được {verb}")
     if not reviewer:
         problems.append("Cần nhập tên người soát")
     elif len(reviewer) > MAX_REVIEWER:
@@ -134,17 +206,25 @@ def decide(
         problems.append(f"{ACTION_LABELS[action]} cần ghi chú nêu lý do")
 
     before = after = None
-    if action == "edit":
+    if action in TEXT_ACTIONS and not problems:
         states = fold_events(prior_events)
         unit_state = next(iter(states.values()), UnitReview())
         current_text = unit_state.edited_content if unit_state.edited_content is not None else original_content
-        after = normalize_text(content or "")
-        if not after.strip():
-            problems.append("Nội dung sửa không được để trống")
-        elif len(after) > MAX_CONTENT:
-            problems.append("Nội dung sửa quá dài")
-        elif after == normalize_text(current_text):
-            problems.append("Nội dung không thay đổi so với bản hiện hành")
+        if action == "adopt":
+            if source_content is None:
+                problems.append("Bạn chưa chọn bản nào")
+            else:
+                after = normalize_text(source_content)
+                if after == normalize_text(current_text):
+                    problems.append("Bản chốt đã giống bản được chọn")
+        else:
+            after = normalize_text(content or "")
+            if not after.strip():
+                problems.append("Nội dung sửa không được để trống")
+            elif len(after) > MAX_CONTENT:
+                problems.append("Nội dung sửa quá dài")
+            elif after == normalize_text(current_text):
+                problems.append("Nội dung không thay đổi so với bản hiện hành")
         before = current_text
 
     if problems:
@@ -155,6 +235,7 @@ def decide(
         "note": note,
         "content_before": before,
         "content_after": after,
+        "track": track_of(role),
     }
 
 
@@ -228,17 +309,36 @@ def resume_unit_id(
 
 
 def _edit_distance_seq(seq_a: list[str] | str, seq_b: list[str] | str) -> int:
-    """Tính khoảng cách chỉnh sửa (Số thao tác Insert + Delete + Substitute) từ opcodes của SequenceMatcher."""
-    matcher = SequenceMatcher(None, seq_a, seq_b)
-    edits = 0
-    for tag, i1, i2, j1, j2 in matcher.get_opcodes():
-        if tag == "replace":
-            edits += max(i2 - i1, j2 - j1)
-        elif tag == "delete":
-            edits += i2 - i1
-        elif tag == "insert":
-            edits += j2 - j1
-    return edits
+    """Khoảng cách Levenshtein: số thao tác Thay (S) + Xóa (D) + Thêm (I) ÍT NHẤT để biến seq_a thành seq_b.
+
+    Nhận chuỗi ký tự (CER) hoặc danh sách tiếng (WER). Dùng thuật toán bit-song song Myers/Hyyrö: kết quả đúng như
+    quy hoạch động O(n·m) nhưng mỗi bước xử lý cả cột bằng phép toán trên số nguyên lớn, nên đơn vị dài hàng chục
+    nghìn ký tự vẫn nhanh. (Bản cũ đếm theo opcodes của difflib.SequenceMatcher: không tối thiểu, có thể đếm thừa.)"""
+    if len(seq_a) < len(seq_b):
+        seq_a, seq_b = seq_b, seq_a  # seq_b (ngắn hơn) làm mẫu dạng bit
+    m = len(seq_b)
+    if m == 0:
+        return len(seq_a)
+    match_bits: dict = {}
+    for position, item in enumerate(seq_b):
+        match_bits[item] = match_bits.get(item, 0) | (1 << position)
+    mask, top = (1 << m) - 1, 1 << (m - 1)
+    vp, vn, distance = mask, 0, m
+    for item in seq_a:
+        eq = match_bits.get(item, 0)
+        xv = eq | vn
+        xh = ((((eq & vp) + vp) & mask) ^ vp) | eq
+        hp = (vn | ~(xh | vp)) & mask
+        hn = vp & xh
+        if hp & top:
+            distance += 1
+        elif hn & top:
+            distance -= 1
+        hp = ((hp << 1) | 1) & mask
+        hn = (hn << 1) & mask
+        vp = (hn | ~(xv | hp)) & mask
+        vn = hp & xv
+    return distance
 
 
 def extract_char_diffs(before: str, after: str) -> list[dict]:

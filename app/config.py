@@ -21,7 +21,7 @@ DEFAULT_ADMIN_PASSWORD = "admin123"  # chỉ để chạy thử trên máy cá n
 @dataclass(frozen=True)
 class Settings:
     data_dir: Path  # chế độ thư mục file: data/<document_id>/{source.pdf,document.json}
-    storage_dir: Path  # nơi lưu source.pdf, ảnh trang đã render, khóa ký phiên và mật khẩu admin khởi tạo
+    storage_dir: Path  # bộ đệm (source.pdf chép từ PostgreSQL, ảnh trang dựng khi xem) và khóa ký phiên tự sinh
     conninfo: str | None  # chuỗi kết nối PostgreSQL; None = chế độ thư mục file
     auto_import_dir: Path | None  # nếu có, mỗi lần khởi động nhập mọi thư mục con của nó (nhập lại không tạo trùng)
     secret_key: str | None = None  # None: tự sinh một lần và lưu ở storage_dir/.secret_key

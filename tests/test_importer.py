@@ -1,9 +1,9 @@
-"""Phần nhập không cần DB: kiểm tra đầu vào, mã băm, ghi và render tệp."""
+"""Phần nhập không cần DB: kiểm tra đầu vào và mã băm."""
 import json
 
 import pytest
 
-from app.services.importer import content_hash_of, prepare_import, publish_files, stage_files
+from app.services.importer import content_hash_of, prepare_import
 from app.services.models import ImportProblem
 
 
@@ -69,21 +69,3 @@ def test_hash_ignores_formatting_but_detects_changes(sample_pdf, sample_json):
     changed = mutate(sample_json, lambda r: r["legal_units"][0].update(content="nội dung khác"))
     assert prepare_import(sample_pdf, changed).content_hash != prepare_import(sample_pdf, sample_json).content_hash
     assert content_hash_of(sample_pdf + b"x", raw) != content_hash_of(sample_pdf, raw)
-
-
-def test_stage_then_publish_files(tmp_path, sample_pdf, sample_json):
-    prepared = prepare_import(sample_pdf, sample_json)
-    storage = tmp_path / "storage"
-    staging = stage_files(prepared, storage)
-    assert (staging / "source.pdf").read_bytes() == sample_pdf
-    assert sorted(p.name for p in (staging / "pages").glob("p*.png")) == ["p001.png", "p002.png", "p003.png"]
-
-    final = publish_files(staging, storage, "ND254_2026")
-    assert final == storage / "ND254_2026" and not staging.exists()
-    assert (final / "pages" / "p003.png").read_bytes()[:8] == b"\x89PNG\r\n\x1a\n"
-
-    # nhập bản thay thế: thư mục cũ bị thay, không lẫn trang cũ
-    (final / "pages" / "p999.png").write_bytes(b"cu")
-    publish_files(stage_files(prepared, storage), storage, "ND254_2026")
-    assert not (final / "pages" / "p999.png").exists()
-    assert [p.name for p in storage.iterdir()] == ["ND254_2026"]  # không còn thư mục .staging

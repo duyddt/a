@@ -40,7 +40,7 @@ class DocumentStore:
             and (child / "source.pdf").is_file()
         ]
 
-    def list_documents(self) -> list[DocumentSummary]:
+    def list_documents(self, viewer: dict | None = None) -> list[DocumentSummary]:
         summaries = []
         for document_id in self.list_ids():
             try:
@@ -61,7 +61,11 @@ class DocumentStore:
             )
         return summaries
 
-    def get(self, document_id: str) -> LoadedDocument:
+    def list_categories(self) -> list:
+        """Chế độ thư mục file không có danh mục: mọi văn bản nằm ở thư mục gốc."""
+        return []
+
+    def get(self, document_id: str, viewer: dict | None = None, version: str | None = None) -> LoadedDocument:
         """Trả LoadedDocument. KeyError nếu không có văn bản; ImportProblem nếu dữ liệu sai."""
         if not DOC_ID_RE.match(document_id):
             raise KeyError(document_id)

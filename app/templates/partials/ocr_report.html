@@ -1,10 +1,10 @@
 <div id="ocr-report-box" style="padding: 6px 12px 0;"{% if oob %} hx-swap-oob="true"{% endif %}>
 {% if can_review and progress and progress.ocr_report and (progress.approved > 0 or progress.ocr_report.edited_units > 0) %}
   {% set rep = progress.ocr_report %}
-  <details style="background:#fff; border:1px solid #94a3b8; border-radius:4px; padding:8px 12px;">
-    <summary style="cursor:pointer; font-weight:700; font-size:14px; color:#0f172a;">
+  <details class="ocr-report">
+    <summary>
       📐 Thang Đo Độ Chính Xác Hệ Thống (Chuẩn ICDAR: CER/WER &amp; Đề Xuất Pháp Lý: UEM/SFI)
-      {%- if rep.composite_score is not none %} — Điểm tổng hợp: <strong style="color:#16a34a;">{{ rep.composite_score }}%</strong>{% endif %}
+      {%- if rep.composite_score is not none %} — Điểm tổng hợp: <strong class="ok-text">{{ rep.composite_score }}%</strong>{% endif %}
       (Đã ghi nhận {{ rep.edited_units }} mục sửa lỗi OCR)
     </summary>
     <div style="margin-top:10px;">
@@ -29,9 +29,9 @@
           <div class="m-val">{{ rep.structural_fidelity_percent if rep.structural_fidelity_percent is not none else "—" }}%</div>
           <div class="m-sub">Đo độ chính xác tách Điều/Khoản/Điểm</div>
         </div>
-        <div class="metric-card" style="border-left-color:#16a34a; background:#f0fdf4;">
+        <div class="metric-card ok">
           <div class="m-title">5. Điểm Hệ Thống Đề Xuất</div>
-          <div class="m-val" style="color:#15803d;">{{ rep.composite_score if rep.composite_score is not none else "—" }}%</div>
+          <div class="m-val ok-text">{{ rep.composite_score if rep.composite_score is not none else "—" }}%</div>
           <div class="m-sub">0.4·CAR + 0.3·WAR + 0.2·SFI + 0.1·UEM</div>
         </div>
       </div>

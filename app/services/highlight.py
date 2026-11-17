@@ -1,10 +1,17 @@
 """Tìm vùng trên ảnh trang PDF tương ứng với một Điều/Khoản/Điểm để tô sáng ở khung trái.
 
-Hai cách, không cần cài thêm công cụ nào:
+Ba cách, theo thứ tự ưu tiên:
 - PDF có lớp chữ (PDF số hoặc PDF scan đã OCR sẵn): lấy toạ độ từng ký tự bằng pypdfium2, so khớp nội dung đơn vị
   với chữ trên trang và tô đúng các dòng chứa nó (`method = "text"`).
-- PDF chỉ có ảnh scan: tách ảnh trang thành các khối đoạn văn (theo khoảng trắng giữa các dòng và thụt đầu dòng),
-  rồi ghép thứ tự các khối với thứ tự đoạn văn của các đơn vị trên trang đó (`method = "layout"`, là vị trí ước lượng).
+- PDF chỉ có ảnh (bản scan, ảnh chụp): dùng toạ độ từng từ do OCR trả về (page_words.py, lưu trong PostgreSQL) và so
+  khớp y như trên (`method = "ocr"`). Chữ OCR lấy trên đúng ảnh đã OCR khi nhập văn bản nên gần như trùng nội dung.
+- Trang chưa có toạ độ từ và máy không có Tesseract: tách ảnh trang thành các khối đoạn văn (khoảng trắng giữa các
+  dòng, thụt đầu dòng) rồi ghép thứ tự khối với thứ tự đoạn văn của các đơn vị (`method = "layout"`, chỉ là ước lượng).
+
+So khớp chữ đi TUẦN TỰ theo thứ tự đơn vị trên trang: đơn vị sau chỉ được bắt đầu sau đơn vị trước, nên các đoạn ngắn
+lặp lại ("a) Thuế;" ở hai Khoản) không bị nhận nhầm; đơn vị kết thúc trước đơn vị kế tiếp không thuộc nó; số trang ở
+đầu / cuối trang không bao giờ bị tô. Chữ OCR của ảnh chụp tay hay lẫn nhiễu ở mép giấy và mất vài ký tự đầu dòng: đơn vị
+nối trang bỏ qua vài dòng mép không có trong nội dung, và chỗ bắt đầu tìm mờ không lấn sang cuối dòng trên.
 
 Toạ độ trả về chuẩn hoá theo kích thước trang: (trái, trên, phải, dưới) trong khoảng 0..1.
 """
@@ -12,9 +19,12 @@ from __future__ import annotations
 
 import logging
 import math
+import re
 import unicodedata
+from bisect import bisect_left, bisect_right
 from dataclasses import dataclass
 from functools import lru_cache
+from itertools import pairwise
 from pathlib import Path
 
 import pypdfium2 as pdfium
@@ -30,7 +40,7 @@ Rect = tuple[float, float, float, float]
 @dataclass(frozen=True)
 class Highlight:
     rects: tuple[Rect, ...]
-    method: str | None  # "text" (chính xác), "layout" (ước lượng) hoặc None (không tìm được)
+    method: str | None  # "text" / "ocr" (theo chữ, chính xác), "layout" (ước lượng) hoặc None (không tìm được)
 
 
 NO_HIGHLIGHT = Highlight((), None)
@@ -58,27 +68,67 @@ def _normalize(text: str) -> tuple[str, list[int]]:
     return "".join(chars), origin
 
 
-def _find_anchor(haystack: str, needle: str, from_end: bool, lo: int = 0) -> int | None:
-    """Vị trí đầu (hoặc cuối) của `needle` trong `haystack[lo:]`, lần xuất hiện đầu tiên.
+def _find_anchor(haystack: str, needle: str, from_end: bool, lo: int = 0, hi: int | None = None) -> int | None:
+    """Vị trí đầu (hoặc cuối) của `needle` trong `haystack[lo:hi]`, lần xuất hiện đầu tiên.
 
-    Thử đoạn neo dài trước rồi ngắn dần; cuối cùng so mờ (lớp chữ OCR có thể sai vài ký tự)."""
-    if not needle:
+    Thử đoạn neo dài trước rồi ngắn dần; cuối cùng so mờ (chữ OCR sai vài ký tự, nội dung đã được sửa)."""
+    hi = len(haystack) if hi is None else hi
+    if not needle or hi <= lo:
         return None
     for size in (60, 40, 24, 14):
         if len(needle) < size and size != 14:
             continue
         anchor = needle[-size:] if from_end else needle[:size]
-        hit = haystack.find(anchor, lo)
+        hit = haystack.find(anchor, lo, hi)
         if hit >= 0:
             return hit + len(anchor) if from_end else hit
+    return _fuzzy_edge(haystack, needle[-40:] if from_end else needle[:40], from_end, lo, hi)
+
+
+def _rfind_end(haystack: str, needle: str, lo: int, hi: int) -> int | None:
+    """Vị trí ngay sau lần xuất hiện CUỐI CÙNG của phần đuôi `needle` trong `haystack[lo:hi]`.
+
+    Dùng cho chỗ kết thúc của đơn vị: phần đuôi (vài chục ký tự) có thể lặp lại ngay trong đơn vị, nhưng sau chỗ kết
+    thúc thật thì không còn (đã sang đơn vị khác, chữ ký, nơi nhận)."""
+    if not needle or hi <= lo:
+        return None
+    for size in (60, 40, 24, 14, 8):
+        if len(needle) < size and size not in (14, 8):
+            continue
+        anchor = needle[-size:]
+        hit = haystack.rfind(anchor, lo, hi)
+        if hit >= 0:
+            return hit + len(anchor)
+    return _fuzzy_edge(haystack, needle[-40:], True, lo, hi)
+
+
+def _fuzzy_edge(haystack: str, anchor: str, from_end: bool, lo: int, hi: int) -> int | None:
+    """So mờ `anchor` (đầu hoặc đuôi nội dung) với `haystack[lo:hi]`: lấy đoạn trùng dài nhất, rồi chỉnh mép theo khối
+    trùng đầu tiên (hoặc cuối cùng) quanh đó, để chữ bị thêm / bớt ở đầu nội dung không làm lệch chỗ bắt đầu."""
     from difflib import SequenceMatcher
 
-    anchor = needle[-40:] if from_end else needle[:40]
-    match = SequenceMatcher(None, haystack, anchor, autojunk=False).find_longest_match(lo, len(haystack), 0, len(anchor))
-    if match.size >= max(10, len(anchor) // 2):
-        start = match.a - match.b
-        return min(len(haystack), start + len(anchor)) if from_end else max(lo, start)
-    return None
+    match = SequenceMatcher(None, haystack, anchor, autojunk=False).find_longest_match(lo, hi, 0, len(anchor))
+    if match.size < max(8, len(anchor) // 2):
+        return None
+    if not from_end:
+        head = anchor[:match.b]
+        if not head:
+            return match.a
+        window_start = max(lo, match.a - len(head) - 10)
+        for block in SequenceMatcher(None, haystack[window_start:match.a], head, autojunk=False).get_matching_blocks():
+            if block.size >= 3:
+                return max(lo, window_start + block.a - block.b)
+        return max(lo, match.a - match.b)
+    tail = anchor[match.b + match.size:]
+    end = match.a + match.size
+    if not tail:
+        return end
+    window = haystack[end:min(hi, end + len(tail) + 10)]
+    blocks = [b for b in SequenceMatcher(None, window, tail, autojunk=False).get_matching_blocks() if b.size >= 3]
+    if blocks:
+        last = blocks[-1]
+        return min(hi, end + last.a + last.size + (len(tail) - last.b - last.size))
+    return min(hi, end + len(tail))
 
 
 def _span_on_page(page_text: str, content: str, heading: str, starts_here: bool, ends_here: bool) -> tuple[int, int] | None:
@@ -143,6 +193,169 @@ def _text_layer(pdf_path: str, stamp: tuple[int, int], page: int) -> _TextLayer 
         visible = not ch.isspace() and right > left and top > bottom
         boxes.append((left / width, 1 - top / height, right / width, 1 - bottom / height) if visible else None)
     return _TextLayer(normalized, tuple(origin), raw, tuple(boxes))
+
+
+def _words_layer(words) -> _TextLayer:
+    """Tầng chữ dựng từ các từ OCR (page_words.Word): mỗi ký tự lấy một phần hộp của từ chứa nó (chia đều theo bề
+    ngang), các từ cùng dòng cách nhau một dấu cách, các dòng cách nhau một dấu xuống dòng."""
+    raw: list[str] = []
+    boxes: list[Rect | None] = []
+    previous_line = None
+    for word in words:
+        if raw:
+            raw.append("\n" if word.line != previous_line else " ")
+            boxes.append(None)
+        previous_line = word.line
+        left, top, right, bottom = word.box
+        step = (right - left) / max(1, len(word.text))
+        for k, ch in enumerate(word.text):
+            raw.append(ch)
+            boxes.append((left + step * k, top, left + step * (k + 1), bottom))
+    text = "".join(raw)
+    normalized, origin = _normalize(text)
+    return _TextLayer(normalized, tuple(origin), text, tuple(boxes))
+
+
+_PAGE_NUMBER = re.compile(r"[-–—.\s]*\d{1,4}[-–—.\s]*")
+
+
+def _body_bounds(layer: _TextLayer) -> tuple[int, int]:
+    """[đầu, cuối) phần thân trang trong chuỗi chuẩn hoá: bỏ dòng chỉ có số trang ở đầu và ở cuối trang."""
+    lines, offset = [], 0
+    for line in layer.raw.split("\n"):
+        if line.strip():
+            lines.append((offset, offset + len(line), line.strip()))
+        offset += len(line) + 1
+    lo, hi = 0, len(layer.normalized)
+    if lines and _PAGE_NUMBER.fullmatch(lines[0][2]):
+        lo = bisect_left(layer.origin, lines[0][1])
+    if len(lines) > 1 and _PAGE_NUMBER.fullmatch(lines[-1][2]):
+        hi = bisect_left(layer.origin, lines[-1][0])
+    return (lo, hi) if hi > lo else (0, len(layer.normalized))
+
+
+def _line_starts(layer: _TextLayer) -> tuple[int, ...]:
+    """Chỉ số (trong chuỗi chuẩn hoá) nơi mỗi dòng chữ bắt đầu."""
+    starts, offset = set(), 0
+    for line in layer.raw.split("\n"):
+        starts.add(bisect_left(layer.origin, offset))
+        offset += len(line) + 1
+    return tuple(sorted(starts))
+
+
+MAX_NOISE_LINES = 3  # số dòng nhiễu tối đa bỏ qua ở mép trang
+
+
+def _line_in_content(line: str, matcher) -> bool:
+    """Dòng (đã chuẩn hoá) có trong nội dung không: dòng ngắn phải có nguyên văn, dòng dài chỉ cần nửa dòng trùng."""
+    content = matcher.b
+    if len(line) < 4:
+        return line in content
+    matcher.set_seq1(line)
+    return matcher.find_longest_match(0, len(line), 0, len(content)).size >= max(4, len(line) // 2)
+
+
+def _content_edge(text: str, content: str, lo: int, hi: int, breaks: tuple[int, ...], from_end: bool) -> int:
+    """Mép đầu (hoặc cuối) phần của đơn vị nằm trong `text[lo:hi]` khi đơn vị nối từ trang trước (hoặc còn tiếp ở trang
+    sau): bỏ tối đa MAX_NOISE_LINES dòng ở mép không có trong nội dung (nhiễu OCR ở mép ảnh, số trang lẫn ký tự lạ).
+    Không dòng nào khớp thì giữ nguyên mép."""
+    from difflib import SequenceMatcher
+
+    cuts = [lo, *(b for b in breaks if lo < b < hi), hi]
+    spans = [(a, b) for a, b in pairwise(cuts) if b > a]
+    if from_end:
+        spans.reverse()
+    matcher = SequenceMatcher(None, autojunk=False)
+    matcher.set_seq2(content)
+    for a, b in spans[:MAX_NOISE_LINES + 1]:
+        if _line_in_content(text[a:b], matcher):
+            return b if from_end else a
+    return hi if from_end else lo
+
+
+def _snap_start(text: str, hit: int, heads: tuple[str, ...], breaks: tuple[int, ...], hi: int) -> int:
+    """Chỗ bắt đầu tìm mờ rơi vào vài ký tự cuối dòng trên mà các ký tự đó không phải đầu đơn vị (OCR mất nhãn "c) Tr" ở
+    đầu dòng nên phần còn thiếu bị bù bằng chữ cuối dòng trên): dời xuống đầu dòng sau."""
+    k = bisect_right(breaks, hit)
+    if k < len(breaks) and breaks[k] < hi:
+        gap = breaks[k] - hit
+        if gap <= 6 and not any(head[:gap] == text[hit:breaks[k]] for head in heads if head):
+            return breaks[k]
+    return hit
+
+
+def _heading(unit) -> str:
+    """Dòng "Điều N. Tên điều" đã chuẩn hoá (chỉ cấp Điều mới có, và nó không nằm trong `content`)."""
+    if unit.article is not None and unit.clause is None and unit.point is None:
+        return _normalize(f"Điều {unit.article}. {unit.title or ''}")[0]
+    return ""
+
+
+def _unit_starts(text: str, on_page: list, page: int, lo: int, hi: int,
+                 breaks: tuple[int, ...] = ()) -> dict[str, int | None]:
+    """Chỗ bắt đầu của từng đơn vị trên trang, tìm lần lượt theo thứ tự đơn vị: đơn vị con bắt đầu từ chỗ của cha trở
+    đi, đơn vị kế tiếp (không phải con) bắt đầu sau đó. Đơn vị nối từ trang trước bắt đầu ở đầu phần thân trang (bỏ vài
+    dòng nhiễu ở mép). `breaks`: chỗ bắt đầu các dòng (_line_starts)."""
+    starts: dict[str, int | None] = {}
+    pos, last_id = lo, None
+    parent_of = {u.unit_id: u.parent_unit_id for u in on_page}
+    for unit in on_page:
+        if unit.source_pages[0] < page:
+            starts[unit.unit_id] = _content_edge(text, _normalize(unit.content)[0], lo, hi, breaks, from_end=False)
+            continue
+        ancestor, inside = parent_of.get(unit.unit_id), False
+        while ancestor is not None:
+            if ancestor == last_id:
+                inside = True
+                break
+            ancestor = parent_of.get(ancestor)
+        frm = pos if inside or last_id is None else min(hi, pos + 1)
+        content = _normalize(unit.content)[0]
+        hit = _find_anchor(text, content, from_end=False, lo=frm, hi=hi)
+        heading = _heading(unit)
+        if heading:
+            exact = text.find(heading, frm, hi)
+            if exact >= 0 and (hit is None or exact <= hit):
+                hit = exact
+            elif hit is not None:  # tên Điều bị OCR sai: tìm mờ ngay trước nội dung
+                found = _fuzzy_edge(text, heading, False, max(frm, hit - len(heading) - 12), hit)
+                hit = found if found is not None else hit
+        if hit is not None:
+            hit = _snap_start(text, hit, (heading, content), breaks, hi)
+        starts[unit.unit_id] = hit
+        if hit is not None:
+            pos, last_id = hit, unit.unit_id
+    return starts
+
+
+def _locate_in_layer(layer: _TextLayer, units, unit, page: int) -> tuple[Rect, ...] | None:
+    """Vùng tô của `unit` trên trang `page` theo tầng chữ (lớp chữ của PDF hoặc chữ OCR kèm toạ độ).
+
+    None: không tìm được chỗ bắt đầu. (): tìm được nhưng trên trang này đơn vị không có dòng nào (đơn vị nối trang mà
+    đơn vị kế tiếp đã bắt đầu ngay đầu trang, ví dụ phần "nối" chỉ là số trang bị tách nhầm vào nội dung)."""
+    text = layer.normalized
+    lo, hi = _body_bounds(layer)
+    on_page = [u for u in units if page in u.source_pages]
+    breaks = _line_starts(layer)
+    starts = _unit_starts(text, on_page, page, lo, hi, breaks)
+    start = starts.get(unit.unit_id)
+    if start is None:
+        return None
+    own = _subtree(units, unit.unit_id)
+    index = next(i for i, u in enumerate(on_page) if u.unit_id == unit.unit_id)
+    continues = unit.source_pages[0] < page  # mọi đơn vị sau nó trên trang đều bắt đầu sau phần nối này
+    later = [starts[u.unit_id] for u in on_page[index + 1:]
+             if u.unit_id not in own and starts[u.unit_id] is not None and (continues or starts[u.unit_id] > start)]
+    limit = min(later) if later else hi
+    if limit <= start:
+        return ()
+    if page < unit.source_pages[-1]:  # còn tiếp ở trang sau: tới hết phần thân trang (hoặc tới đơn vị kế tiếp)
+        end = _content_edge(text, _normalize(unit.content)[0], start, limit, breaks, from_end=True)
+    else:
+        end = _rfind_end(text, _normalize(unit.content)[0], start, limit)
+        if end is None:
+            end = limit if later else min(hi, start + len(_normalize(unit.content)[0]))
+    return _text_rects(layer, start, end) if end > start else ()
 
 
 def _text_rects(layer: _TextLayer, start: int, end: int) -> tuple[Rect, ...]:
@@ -465,6 +678,29 @@ def _pad(rect: Rect, dx: float, dy: float) -> Rect:
 
 # ---------------------------------------------------------------- điểm vào
 
+
+def _rects_from_layer(layer: _TextLayer, units, unit, page: int) -> tuple[Rect, ...] | None:
+    """Vùng tô theo tầng chữ; () nếu đơn vị không có dòng nào trên trang, None nếu không tìm thấy đơn vị."""
+    rects = _locate_in_layer(layer, units, unit, page)
+    if rects is not None:
+        return rects
+    # không tìm được chỗ bắt đầu theo thứ tự: tìm riêng đơn vị này như trước (neo đầu / đuôi độc lập)
+    span = _span_on_page(layer.normalized, _normalize(unit.content)[0], _heading(unit),
+                         page == unit.source_pages[0], page == unit.source_pages[-1])
+    return (_text_rects(layer, *span) or None) if span else None
+
+
+def _page_words(loaded, page: int):
+    """Toạ độ từ OCR của trang (đã lưu, hoặc OCR ngay nếu máy có Tesseract); lỗi thì coi như chưa có."""
+    from . import page_words
+
+    try:
+        return page_words.for_page(loaded, page)
+    except Exception:
+        log.warning("Không lấy được toạ độ chữ OCR trang %s", page, exc_info=True)
+        return None
+
+
 def locate(loaded, unit_id: str | None, page: int) -> Highlight:
     """Vùng cần tô sáng của đơn vị `unit_id` trên trang `page` của văn bản đã nạp (LoadedDocument)."""
     unit = loaded.units_by_id.get(unit_id) if unit_id else None
@@ -473,18 +709,19 @@ def locate(loaded, unit_id: str | None, page: int) -> Highlight:
     try:
         pdf_path = loaded.pdf_path
         stat = pdf_path.stat()
+        units = loaded.doc.legal_units
         layer = _text_layer(str(pdf_path), (stat.st_size, stat.st_mtime_ns), page)
         if layer is not None:
-            content, _ = _normalize(unit.content)
-            heading = ""
-            if unit.article is not None and unit.clause is None and unit.point is None:
-                heading, _ = _normalize(f"Điều {unit.article}. {unit.title or ''}")
-            span = _span_on_page(layer.normalized, content, heading, page == unit.source_pages[0], page == unit.source_pages[-1])
-            rects = _text_rects(layer, *span) if span else ()
-            if rects:
-                return Highlight(rects, "text")
-            # lớp chữ không khớp nội dung (OCR kém, nội dung đã sửa nhiều...): dùng cách ước lượng theo bố cục
-        rects = _layout_rects(loaded.doc.legal_units, unit, page, loaded.page_image(page))
+            rects = _rects_from_layer(layer, units, unit, page)
+            if rects is not None:  # () = đơn vị không có dòng nào trên trang này: không tô, không đoán
+                return Highlight(rects, "text") if rects else NO_HIGHLIGHT
+            # lớp chữ không khớp nội dung (OCR kém, nội dung đã sửa nhiều...): thử chữ OCR rồi tới ước lượng bố cục
+        words = _page_words(loaded, page)
+        if words:
+            rects = _rects_from_layer(_words_layer(words), units, unit, page)
+            if rects is not None:
+                return Highlight(rects, "ocr") if rects else NO_HIGHLIGHT
+        rects = _layout_rects(units, unit, page, loaded.page_image(page))
         return Highlight(rects, "layout") if rects else NO_HIGHLIGHT
     except Exception:  # tô sáng chỉ là phần hỗ trợ: lỗi ở đây không được làm hỏng khung xem PDF
         log.warning("Không xác định được vùng tô sáng của %s ở trang %s", unit_id, page, exc_info=True)

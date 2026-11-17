@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block title %}Thống kê tiến độ{% endblock %}
+{#- Thanh tiến độ một chuỗi: giá trị luôn hiện bằng chữ bên cạnh, thanh chỉ để liếc nhanh -#}
+{% macro meter(percent, text) -%}
+<div class="meter-cell">
+  <span class="meter" aria-hidden="true"><span class="meter-fill" style="width: {{ percent }}%"></span></span>
+  <span class="meter-text"><strong>{{ percent }}%</strong> <span class="muted">{{ text }}</span></span>
+</div>
+{%- endmacro %}
+{% block body %}
+<header class="topbar">
+  <a href="/" class="button-link">&larr; Về Danh sách văn bản</a>
+  <h1>📊 Thống kê tiến độ</h1>
+  <div class="topbar-actions">
+    <a href="/admin/assign" class="button-link">🧑‍💼 Phân công</a>
+    <a href="/admin/users" class="button-link">⚙ Tài khoản</a>
+    <form method="post" action="/account/logout" style="margin:0;">
+      <button type="submit" class="button-link">Đăng xuất</button>
+    </form>
+    {% include "partials/theme_toggle.html" %}
+  </div>
+</header>
+
+<main class="narrow">
+  <nav class="assign-folders" aria-label="Lọc theo thư mục">
+    <a href="/admin/stats"{% if not current %} aria-current="page"{% endif %}>Tất cả</a>
+    {% for c in categories %}<a href="/admin/stats?folder={{ c.code|urlencode }}"{% if current and current.code == c.code %} aria-current="page"{% endif %}>{{ c.label }}</a>{% endfor %}
+  </nav>
+
+  <section class="stat-row" aria-label="Tổng quan văn bản theo trạng thái">
+    <div class="stat-tile">
+      <span class="stat-value">{{ stats.total_documents }}</span>
+      <span class="stat-label">Văn bản{% if current %} trong {{ current.label }}{% endif %}</span>
+    </div>
+    {% for code, label in STATUS_LABELS.items() %}
+    <div class="stat-tile">
+      <span class="stat-value">{{ stats.status_counts[code] }}</span>
+      <span class="stat-label"><span class="wf-status wf-{{ code }}">{{ label }}</span></span>
+    </div>
+    {% endfor %}
+  </section>
+
+  <section class="pane stats-section" aria-labelledby="people-title">
+    <h2 id="people-title">Theo người</h2>
+    <p class="muted small">Hoàn thành = văn bản đã xong / văn bản được giao. Người chỉnh sửa xong một văn bản khi bấm Hoàn
+      thành; người phê duyệt xong khi Hoàn tất phê duyệt. Đơn vị đã xử lý: người chỉnh sửa tính đơn vị đã duyệt, gắn cờ
+      hoặc báo lỗi cấu trúc trên bản riêng; người phê duyệt tính đơn vị đã duyệt trên bản chốt.</p>
+    {% if stats.people %}
+    <div class="table-scroll">
+      <table class="doclist stats-table">
+        <thead>
+          <tr>
+            <th scope="col">Người</th>
+            <th scope="col">Vai trò</th>
+            <th scope="col" class="num">Được giao</th>
+            <th scope="col">Hoàn thành</th>
+            <th scope="col" class="num">Đang chờ duyệt</th>
+            <th scope="col">Đơn vị đã xử lý</th>
+            <th scope="col">Thao tác gần nhất</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for p in stats.people %}
+          <tr>
+            <th scope="row">{{ p.display_name }}{% if p.display_name != p.username %} <code>{{ p.username }}</code>{% endif %}</th>
+            <td><span class="tag role-{{ p.role }}">{{ p.role_label }}</span></td>
+            <td class="num">{{ p.assigned }}</td>
+            <td>{{ meter(p.percent, p.completed ~ "/" ~ p.assigned ~ " văn bản") }}</td>
+            <td class="num">{% if p.role == "approver" %}{{ p.waiting }}{% else %}<span class="muted" aria-label="Không áp dụng">—</span>{% endif %}</td>
+            <td>{{ meter(p.units_percent, p.units_done ~ "/" ~ p.units_total ~ " đơn vị") }}</td>
+            <td class="small">{% if p.last_activity %}{{ p.last_activity|vn_time }}{% else %}<span class="muted">Chưa thao tác</span>{% endif %}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="muted">Chưa phân công văn bản nào{% if current %} trong thư mục này{% endif %}. <a href="/admin/assign">Phân công văn bản</a>.</p>
+    {% endif %}
+  </section>
+
+  <section class="pane stats-section" aria-labelledby="docs-title">
+    <h2 id="docs-title">Theo văn bản <span class="muted small">({{ stats.total_documents }})</span></h2>
+    <div class="table-scroll">
+      <table class="doclist stats-table">
+        <thead>
+          <tr>
+            <th scope="col">Văn bản</th>
+            <th scope="col">Trạng thái</th>
+            <th scope="col">Người chỉnh sửa <span class="muted">(đơn vị đã xử lý)</span></th>
+            <th scope="col">Người phê duyệt</th>
+            <th scope="col">Bản chốt đã duyệt</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for d in stats.documents %}
+          <tr>
+            <th scope="row"><a href="/documents/{{ d.document_id|urlencode }}">{{ d.document_id }}</a>
+              {% if d.categories %}<div class="small muted">{% for code in d.categories %}{{ category_names.get(code, code) }}{% if not loop.last %} · {% endif %}{% endfor %}</div>{% endif %}</th>
+            <td><span class="wf-status wf-{{ d.status }}">{{ d.status_label }}</span></td>
+            <td>
+              {% for e in d.editors %}
+              <span class="person-chip person-{{ e.color }}" title="{{ 'Đã bấm Hoàn thành' if e.submitted else 'Đang làm' }}">{{ e.username }}{% if e.submitted %} ✓{% endif %} <span class="chip-count">{{ e.units_done }}/{{ d.unit_count }}</span></span>
+              {% else %}<span class="muted small">Chưa giao</span>{% endfor %}
+            </td>
+            <td>{% if d.approver %}{{ d.approver }}{% else %}<span class="muted small">{% if d.editors %}Mọi người phê duyệt{% else %}—{% endif %}</span>{% endif %}</td>
+            <td>{{ meter(d.final_percent, d.final_approved ~ "/" ~ d.unit_count) }}</td>
+          </tr>
+        {% else %}
+          <tr><td colspan="5" class="muted">Không có văn bản nào.</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>
+{% endblock %}

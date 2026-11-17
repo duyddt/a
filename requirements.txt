@@ -6,7 +6,8 @@ python-multipart>=0.0.9
 psycopg[binary]>=3.2
 psycopg-pool>=3.2
 pypdfium2>=4.30
-pillow>=10
-# Tùy chọn, chỉ cần khi tải lên PDF scan MỚI (không có lớp chữ, không khớp dữ liệu mẫu trong data/):
-#   pip install pytesseract  và cài Tesseract OCR kèm gói tiếng Việt (vie)
-#   hoặc đặt GEMINI_API_KEY trong .env
+pillow>=10.3
+# OCR cho PDF scan MỚI (không có lớp chữ, không trùng tệp mẫu trong data/). pytesseract chỉ là lớp gọi:
+# cần thêm chương trình Tesseract kèm gói tiếng Việt 'vie' (Docker image đã cài sẵn), hoặc GEMINI_API_KEY trong .env.
+# Thiếu cả hai thì PDF scan bị từ chối kèm lý do, không nhập thành đơn vị rỗng.
+pytesseract>=0.3.10

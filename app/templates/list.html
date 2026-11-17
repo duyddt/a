@@ -1,53 +1,101 @@
 {% extends "base.html" %}
 {% from "partials/progress.html" import bar %}
-{% block title %}Danh sách văn bản{% endblock %}
+{% from "partials/doc_table.html" import doc_table with context %}
+{% block title %}{{ current.category.label if current else "Danh sách văn bản" }}{% endblock %}
 {% block body %}
 <header class="topbar">
   <h1>🗂 Hệ thống Thẩm định Dữ liệu Pháp lý (File Explorer)</h1>
-  <div style="margin-left:auto; display:flex; align-items:center; gap:8px;">
+  <div class="topbar-actions">
     {% if current_user %}
       <span>👤 <strong>{{ current_user.display_name or current_user.username }}</strong> (<code>{{ current_user.username }}</code>)</span>
-      {% if current_user.role == 'admin' %}
-        <span class="tag edited" style="background:#dcfce7; color:#14532d; border-color:#16a34a;">🛡 Admin</span>
-        <a href="/admin/users" class="button-link" style="background:#dbeafe; border-color:#2563eb; color:#1e3a8a;">⚙ Quản lý &amp; Cấp quyền tài khoản</a>
-      {% elif current_user.is_approved %}
-        <span class="tag edited">✓ Đã cấp quyền soát</span>
-      {% else %}
-        <span class="tag warn">👁 Chế độ Chỉ xem (Chờ Admin duyệt quyền)</span>
+      <span class="tag role-{{ current_user.role }}">{{ ROLE_LABELS[current_user.role] }}</span>
+      {% if not current_user.is_approved %}
+        <span class="tag warn">🔒 Đã khóa</span>
+      {% elif current_user.role == 'admin' %}
+        <a href="/admin/stats" class="button-link info">📊 Thống kê</a>
+        <a href="/admin/assign" class="button-link info">🧑‍💼 Phân công</a>
+        <a href="/admin/users" class="button-link info">⚙ Quản lý tài khoản</a>
       {% endif %}
       <form method="post" action="/account/logout" style="margin:0;">
         <button type="submit" class="button-link">Đăng xuất</button>
       </form>
-    {% else %}
-      <span class="tag warn">👁 Khách (Chỉ xem)</span>
-      <a href="/login" class="button-link" style="background:#0078d4; color:#fff; border-color:#005a9e;">🔐 Đăng nhập / Đăng ký</a>
     {% endif %}
+    {% include "partials/theme_toggle.html" %}
   </div>
 </header>
+
+{#- Thanh địa chỉ kiểu Explorer: Văn bản pháp luật › I. Quản lý thuế -#}
+<nav class="explorer-address-bar" aria-label="Đường dẫn thư mục">
+  <ol class="address-box">
+    <li>
+      {% if current %}<a href="/">🗂 Văn bản pháp luật</a>
+      {% else %}<span aria-current="page">🗂 Văn bản pháp luật</span>{% endif %}
+    </li>
+    {% if current %}
+    <li><span class="address-sep" aria-hidden="true">›</span><span aria-current="page">📁 {{ current.category.label }}</span></li>
+    {% endif %}
+  </ol>
+</nav>
+
 <main class="narrow">
   {% if db_error %}
-    <div style="padding:10px 14px; background:#fffbeb; border:1px solid #f59e0b; color:#92400e; border-radius:4px; margin-bottom:14px;">
+    <div class="alert warn">
       ⚠ <strong>Chưa kết nối được PostgreSQL</strong> — hệ thống đang ở chế độ <strong>chỉ xem</strong> (không thêm văn bản, không lưu thẩm định).
       Hãy bật PostgreSQL, kiểm tra <code>DATABASE_URL</code> / <code>POSTGRES_*</code> trong tệp <code>.env</code> rồi khởi động lại ứng dụng.
       <br><span class="muted">{{ db_error }}</span>
     </div>
   {% endif %}
   {% if err %}
-    <div style="padding:10px 14px; background:#fef2f2; border:1px solid #dc2626; color:#991b1b; border-radius:4px; margin-bottom:14px; font-weight:600;">⚠ {{ err }}</div>
+    <div class="alert error" role="alert">⚠ {{ err }}</div>
   {% endif %}
   {% if msg %}
-    <div style="padding:10px 14px; background:#f0fdf4; border:1px solid #16a34a; color:#166534; border-radius:4px; margin-bottom:14px; font-weight:600;">✓ {{ msg }}</div>
+    <div class="alert success" role="status">✓ {{ msg }}</div>
   {% endif %}
 
-  {% if current_user and not current_user.is_approved and current_user.role != 'admin' %}
-  <div style="padding:12px 16px; background:#fffbeb; border:1px solid #f59e0b; color:#92400e; border-radius:6px; margin-bottom:16px;">
-    🔒 <strong>Tài khoản <code>{{ current_user.username }}</code> đang chờ cấp quyền:</strong> Bạn hiện chỉ có thể mở văn bản ở <strong>Chế độ Chỉ xem</strong>. Vui lòng nhờ Admin đăng nhập vào mục <em>Quản lý &amp; Cấp quyền tài khoản</em> để bật quyền soát cho bạn.
+  {% if current_user and not current_user.is_approved %}
+  <div class="alert warn" role="status">
+    🔒 <strong>Tài khoản <code>{{ current_user.username }}</code> đang bị khóa:</strong> bạn vẫn mở và đọc được văn bản nhưng không thao tác được. Hãy liên hệ Admin để mở khóa.
   </div>
   {% endif %}
 
   <!-- Khung tải văn bản mới lên để đọc/soát -->
+  {% if my_work is not none or queue is not none %}
+  {% set mine = my_work is not none %}
+  {% set rows = my_work if mine else queue %}
+  <section class="pane work-queue" aria-labelledby="work-title">
+    <h2 id="work-title">{% if mine %}📋 Việc được giao cho tôi{% elif current_user.role == 'admin' %}📥 Văn bản chờ phê duyệt{% else %}📥 Chờ tôi phê duyệt{% endif %} <span class="muted small">({{ rows|length }})</span></h2>
+    {% if rows %}
+    <table class="doclist compact">
+      <thead><tr>
+        <th scope="col">Văn bản</th><th scope="col">Trạng thái</th>
+        <th scope="col">{% if mine %}Tiến độ bản của bạn{% else %}Người chỉnh sửa{% endif %}</th>
+        {% if not mine %}<th scope="col">Bản chốt</th>{% endif %}
+      </tr></thead>
+      <tbody>
+      {% for item in rows %}
+        {% set wf = item.workflow %}
+        <tr>
+          <td><a href="/documents/{{ item.document_id|urlencode }}">{{ item.title }}</a><br><code class="doc-code">{{ item.document_id }}</code></td>
+          <td><span class="wf-status wf-{{ wf.status }}">{{ wf.status_label }}</span>
+            {% if mine and wf.has_submitted(current_user.username) %}<span class="small muted">· bạn đã bấm Hoàn thành</span>{% endif %}
+            {% if wf.returned_note %}<div class="small wf-return-note-inline">↩ {{ wf.returned_note }}</div>{% endif %}</td>
+          {% if mine %}<td>{{ bar(item.progress) }}</td>
+          {% else %}
+          <td>{% for name, done in wf.editors.items() %}<span class="person-chip person-{{ loop.index0 % 8 + 1 }}">{{ name }}{% if done %} ✓{% endif %}</span> {% endfor %}</td>
+          <td>{{ bar(item.progress) }}</td>
+          {% endif %}
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="muted small">{% if mine %}Chưa có văn bản nào được giao cho bạn.{% else %}Chưa có văn bản nào chờ phê duyệt.{% endif %}</p>
+    {% endif %}
+  </section>
+  {% endif %}
+
   {% if can_upload %}
-  <section class="pane" style="padding:14px 16px; margin-bottom:18px; background:#f8fafc;">
+  <section class="pane soft" style="padding:14px 16px; margin-bottom:18px;">
     <h3 style="margin:0 0 10px; font-size:15px;">➕ Thêm văn bản mới vào hệ thống để đọc &amp; thẩm định</h3>
     <form method="post" action="/documents/upload" enctype="multipart/form-data" style="display:flex; flex-wrap:wrap; gap:12px; align-items:end;">
       <label class="field" style="flex:1 1 240px;">📄 Tệp PDF gốc (<code>source.pdf</code>)
@@ -56,6 +104,16 @@
       <label class="field" style="flex:1 1 260px;">🗂 Tệp JSON có sẵn <span class="muted">(Tùy chọn — bỏ trống sẽ tự tách từ PDF)</span>
         <input type="file" name="document" accept=".json,application/json">
       </label>
+      {% if folders %}
+      <label class="field" style="flex:1 1 220px;">📁 Thư mục
+        <select name="category">
+          <option value="">— Chưa xếp thư mục —</option>
+          {% for f in folders %}
+          <option value="{{ f.category.code }}"{% if current and current.category.code == f.category.code %} selected{% endif %}>{{ f.category.label }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      {% endif %}
       {% if can_replace %}
       <label style="display:flex; align-items:center; gap:5px; font-size:13px; padding-bottom:6px; cursor:pointer;">
         <input type="checkbox" name="replace" value="true"> Ghi đè nếu đã có
@@ -66,73 +124,138 @@
   </section>
   {% endif %}
 
-  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-    <h2 style="margin:0;">📂 Thư mục Văn bản hiện có ({{ items|length }})</h2>
-  </div>
-
   {% if not items %}
   <div class="pane" style="padding:28px; text-align:center;">
     <p style="font-size:16px; font-weight:600; margin:0 0 6px;">📭 Hệ thống hiện đang trống (chưa có văn bản nào được nạp).</p>
     {% if can_upload %}
     <p class="muted" style="margin:0;">Hãy chọn tệp <code>source.pdf</code> và <code>document.json</code> ở khung <strong>➕ Thêm văn bản mới</strong> phía trên (ví dụ trong thư mục <code>data/ND254_2026/</code>) để bắt đầu đọc và thẩm định.</p>
-    {% elif current_user %}
-    <p class="muted" style="margin:0;">Nhờ Admin hoặc người soát đã được cấp quyền thêm văn bản vào hệ thống.</p>
     {% else %}
-    <p class="muted" style="margin:0;"><a href="/login">Đăng nhập</a> bằng tài khoản có quyền soát để thêm văn bản.</p>
+    <p class="muted" style="margin:0;">Nhờ Admin thêm văn bản vào hệ thống.</p>
     {% endif %}
   </div>
+  {% elif not folders %}
+  {#- Chưa có danh mục nào (chế độ thư mục file, hoặc chưa nhập bộ dữ liệu theo thư mục): danh sách phẳng như trước -#}
+  <h2 class="listing-title">📂 Thư mục Văn bản hiện có ({{ items|length }})</h2>
+  {{ doc_table(loose, "document-table") }}
   {% else %}
-  <table class="doclist">
-    <thead>
-      <tr>
-        <th>Văn bản</th>
-        <th>Số đơn vị</th>
-        <th>Số trang</th>
-        <th>Tiến độ thẩm định &amp; Độ chính xác</th>
-        <th>Tiến trình của {{ reviewer or "bạn" }}</th>
-        {% if current_user and current_user.role == 'admin' %}<th>Xóa</th>{% endif %}
-      </tr>
-    </thead>
-    <tbody>
-    {% for item in items %}
-      {% if not item.problem %}
-      {% set up = user_progress_map.get(item.document_id) if user_progress_map else None %}
-      <tr>
-        <td>
-          📁 <a href="/documents/{{ item.document_id }}">{{ item.title }}</a><br>
-          <span class="muted">{{ item.document_no }}</span>
-        </td>
-        <td>{{ item.unit_count }}</td>
-        <td>{{ item.page_count }}</td>
-        <td>{{ bar(item.progress) }}</td>
-        <td>
-          {% if up %}
-            <a class="button-link" href="/documents/{{ item.document_id }}?unit={{ up.last_unit_id }}&page={{ up.last_page }}">
-              ▶ Tiếp tục tại {{ up.last_unit_id }} (Trang {{ up.last_page }})
-            </a>
-          {% else %}
-            <a href="/documents/{{ item.document_id }}">Mở văn bản &rarr;</a>
-          {% endif %}
-        </td>
-        {% if current_user and current_user.role == 'admin' %}
-        <td>
-          <form method="post" action="/documents/{{ item.document_id|urlencode }}/delete" style="margin:0;" data-confirm="Xóa văn bản {{ item.document_id }} khỏi hệ thống?" onsubmit="return confirm(this.dataset.confirm);">
-            <button type="submit" class="ribbon-btn structure" style="min-height:28px; padding:0 8px; font-size:12px;">🗑 Xóa</button>
-          </form>
-        </td>
-        {% endif %}
-      </tr>
+  <div class="library">
+    <aside class="pane folder-pane" aria-label="Cây thư mục">
+      <h2 class="pane-title">Thư mục</h2>
+      <div class="folder-filter">
+        <input type="search" id="doc-filter" placeholder="Lọc theo mã, số hiệu, tên…" aria-label="Lọc văn bản trong mọi thư mục" autocomplete="off">
+      </div>
+      <ul class="folder-tree" id="folder-tree">
+        {% for f in folders %}
+        {% set is_open = current and current.category.code == f.category.code %}
+        <li class="folder-item">
+          <a class="folder-link" href="/?folder={{ f.category.code|urlencode }}"{% if is_open %} aria-current="page"{% endif %}>
+            <span aria-hidden="true">{{ "📂" if is_open else "📁" }}</span><span class="name">{{ f.category.label }}</span><span class="count">{{ f.documents|length }}</span>
+          </a>
+          <ul class="folder-docs"{% if not is_open %} hidden{% endif %}>
+            {% for d in f.documents %}
+            <li data-filter="{{ (d.document_id ~ ' ' ~ (d.document_no or '') ~ ' ' ~ (d.title or ''))|lower }}"><a href="/documents/{{ d.document_id|urlencode }}?folder={{ f.category.code|urlencode }}" title="{{ d.title }}">📄 {{ d.document_id }}</a></li>
+            {% endfor %}
+          </ul>
+        </li>
+        {% endfor %}
+        {% for d in loose if not d.problem %}
+        <li class="loose-doc" data-filter="{{ (d.document_id ~ ' ' ~ (d.document_no or '') ~ ' ' ~ (d.title or ''))|lower }}"><a href="/documents/{{ d.document_id|urlencode }}" title="{{ d.title }}">📄 {{ d.document_id }}</a></li>
+        {% endfor %}
+      </ul>
+      <p class="muted small folder-empty" id="filter-empty" hidden>Không có văn bản nào khớp.</p>
+    </aside>
+
+    <section class="listing" aria-labelledby="listing-title">
+      {% if current %}
+      <div class="listing-head">
+        <h2 class="listing-title" id="listing-title">📂 {{ current.category.label }}</h2>
+        <span class="muted small">{{ current.documents|length }} văn bản · {{ "{:,}".format(current.unit_count)|replace(",", ".") }} đơn vị · {{ "{:,}".format(current.page_count)|replace(",", ".") }} trang</span>
+      </div>
+      {% if current.documents %}
+      {{ doc_table(current.documents, "document-table", current.category) }}
       {% else %}
-      <tr>
-        <td colspan="6">
-          <strong>{{ item.document_id }}</strong>: <span class="err">không nhập được</span>
-          (<a href="/documents/{{ item.document_id }}">xem lỗi</a>)
-        </td>
-      </tr>
+      <div class="pane empty-folder" role="status">
+        <p><strong>📭 Thư mục này chưa có văn bản nào.</strong></p>
+        <p class="muted small">{% if can_upload %}Chọn tệp ở khung <strong>➕ Thêm văn bản mới</strong> phía trên; thư mục <strong>{{ current.category.label }}</strong> đã được chọn sẵn.{% else %}<a href="/">Về thư mục gốc</a>{% endif %}</p>
+      </div>
       {% endif %}
-    {% endfor %}
-    </tbody>
-  </table>
+      {% else %}
+      <div class="listing-head">
+        <h2 class="listing-title" id="listing-title">🗂 Văn bản pháp luật</h2>
+        <span class="muted small">{{ items|length }} văn bản · {{ folders|length }} thư mục chủ đề</span>
+      </div>
+      <table class="doclist" id="folder-table">
+        <thead>
+          <tr>
+            <th scope="col">Thư mục</th>
+            <th scope="col" class="num">Văn bản</th>
+            <th scope="col" class="num">Đơn vị</th>
+            <th scope="col" class="num">Trang</th>
+            <th scope="col">Tiến độ thẩm định</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for f in folders %}
+          <tr>
+            <th scope="row" class="folder-name"><a href="/?folder={{ f.category.code|urlencode }}">📁 {{ f.category.label }}</a></th>
+            <td class="num" data-count="{{ f.documents|length }}">{{ f.documents|length }}</td>
+            <td class="num">{{ "{:,}".format(f.unit_count)|replace(",", ".") }}</td>
+            <td class="num">{{ "{:,}".format(f.page_count)|replace(",", ".") }}</td>
+            <td>{% if f.progress %}{{ bar(f.progress) }}{% elif not f.documents %}<span class="muted">Trống</span>{% endif %}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% if loose %}
+      <h3 class="listing-subtitle">📄 Văn bản chưa xếp thư mục ({{ loose|length }})</h3>
+      {{ doc_table(loose, "loose-table") }}
+      {% endif %}
+      {% endif %}
+    </section>
+  </div>
   {% endif %}
 </main>
+
+{% if folders %}
+<script>
+  /* Lọc văn bản trên cây thư mục: mở các thư mục có văn bản khớp, ẩn phần còn lại. Không có JS thì cây vẫn dùng được. */
+  (function () {
+    var input = document.getElementById('doc-filter');
+    var tree = document.getElementById('folder-tree');
+    if (!input || !tree) return;
+    var folders = Array.prototype.slice.call(tree.querySelectorAll('.folder-item'));
+    var loose = Array.prototype.slice.call(tree.querySelectorAll('.loose-doc'));
+    var empty = document.getElementById('filter-empty');
+    folders.forEach(function (item) {
+      var list = item.querySelector('.folder-docs');
+      item.dataset.wasHidden = list.hidden ? '1' : '';
+    });
+    input.addEventListener('input', function () {
+      var query = input.value.trim().toLowerCase();
+      var matches = 0;
+      folders.forEach(function (item) {
+        var list = item.querySelector('.folder-docs');
+        var docs = list.querySelectorAll('li');
+        var found = 0;
+        docs.forEach(function (doc) {
+          var hit = !query || doc.dataset.filter.indexOf(query) !== -1;
+          doc.hidden = !hit;
+          if (hit) found += 1;
+        });
+        var nameHit = query && item.querySelector('.name').textContent.toLowerCase().indexOf(query) !== -1;
+        if (nameHit) docs.forEach(function (doc) { doc.hidden = false; });
+        item.hidden = Boolean(query) && !found && !nameHit;
+        list.hidden = query ? false : item.dataset.wasHidden === '1';
+        matches += nameHit ? docs.length : found;
+      });
+      loose.forEach(function (doc) {
+        var hit = !query || doc.dataset.filter.indexOf(query) !== -1;
+        doc.hidden = !hit;
+        if (hit && query) matches += 1;
+      });
+      empty.hidden = !query || matches > 0;
+    });
+  })();
+</script>
+{% endif %}
 {% endblock %}

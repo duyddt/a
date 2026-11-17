@@ -12,25 +12,51 @@ from .auth import hash_password, verify_password
 
 log = logging.getLogger("review-app")
 
-ROLES = ("admin", "reviewer", "viewer")
+ROLES = ("admin", "approver", "reviewer")
+ROLE_LABELS = {"admin": "Admin", "approver": "Người phê duyệt", "reviewer": "Người chỉnh sửa"}
+DEFAULT_ROLE = "reviewer"
+
+
+def normalize_role(role: str | None) -> str:
+    """Vai trò hợp lệ; vai trò cũ hoặc lạ (ví dụ 'viewer' đã bỏ) thành người chỉnh sửa."""
+    return role if role in ROLES else DEFAULT_ROLE
+
+
+def is_active(user: dict | None) -> bool:
+    """Tài khoản đang hoạt động (Admin chưa khóa). Tài khoản bị khóa vẫn đăng nhập và xem được, không thao tác được."""
+    return bool(user) and bool(user.get("is_approved"))
 
 
 def is_admin(user: dict | None) -> bool:
-    return bool(user) and user.get("role") == "admin"
+    return is_active(user) and user.get("role") == "admin"
+
+
+def is_approver(user: dict | None) -> bool:
+    return is_active(user) and user.get("role") == "approver"
+
+
+def can_edit_own(user: dict | None) -> bool:
+    """Người chỉnh sửa đang hoạt động: sửa/duyệt/gắn cờ trên bản riêng của mình."""
+    return is_active(user) and user.get("role") == "reviewer"
+
+
+def can_finalize(user: dict | None) -> bool:
+    """Người phê duyệt hoặc Admin: chọn bản, duyệt bản chốt, trả lại, hoàn tất phê duyệt."""
+    return is_active(user) and user.get("role") in ("approver", "admin")
 
 
 def can_review(user: dict | None) -> bool:
-    """Admin, hoặc người soát đã được Admin cấp quyền."""
-    if not user:
-        return False
-    return user.get("role") == "admin" or (user.get("role") == "reviewer" and bool(user.get("is_approved")))
+    """Có quyền thao tác thẩm định nào đó (mọi vai trò, miễn tài khoản chưa bị khóa)."""
+    return is_active(user) and user.get("role") in ROLES
 
 
 def public(account: dict | None) -> dict | None:
     """Bản sao không có password_hash, an toàn để đưa vào template."""
     if account is None:
         return None
-    return {k: v for k, v in account.items() if k != "password_hash"}
+    clean = {k: v for k, v in account.items() if k != "password_hash"}
+    clean["role"] = normalize_role(clean.get("role"))
+    return clean
 
 
 class AccountService:
@@ -48,10 +74,14 @@ class AccountService:
         if not username:
             return None
         if self.persistent:
-            return self.catalog.get_account(username)
-        with self._lock:
-            acc = self._accounts.get(username)
-            return dict(acc) if acc else None
+            acc = self.catalog.get_account(username)
+        else:
+            with self._lock:
+                acc = self._accounts.get(username)
+                acc = dict(acc) if acc else None
+        if acc is not None:
+            acc["role"] = normalize_role(acc.get("role"))
+        return acc
 
     def authenticate(self, username: str, password: str) -> dict | None:
         """Tài khoản nếu đúng mật khẩu; None nếu sai (thời gian xử lý như nhau dù tài khoản có hay không)."""
@@ -61,11 +91,11 @@ class AccountService:
         ok = verify_password(password, acc.get("password_hash") if acc else None)
         return acc if ok and acc else None
 
-    def create(self, username: str, display_name: str, password: str, role: str = "viewer",
-               is_approved: bool = False) -> dict | None:
-        """Tạo tài khoản mới. Trả None nếu tên đã có (không ghi đè)."""
+    def create(self, username: str, display_name: str, password: str, role: str = DEFAULT_ROLE,
+               is_approved: bool = True) -> dict | None:
+        """Tạo tài khoản mới (chỉ Admin làm việc này). Trả None nếu tên đã có (không ghi đè)."""
         username = username.strip()
-        role = role if role in ROLES else "viewer"
+        role = normalize_role(role)
         pw_hash = hash_password(password)
         name = (display_name or username).strip()[:100]
         if self.persistent:
@@ -86,7 +116,7 @@ class AccountService:
         return any(a["username"].lower() == username.lower() for a in self.list())
 
     def set_permission(self, username: str, role: str, is_approved: bool) -> bool:
-        role = role if role in ROLES else "viewer"
+        role = normalize_role(role)
         if self.persistent:
             return self.catalog.update_account_permission(username, role, is_approved) is not None
         with self._lock:

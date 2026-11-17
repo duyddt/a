@@ -27,11 +27,14 @@ def unit_snippet(unit: LegalUnit) -> str:
     return text[:SNIPPET_LENGTH]
 
 
-def build_tree(units: list[LegalUnit], reviews: dict | None = None) -> list[dict]:
+def build_tree(units: list[LegalUnit], reviews: dict | None = None, marks: dict | None = None) -> list[dict]:
     """Cây lồng nhau theo parent_unit_id, giữ đúng thứ tự trong `units`. Đơn vị không có cha là gốc.
 
-    `reviews`: unit_id -> UnitReview; đơn vị không có trong đó là "unreviewed"."""
+    `reviews`: unit_id -> UnitReview; đơn vị không có trong đó là "unreviewed".
+    `marks`: unit_id -> [{"name", "color"}], người chỉnh sửa đã thao tác trên đơn vị (vạch màu, chỉ người phê duyệt /
+    Admin thấy)."""
     reviews = reviews or {}
+    marks = marks or {}
     nodes: dict[str, dict] = {}
     roots: list[dict] = []
     for unit in units:
@@ -49,6 +52,7 @@ def build_tree(units: list[LegalUnit], reviews: dict | None = None) -> list[dict
             "review_status": status,
             "review_status_label": REVIEW_STATUS_LABELS[status],
             "source_pages": list(unit.source_pages),
+            "marks": marks.get(unit.unit_id, []),
             "children": [],
         }
         nodes[unit.unit_id] = node
@@ -57,7 +61,7 @@ def build_tree(units: list[LegalUnit], reviews: dict | None = None) -> list[dict
     return roots
 
 
-def decorate_for_page(tree: list[dict], document_id: str, selected_id: str | None, zoom: int) -> None:
+def decorate_for_page(tree: list[dict], document_id: str, selected_id: str | None) -> None:
     """Thêm url, selected, open cho từng nút (tại chỗ). `open` = nút là tổ tiên của đơn vị đang chọn."""
 
     def visit(node: dict) -> bool:
@@ -65,10 +69,21 @@ def decorate_for_page(tree: list[dict], document_id: str, selected_id: str | Non
         for child in node["children"]:
             if visit(child):
                 contains_selected = True
-        node["url"] = f"/documents/{document_id}/units/{quote(node['unit_id'], safe='')}?zoom={zoom}"
+        node["url"] = f"/documents/{document_id}/units/{quote(node['unit_id'], safe='')}"
         node["selected"] = node["unit_id"] == selected_id
         node["open"] = contains_selected and not node["selected"]
         return contains_selected
 
     for root in tree:
         visit(root)
+
+
+def person_marks(loaded) -> dict[str, list[dict]]:
+    """unit_id -> người chỉnh sửa đã thao tác trên đơn vị (theo màu của họ trong văn bản)."""
+    marks: dict[str, list[dict]] = {}
+    if loaded.tracks is None:
+        return marks
+    for person in loaded.people:
+        for unit_id in loaded.tracks.editors.get(person, {}):
+            marks.setdefault(unit_id, []).append({"name": person, "color": loaded.color_of(person)})
+    return marks

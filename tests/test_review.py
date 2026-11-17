@@ -9,7 +9,7 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 from app.contracts import LegalDocument
 from app.services.models import LoadedDocument
 from app.services.review import (
-    ReviewEvent, ReviewProblem, UnitReview, apply_edits, build_export, decide, fold_events, progress,
+    ReviewEvent, ReviewProblem, UnitReview, apply_edits, build_export, decide, fold_events, fold_tracks, progress,
 )
 from app.services.tree import build_tree
 from app.services.views import vn_time
@@ -18,9 +18,9 @@ U = "ND254_2026_D9"
 T0 = datetime(2026, 10, 31, 0, 45, tzinfo=timezone.utc)
 
 
-def ev(i, action, unit=U, reviewer="Duy", note=None, before=None, after=None):
+def ev(i, action, unit=U, reviewer="Duy", note=None, before=None, after=None, track="final"):
     return ReviewEvent(id=i, unit_id=unit, action=action, reviewer=reviewer, note=note,
-                       content_before=before, content_after=after, created_at=T0)
+                       content_before=before, content_after=after, created_at=T0, track=track)
 
 
 def problems_of(*args, **kwargs):
@@ -84,6 +84,53 @@ def test_edit_compares_against_current_text_not_original():
     assert "không thay đổi" in problems_of("gốc", prior, "edit", "Duy", content="đã sửa")
     again = decide("gốc", prior, "edit", "Duy", content="gốc")  # sửa ngược về chữ gốc là một thay đổi hợp lệ
     assert again["content_before"] == "đã sửa" and again["content_after"] == "gốc"
+
+
+# ---- bản riêng của từng người: OCR gốc, bản của mỗi người chỉnh sửa, bản chốt ----
+
+def test_each_reviewer_and_the_final_version_are_folded_separately():
+    events = [ev(1, "edit", reviewer="bt1", before="gốc", after="A", track="editor"),
+              ev(2, "edit", reviewer="bt2", before="gốc", after="B", track="editor"),
+              ev(3, "approve", reviewer="bt2", track="editor"),
+              ev(4, "flag", unit="ND254_2026_D10", reviewer="bt1", note="thiếu dòng", track="editor"),
+              ev(5, "adopt", reviewer="pd1", before="gốc", after="B", note="Chọn bản của bt2"),
+              ev(6, "approve", reviewer="pd1")]
+    tracks = fold_tracks(events)
+    assert tracks.people == ["bt1", "bt2"]  # theo lần thao tác đầu tiên: màu 1, màu 2
+    assert tracks.editors["bt1"][U].edited_content == "A" and tracks.editors["bt1"][U].status == "unreviewed"
+    assert tracks.editors["bt1"]["ND254_2026_D10"].status == "flagged"
+    assert tracks.editors["bt2"][U].edited_content == "B" and tracks.editors["bt2"][U].status == "approved"
+    assert tracks.final[U].edited_content == "B" and tracks.final[U].status == "approved"
+    assert "ND254_2026_D10" not in tracks.final  # gắn cờ của bt1 không đụng tới bản chốt
+    assert [e.id for e in tracks.events_of("final")] == [5, 6]
+    assert [e.id for e in tracks.events_of("bt1")] == [1, 4] and tracks.events_of("ai_do") == []
+    assert tracks.reviews_of("bt2") is tracks.editors["bt2"] and tracks.reviews_of("ai_do") == {}
+
+
+def test_choosing_a_version_changes_the_final_text_so_it_must_be_approved_again():
+    reviews = fold_events([ev(1, "approve"), ev(2, "adopt", before="gốc", after="B", note="Chọn bản của bt2")])
+    assert reviews[U].status == "unreviewed" and reviews[U].edited_content == "B" and reviews[U].edit_count == 1
+
+
+def test_role_decides_which_version_an_action_is_written_to():
+    assert decide("gốc", [], "edit", "bt1", content="A", role="reviewer")["track"] == "editor"
+    assert decide("gốc", [], "flag", "bt1", note="x", role="reviewer")["track"] == "editor"
+    assert decide("gốc", [], "approve", "pd1", role="approver")["track"] == "final"
+    assert decide("gốc", [], "edit", "admin", content="A", role="admin")["track"] == "final"
+    assert "không được sửa chữ" in problems_of("gốc", [], "edit", "pd1", content="A", role="approver")
+    assert "không được chọn bản" in problems_of("gốc", [], "adopt", "bt1", role="reviewer", source_content="A")
+
+
+def test_adopt_copies_the_chosen_version_into_the_final_one():
+    fields = decide("gốc", [], "adopt", "pd1", role="approver", source_content="B\r\nhai", note="Chọn bản của bt2")
+    assert fields["track"] == "final" and fields["content_before"] == "gốc" and fields["content_after"] == "B\nhai"
+    assert fields["note"] == "Chọn bản của bt2"
+    prior = [ev(1, "adopt", before="gốc", after="B", note="Chọn bản của bt2")]
+    assert "đã giống" in problems_of("gốc", prior, "adopt", "pd1", role="approver", source_content="B")
+    assert "đã giống" in problems_of("gốc", [], "adopt", "pd1", role="approver", source_content="gốc")
+    assert "chưa chọn bản" in problems_of("gốc", [], "adopt", "pd1", role="approver")
+    back = decide("gốc", prior, "adopt", "pd1", role="approver", source_content="gốc", note="Chọn bản OCR gốc")
+    assert back["content_before"] == "B" and back["content_after"] == "gốc"
 
 
 # ---- áp dụng bản sửa, tiến độ, xuất ----
@@ -177,6 +224,7 @@ def test_detail_shows_buttons_and_hides_reset_when_unreviewed(env, doc):
     html = render_detail(env, doc)
     for label in ("Duyệt", "Gắn cờ", "Báo lỗi cấu trúc", "Sửa chữ", "Lưu bản sửa"):
         assert label in html
+    assert "single-unit-focus-banner" not in html  # chế độ sửa cũ (chỉ ẩn cây) đã bỏ
     assert "Bỏ đánh dấu" not in html and "Chưa soát" in html
     assert 'hx-post="/documents/ND254_2026/units/ND254_2026_D9_K1_a/review"' in html
     assert '"action": "approve"' in html and 'onsubmit="return false;"' in html
@@ -197,7 +245,7 @@ def test_detail_shows_status_note_history_and_edit_marker(env, doc):
 def test_detail_escapes_user_text_and_keeps_form_values_after_error(env, doc):
     html = render_detail(env, doc, errors=["Cần nhập tên người soát"], form_note="<script>x</script>", form_content="chữ đang gõ dở")
     assert "Cần nhập tên người soát" in html and "<script>x</script>" not in html and "&lt;script&gt;" in html
-    assert "chữ đang gõ dở" in html and "<details class=\"edit-box\" open>" in html
+    assert "chữ đang gõ dở" in html and "data-reopen" in html  # lưu lỗi: mở lại ngay khung sửa tập trung
 
 
 def test_detail_without_database_has_no_buttons(env, doc):
@@ -205,12 +253,10 @@ def test_detail_without_database_has_no_buttons(env, doc):
     assert "Duyệt" not in html and "PostgreSQL" in html
 
 
-def test_detail_read_only_messages_depend_on_login(env, doc):
-    anonymous = render_detail(env, doc, can_review=False, db_ready=True, current_user=None)
-    assert 'href="/login?next=' in anonymous and "PostgreSQL" not in anonymous and 'hx-post' not in anonymous
-    viewer = {"username": "khach", "role": "viewer", "is_approved": False}
-    pending = render_detail(env, doc, can_review=False, db_ready=True, current_user=viewer)
-    assert "Chế độ Chỉ xem" in pending and "khach" in pending and 'hx-post' not in pending
+def test_detail_for_a_locked_account_is_read_only(env, doc):
+    locked = {"username": "bi_khoa", "role": "reviewer", "is_approved": False}
+    html = render_detail(env, doc, can_review=False, db_ready=True, current_user=locked)
+    assert "đang bị khóa" in html and "bi_khoa" in html and 'hx-post' not in html and "PostgreSQL" not in html
 
 
 def test_progress_bar_and_review_response_render(env, doc):
@@ -227,3 +273,34 @@ def test_progress_bar_and_review_response_render(env, doc):
         form_note="", form_content=None, progress=p)
     assert f'id="dot-{ids[0]}"' in response and "st-approved" in response and 'hx-swap-oob="true"' in response
     assert 'id="progress"' in response
+
+
+def test_edit_button_opens_a_focused_editor_with_only_text_and_a_small_toolbar(env, doc):
+    html = render_detail(env, doc)
+    assert 'onclick="enterFocusEdit()"' in html and "✎ Sửa chữ" in html
+    editor = html[html.index('id="focus-editor"'):]
+    editor = editor[:editor.index("</section>")]
+    assert 'id="focus-edit-textarea"' in editor and 'name="content"' in editor
+    assert 'name="ocr_reason"' in editor and html.count('name="ocr_reason"') == 1  # lý do OCR chỉ hỏi khi sửa chữ
+    assert '"action": "edit"' in editor and "Ctrl+Enter" in editor and "Esc" in editor
+    assert "Điểm a, Khoản 1, Điều 9" in editor and "data-reopen" not in editor
+    assert '<label for="focus-edit-textarea"' in editor  # ô sửa có nhãn cho trình đọc màn hình
+
+
+def test_review_page_hides_everything_but_the_pdf_and_the_editor_in_focus_mode():
+    css = (Path(__file__).resolve().parents[1] / "app" / "static" / "style.css").read_text(encoding="utf-8")
+    rules = css[css.index("/* CHẾ ĐỘ SỬA TẬP TRUNG"):]
+    rules = rules[:rules.index("/* KHUNG CHI TIẾT")]
+    for hidden in (".topbar", "#ocr-report-box", ".pane.right > .pane-title", "#explorer-tree-panel",
+                   ".detail > :not(#review-form)", "#review-form > :not(#focus-editor)"):
+        assert f"body.focus-edit {hidden}" in rules
+    assert "body.focus-edit .focus-editor" in rules and "editing-single-unit" not in css
+    page = (Path(__file__).resolve().parents[1] / "app" / "templates" / "review.html").read_text(encoding="utf-8")
+    assert "function enterFocusEdit" in page and "function exitFocusEdit" in page
+    assert '"Escape"' in page and "ctrlKey" in page and "data-reopen" in page
+
+
+def test_templates_have_no_byte_order_mark():
+    """BOM ở đầu một partial thành một ký tự lạ trong trang (khung flex còn dành riêng một dòng cho nó)."""
+    root = Path(__file__).resolve().parents[1] / "app" / "templates"
+    assert [p.name for p in root.rglob("*.html") if p.read_bytes().startswith(b"\xef\xbb\xbf")] == []

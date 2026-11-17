@@ -16,20 +16,36 @@ DOC = "ND254_2026"
 
 
 @pytest.fixture
-def client(data_dir, tmp_path):
+def anonymous(data_dir, tmp_path):
     settings = Settings(data_dir=data_dir, storage_dir=tmp_path / "storage", conninfo=None, auto_import_dir=None)
-    return TestClient(create_app(settings, catalog=DocumentStore(data_dir)))
+    with TestClient(create_app(settings, catalog=DocumentStore(data_dir))) as test_client:  # lifespan tạo admin
+        yield test_client
+
+
+@pytest.fixture
+def client(anonymous):
+    """Đã đăng nhập bằng admin mặc định: mọi trang và API đều cần tài khoản."""
+    login = anonymous.post("/account/login", data={"username": "admin", "password": "admin123"}, follow_redirects=False)
+    assert login.status_code == 303
+    return anonymous
 
 
 def test_list_page(client):
-    response = client.get("/?guest=1")
+    response = client.get("/")
     assert response.status_code == 200
     assert "Văn bản mẫu" in response.text and f"/documents/{DOC}" in response.text
 
 
-def test_list_page_sends_anonymous_users_to_login(client):
-    response = client.get("/", follow_redirects=False)
-    assert response.status_code == 303 and response.headers["location"].startswith("/login")
+def test_pages_send_anonymous_users_to_login_and_come_back(anonymous):
+    response = anonymous.get("/", follow_redirects=False)
+    assert response.status_code == 303 and response.headers["location"] == "/login?next=%2F"
+    deep = anonymous.get(f"/documents/{DOC}?unit=ND254_2026_D9", follow_redirects=False)
+    assert deep.headers["location"] == f"/login?next=%2Fdocuments%2F{DOC}%3Funit%3DND254_2026_D9"
+    htmx = anonymous.get(f"/documents/{DOC}/units/ND254_2026_D9", headers={"HX-Request": "true"})
+    assert htmx.status_code == 401 and htmx.headers["hx-redirect"].startswith("/login?next=")
+    signed_in = anonymous.post("/account/login", follow_redirects=False, data={
+        "username": "admin", "password": "admin123", "redirect_to": f"/documents/{DOC}?unit=ND254_2026_D9"})
+    assert signed_in.headers["location"] == f"/documents/{DOC}?unit=ND254_2026_D9"
 
 
 def test_review_page_has_both_panes_and_nested_tree(client):
@@ -61,6 +77,15 @@ def test_viewer_partial_changes_page_and_zoom(client):
     assert f"/documents/{DOC}/pages/2" in response.text and "width: 150%" in response.text
 
 
+def test_every_page_has_sun_moon_theme_toggle(client):
+    for url in ("/login", "/", f"/documents/{DOC}"):
+        html = client.get(url).text
+        assert html.count('class="btn-theme-toggle"') == 1, url
+        assert 'class="icon-moon"' in html and 'class="icon-sun"' in html
+    css = client.get("/static/style.css").text
+    assert ':root[data-theme="dark"]' in css
+
+
 def test_not_found_and_bad_ids(client):
     assert client.get("/documents/khong_co").status_code == 404
     assert client.get(f"/documents/{DOC}/units/khong_co").status_code == 404
@@ -85,7 +110,7 @@ def test_api_list_documents(client):
     assert response.json() == [{
         "document_id": DOC, "document_no": "254/2026/NĐ-CP", "document_type": "Nghị định",
         "title": "Văn bản mẫu để thử giao diện (dữ liệu minh họa, không phải nguyên văn pháp luật)",
-        "page_count": 3, "unit_count": 7,
+        "page_count": 3, "unit_count": 7, "categories": [],  # chế độ thư mục file: không có danh mục
     }]
 
 
@@ -145,3 +170,10 @@ def test_file_mode_has_no_review_buttons_and_review_api_is_501(client):
 def test_file_mode_api_lists_have_no_progress_and_history_is_empty(client):
     assert client.get(f"/api/documents/{DOC}").json()["progress"] is None
     assert client.get(f"/api/documents/{DOC}/units/ND254_2026_D9/reviews").json() == []
+
+
+def test_file_mode_has_no_folders_and_lists_documents_flat(client):
+    assert client.get("/api/categories").json() == []
+    page = client.get("/").text
+    assert 'id="document-table"' in page and 'id="folder-table"' not in page and 'name="category"' not in page
+    assert client.get("/?folder=I", follow_redirects=False).headers["location"].startswith("/?err=")

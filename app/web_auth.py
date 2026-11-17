@@ -13,7 +13,7 @@ from urllib.parse import urlsplit
 
 from fastapi import HTTPException, Request
 
-from app.services.accounts import can_review, is_admin, public
+from app.services.accounts import can_review, is_active, is_admin, public
 from app.services.auth import verify_session
 
 SESSION_COOKIE = "session_token"
@@ -74,19 +74,41 @@ def current_user(request: Request) -> dict | None:
     return request.state.user
 
 
-def require_reviewer(request: Request) -> dict:
-    """Dependency cho API ghi dữ liệu: 401 nếu chưa xác thực, 403 nếu chưa được cấp quyền soát."""
+BASIC_CHALLENGE = {"WWW-Authenticate": 'Basic realm="review-app", charset="UTF-8"'}
+LOGIN_HINT = "Cần đăng nhập (cookie phiên hoặc HTTP Basic: curl -u tai_khoan:mat_khau)"
+
+# Đường dẫn xem được khi chưa đăng nhập; mọi đường dẫn khác (trang web lẫn /api) đều cần tài khoản.
+PUBLIC_PATHS = frozenset({"/login", "/account/login", "/account/logout", "/healthz", "/favicon.ico",
+                          "/openapi.json", "/docs", "/docs/oauth2-redirect", "/redoc"})
+
+
+def is_public_path(path: str) -> bool:
+    return path in PUBLIC_PATHS or path.startswith("/static/")
+
+
+def require_user(request: Request) -> dict:
+    """Dependency: 401 kèm lời mời HTTP Basic nếu chưa đăng nhập."""
     user = current_user(request)
     if user is None:
-        raise HTTPException(
-            status_code=401,
-            detail="Cần đăng nhập bằng tài khoản có quyền soát (cookie phiên hoặc HTTP Basic: curl -u tai_khoan:mat_khau)",
-            headers={"WWW-Authenticate": 'Basic realm="review-app", charset="UTF-8"'},
-        )
-    if not can_review(user):
-        raise HTTPException(status_code=403, detail="Tài khoản chưa được Admin cấp quyền soát")
+        raise HTTPException(status_code=401, detail=LOGIN_HINT, headers=BASIC_CHALLENGE)
     return user
 
 
-__all__ = ["SESSION_COOKIE", "LEGACY_REVIEWER_COOKIE", "client_ip", "safe_next", "current_user", "require_reviewer",
-           "can_review", "is_admin"]
+def require_reviewer(request: Request) -> dict:
+    """Dependency cho API ghi dữ liệu: 401 nếu chưa xác thực, 403 nếu tài khoản đang bị khóa."""
+    user = require_user(request)
+    if not can_review(user):
+        raise HTTPException(status_code=403, detail="Tài khoản đang bị Admin khóa nên không thao tác được")
+    return user
+
+
+def require_admin(request: Request) -> dict:
+    user = require_user(request)
+    if not is_admin(user):
+        raise HTTPException(status_code=403, detail="Chỉ Admin mới làm được việc này")
+    return user
+
+
+__all__ = ["SESSION_COOKIE", "LEGACY_REVIEWER_COOKIE", "BASIC_CHALLENGE", "LOGIN_HINT", "client_ip", "safe_next",
+           "current_user", "is_public_path", "require_user", "require_reviewer", "require_admin", "can_review", "is_active",
+           "is_admin"]

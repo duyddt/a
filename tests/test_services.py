@@ -8,7 +8,7 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 from app.services.store import DocumentStore
 from app.services.models import ImportProblem
 from app.services.tree import build_tree, decorate_for_page
-from app.services.views import first_page_of, nearest_zoom, viewer_context, vn_time
+from app.services.views import FIT, first_page_of, nearest_zoom, viewer_context, vn_time
 
 TEMPLATES = Path(__file__).resolve().parent.parent / "app" / "templates"
 DOC = "ND254_2026"
@@ -109,6 +109,20 @@ def test_viewer_context_clamps_and_links(data_dir):
     assert first_page_of(loaded.units_by_id["ND254_2026_D10"]) == 3
 
 
+def test_viewer_fit_page_mode_shows_one_whole_page(data_dir):
+    """Mặc định "Vừa trang": mỗi lần một trang, giữ tỉ lệ trang; đơn vị sang trang sau thì chuyển bằng số trang."""
+    loaded = DocumentStore(data_dir).get(DOC)
+    v = viewer_context(loaded, 1, FIT, "ND254_2026_D9_K1")  # đơn vị nằm ở trang 1 và 2
+    assert v["fit"] and v["frame_width"] == 100 and v["image_url"].endswith("/pages/1")
+    assert 1.2 < v["aspect"] < 1.6 and v["highlights"]
+    assert [(c["page"], c["current"]) for c in v["chips"]] == [(1, True), (2, False)]
+    assert v["chips"][1]["url"] == "/documents/ND254_2026/viewer?page=2&zoom=0&unit=ND254_2026_D9_K1"
+    assert v["next_url"].startswith("/documents/ND254_2026/viewer?page=2&zoom=0")
+    zoomed = viewer_context(loaded, 1, 150, "ND254_2026_D9_K1")
+    assert not zoomed["fit"] and zoomed["frame_width"] == 150
+    assert nearest_zoom(FIT) == FIT and nearest_zoom(-5) == FIT
+
+
 def test_click_unit_jumps_left_pane_to_its_page(data_dir):
     """Hành vi chính của buổi 30/10: chọn đơn vị ở trang 3 thì khung trái hiển thị trang 3."""
     loaded = DocumentStore(data_dir).get(DOC)
@@ -128,7 +142,7 @@ def review_html(loaded, unit_id, content_override=None):
     if content_override:
         units[0].content = content_override
     tree = build_tree(units)
-    decorate_for_page(tree, DOC, unit_id, 100)
+    decorate_for_page(tree, DOC, unit_id)
     return render(
         "review.html",
         doc=loaded.doc, unit=loaded.units_by_id[unit_id], oob=False, tree=tree,
@@ -150,9 +164,9 @@ def test_review_page_renders_nested_tree_and_escapes_content(data_dir):
 def test_tree_opens_ancestors_of_selected_unit_only(data_dir):
     loaded = DocumentStore(data_dir).get(DOC)
     tree = build_tree(loaded.doc.legal_units)
-    decorate_for_page(tree, DOC, "ND254_2026_D9_K1_b", 100)
+    decorate_for_page(tree, DOC, "ND254_2026_D9_K1_b")
     d9, d10 = tree
     k1 = d9["children"][0]
     assert d9["open"] and k1["open"] and not d10["open"]
     assert k1["children"][1]["selected"] and not k1["children"][1]["open"]
-    assert k1["children"][1]["url"] == "/documents/ND254_2026/units/ND254_2026_D9_K1_b?zoom=100"
+    assert k1["children"][1]["url"] == "/documents/ND254_2026/units/ND254_2026_D9_K1_b"

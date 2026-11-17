@@ -3,8 +3,16 @@
     python -m app.cli import --pdf source.pdf --json document.json [--replace]
     python -m app.cli import-dir data/ND254_2026 [--replace]
     python -m app.cli import-all data [--replace]
+    python -m app.cli import-pdfs "bo du lieu" [--replace]
+    python -m app.cli page-words [--document ND254_2026 ...] [--workers 4] [--force]
 
-Cần POSTGRES_HOST (hoặc DATABASE_URL) và STORAGE_DIR, giống khi chạy API.
+import-pdfs nhận thư mục chỉ có PDF (kể cả thư mục con): tự tách Điều/Khoản/Điểm, OCR bản scan nếu máy có Tesseract
+(OCR_WORKERS trang cùng lúc). Mọi thứ, kể cả PDF gốc, được lưu trong PostgreSQL.
+
+page-words OCR các trang scan chưa có toạ độ từng từ (văn bản nhập trước đây, hoặc nhập kèm document.json), để khung
+xem PDF tô vàng đúng vùng của Điều/Khoản/Điểm. Cần Tesseract kèm gói 'vie'; dừng giữa chừng thì lần sau làm tiếp.
+
+Cần POSTGRES_HOST (hoặc DATABASE_URL), giống khi chạy API.
 """
 from __future__ import annotations
 
@@ -31,8 +39,14 @@ def main(argv: list[str] | None = None) -> int:
     p_dir.add_argument("directory", type=Path)
     p_all = sub.add_parser("import-all", help="mọi thư mục con của một thư mục")
     p_all.add_argument("directory", type=Path)
-    for p in (p_one, p_dir, p_all):
+    p_pdfs = sub.add_parser("import-pdfs", help="mọi PDF trong một thư mục (không cần document.json, tự OCR bản scan)")
+    p_pdfs.add_argument("directory", type=Path)
+    for p in (p_one, p_dir, p_all, p_pdfs):
         p.add_argument("--replace", action="store_true", help="thay bản cũ nếu đã có cùng document_id")
+    p_words = sub.add_parser("page-words", help="OCR toạ độ từng từ cho các trang scan (để tô vàng đúng vùng)")
+    p_words.add_argument("--document", action="append", help="chỉ văn bản này (lặp lại được); mặc định: mọi văn bản")
+    p_words.add_argument("--workers", type=int, default=None, help="số trang OCR cùng lúc (mặc định OCR_WORKERS)")
+    p_words.add_argument("--force", action="store_true", help="OCR lại cả các trang đã có toạ độ")
     args = parser.parse_args(argv)
 
     settings = load_settings()
@@ -45,7 +59,22 @@ def main(argv: list[str] | None = None) -> int:
     pool = create_pool(settings.conninfo)
     try:
         migrate(pool)
-        importer = Importer(pool, settings.storage_dir)
+        if args.command == "page-words":
+            from app.services.page_words import backfill
+
+            try:
+                backfill(pool, args.document, args.workers, args.force, report=lambda line: print(line, flush=True))
+            except RuntimeError as exc:
+                print(exc, file=sys.stderr)
+                return 2
+            return 0
+        importer = Importer(pool)
+        if args.command == "import-pdfs":
+            failed = False
+            for name, outcome in importer.import_pdfs(args.directory, replace=args.replace):
+                print(f"{name}: {outcome}", flush=True)
+                failed = failed or outcome.startswith(("TỪ CHỐI", "LỖI"))
+            return 1 if failed else 0
         if args.command == "import-all":
             outcomes = importer.import_all(args.directory, replace=args.replace)
             for name, outcome in outcomes:

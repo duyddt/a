@@ -3,12 +3,13 @@
 Ảnh lưu ở pages_dir/pNNN.png kèm file .stamp ghi (kích thước, thời điểm sửa) của PDF lúc render.
 PDF đổi (kể cả khi chép đè mà ngày sửa cũ hơn) thì .stamp lệch và ảnh cũ bị xóa.
 
-Chế độ PostgreSQL render TOÀN BỘ trang ngay lúc nhập (render_all); chế độ thư mục file render từng trang khi được mở
-(render_page).
+Cả hai chế độ đều render từng trang khi có người mở (render_page). Ở chế độ PostgreSQL, thư mục ảnh chỉ là bộ đệm:
+PDF gốc nằm trong DB (bảng document_pdf), xóa ảnh thì lần xem sau dựng lại.
 """
 from __future__ import annotations
 
 import threading
+from functools import lru_cache
 from pathlib import Path
 
 import pypdfium2 as pdfium
@@ -26,6 +27,27 @@ def count_pages(pdf_path: Path) -> int:
         pdf = pdfium.PdfDocument(str(pdf_path))
         try:
             return len(pdf)
+        finally:
+            pdf.close()
+
+
+def page_aspect(pdf_path: Path, page: int) -> float:
+    """Tỉ lệ cao / rộng của trang `page` (đếm từ 1), để khung xem giữ đúng chỗ cho ảnh trước khi ảnh tải xong."""
+    try:
+        stat = pdf_path.stat()
+        sizes = _page_sizes(str(pdf_path), stat.st_size, stat.st_mtime_ns)
+        width, height = sizes[page - 1]
+        return height / width if width else 1.414
+    except (OSError, IndexError, pdfium.PdfiumError):  # PDF hỏng / thiếu trang: dùng khổ A4
+        return 1.414
+
+
+@lru_cache(maxsize=32)
+def _page_sizes(pdf_path: str, size: int, mtime_ns: int) -> tuple[tuple[float, float], ...]:
+    with PDFIUM_LOCK:
+        pdf = pdfium.PdfDocument(pdf_path)
+        try:
+            return tuple(tuple(pdf[index].get_size()) for index in range(len(pdf)))
         finally:
             pdf.close()
 
@@ -71,19 +93,3 @@ def render_page(pdf_path: Path, pages_dir: Path, page: int, dpi: int = DPI) -> P
             pdf.close()
     return out
 
-
-def render_all(pdf_path: Path, pages_dir: Path, dpi: int = DPI) -> int:
-    """Render mọi trang vào pages_dir (mở PDF một lần), trả về số trang."""
-    _drop_stale_images(pdf_path, pages_dir)
-    with PDFIUM_LOCK:
-        pdf = pdfium.PdfDocument(str(pdf_path))
-        count = len(pdf)
-    try:
-        for index in range(count):  # khoá theo từng trang để request xem trang khác không phải chờ cả văn bản
-            out = pages_dir / f"p{index + 1:03d}.png"
-            if not out.is_file():
-                _render_to(pdf, index, out, dpi)
-        return count
-    finally:
-        with PDFIUM_LOCK:
-            pdf.close()

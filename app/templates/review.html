@@ -1,40 +1,37 @@
 {% extends "base.html" %}
 {% from "partials/progress.html" import bar %}
 {% block title %}{{ doc.document_no }}{% endblock %}
+{% block body_class %}review-page{% endblock %}
 {% block body %}
 <header class="topbar">
-  <a href="/?guest=1" class="button-link">&larr; Danh sách văn bản</a>
-  <h1>🗂 {{ doc.title }} <span class="muted">· {{ doc.document_no }}</span></h1>
+  {% if folder %}
+  <a href="/?folder={{ folder.code|urlencode }}" class="button-link back-folder" title="Về thư mục {{ folder.label }}">&larr; 📁 {{ folder.label }}</a>
+  {% else %}
+  <a href="/" class="button-link">&larr; Danh sách văn bản</a>
+  {% endif %}
+  <h1 title="{{ doc.title }} · {{ doc.document_no }}">🗂 {{ doc.title }} <span class="muted">· {{ doc.document_no }}</span></h1>
   <div id="progress">{{ bar(progress) }}</div>
 
-  <div style="margin-left:auto; display:flex; align-items:center; gap:8px;">
+  <div class="topbar-actions">
     {% if current_user %}
       <span class="small">👤 <strong>{{ current_user.username }}</strong></span>
-      {% if current_user.role == 'admin' %}
-        <a href="/admin/users" class="button-link" style="background:#dbeafe; border-color:#2563eb; color:#1e3a8a;">⚙ Cấp quyền TK</a>
-      {% elif not current_user.is_approved %}
-        <span class="tag warn">🔒 Chỉ xem (Chờ Admin duyệt)</span>
-      {% else %}
-        <span class="tag edited">✓ Quyền soát</span>
-      {% endif %}
+      <span class="tag role-{{ current_user.role }}">{{ ROLE_LABELS[current_user.role] }}</span>
+      {% if not current_user.is_approved %}<span class="tag warn">🔒 Đã khóa</span>{% endif %}
       <form method="post" action="/account/logout" style="margin:0;">
         <button type="submit" class="button-link">Đăng xuất</button>
       </form>
     {% else %}
-      <a href="/login?next=/documents/{{ doc.document_id }}" class="button-link" style="background:#0078d4; color:#fff;">🔐 Đăng nhập</a>
+      <a href="/login?next=/documents/{{ doc.document_id }}" class="button-link primary">🔐 Đăng nhập</a>
     {% endif %}
-    {% if can_review %}<a class="button-link" href="/api/documents/{{ doc.document_id }}/export" download>⬇ Xuất JSON đã duyệt</a>{% endif %}
+    {% if can_export %}<a class="button-link" href="/api/documents/{{ doc.document_id }}/export" download title="Các đơn vị đã duyệt trên bản chốt">⬇ Xuất JSON đã duyệt</a>{% endif %}
+    {% include "partials/theme_toggle.html" %}
   </div>
 </header>
-
+{% include "partials/workflow_bar.html" %}
 {% include "partials/ocr_report.html" %}
 
 <div class="split">
   <section class="pane left" aria-label="Trang PDF gốc">
-    <h2 class="pane-title">
-      <span>📄 Bản gốc PDF Scan</span>
-      {% if reviewer %}<span class="muted small">Tài khoản: <strong>{{ reviewer }}</strong></span>{% endif %}
-    </h2>
     {% include "partials/viewer.html" %}
   </section>
   <section class="pane right">
@@ -56,22 +53,46 @@
     root.style.setProperty("--compare-font-size", next + "px");
     localStorage.setItem("compareFontSize", next);
   }
-  function enterSingleUnitEditMode() {
-    document.body.classList.add("editing-single-unit");
-    var readView = document.getElementById("read-only-view");
-    var editDetails = document.querySelector("details.edit-box");
-    if (readView) readView.style.display = "none";
-    if (editDetails) editDetails.open = true;
-    var ta = document.getElementById("inline-edit-textarea");
-    if (ta) ta.focus();
+  /* CHẾ ĐỘ SỬA TẬP TRUNG: chỉ còn trang PDF và ô sửa chữ của đơn vị. Esc: hủy; Ctrl+Enter: lưu. */
+  var focusReturn = null;
+  function enterFocusEdit() {
+    var editor = document.getElementById("focus-editor");
+    if (!editor) return;
+    if (!document.body.classList.contains("focus-edit")) focusReturn = document.activeElement;
+    document.body.classList.add("focus-edit");
+    window.scrollTo(0, 0);
+    var ta = document.getElementById("focus-edit-textarea");
+    if (ta) { ta.focus(); ta.setSelectionRange(0, 0); ta.scrollTop = 0; }
   }
-  function exitSingleUnitEditMode() {
-    document.body.classList.remove("editing-single-unit");
-    var readView = document.getElementById("read-only-view");
-    var editDetails = document.querySelector("details.edit-box");
-    if (readView) readView.style.display = "block";
-    if (editDetails) editDetails.open = false;
+  function exitFocusEdit(cancel) {
+    if (!document.body.classList.contains("focus-edit")) return;
+    document.body.classList.remove("focus-edit");
+    var ta = document.getElementById("focus-edit-textarea");
+    if (cancel && ta) ta.value = ta.defaultValue;
+    var back = focusReturn && document.body.contains(focusReturn) ? focusReturn : document.querySelector("#review-form .edit-toggle");
+    focusReturn = null;
+    if (back) back.focus();
   }
+  document.addEventListener("keydown", function (e) {
+    if (!document.body.classList.contains("focus-edit")) return;
+    if (e.key === "Escape" && !e.defaultPrevented) {
+      e.preventDefault();
+      exitFocusEdit(true);
+    } else if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
+      var save = document.querySelector("#focus-editor .save");
+      if (save) save.click();
+    }
+  });
+  /* chọn đơn vị khác trong cây: khung chi tiết quay về đầu */
+  document.addEventListener("htmx:afterSwap", function (e) {
+    if (!e.target || e.target.id !== "detail") return;
+    var source = e.detail && e.detail.requestConfig && e.detail.requestConfig.elt;
+    if (source && source.closest && source.closest("#tree")) e.target.scrollTop = 0;
+    /* lưu xong: thoát chế độ sửa tập trung và hiện kết quả; lưu lỗi (data-reopen): ở lại sửa tiếp */
+    if (document.querySelector("#focus-editor[data-reopen]")) enterFocusEdit();
+    else exitFocusEdit(false);
+  });
   window.addEventListener("DOMContentLoaded", function () {
     var savedSize = localStorage.getItem("compareFontSize");
     if (savedSize) {

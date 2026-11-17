@@ -1,6 +1,8 @@
 """Mọi câu SQL của app nằm ở đây. Mỗi hàm nhận một kết nối psycopg (row_factory = dict_row)."""
 from __future__ import annotations
 
+import hashlib
+
 from app.contracts import LegalDocument, LegalUnit
 
 _UNIT_COLUMNS = (
@@ -15,8 +17,9 @@ def find_hash(conn, document_id: str) -> str | None:
 
 
 def delete_document(conn, document_id: str) -> None:
-    """Xóa văn bản; các đơn vị xóa theo (ON DELETE CASCADE)."""
+    """Xóa văn bản; các đơn vị xóa theo (ON DELETE CASCADE), toạ độ chữ OCR của PDF không còn ai dùng cũng xóa."""
     conn.execute("DELETE FROM document WHERE document_id = %s", (document_id,))
+    conn.execute("DELETE FROM page_words w WHERE NOT EXISTS (SELECT 1 FROM document_pdf p WHERE p.sha256 = w.pdf_sha256)")
 
 
 def insert_document(conn, doc: LegalDocument, page_count: int, content_hash: str) -> int:
@@ -89,11 +92,128 @@ def list_documents(conn) -> list[dict]:
 
 
 def get_document(conn, document_id: str) -> dict | None:
+    """Thông tin văn bản; `pdf_sha256` là None khi văn bản được nhập trước khi PDF lưu trong PostgreSQL."""
     return conn.execute(
-        "SELECT id, document_id, document_no, document_type, title, issuer, issued_date, effective_from, "
-        "effective_to, status, amended_by, replaced_by, page_count FROM document WHERE document_id = %s",
+        "SELECT d.id, d.document_id, d.document_no, d.document_type, d.title, d.issuer, d.issued_date, "
+        "d.effective_from, d.effective_to, d.status, d.amended_by, d.replaced_by, d.page_count, p.sha256 AS pdf_sha256 "
+        "FROM document d LEFT JOIN document_pdf p ON p.document_pk = d.id WHERE d.document_id = %s",
         (document_id,),
     ).fetchone()
+
+
+# ---- PDF gốc (bảng document_pdf) ----
+
+
+def has_pdf(conn, document_id: str) -> bool:
+    return conn.execute(
+        "SELECT 1 FROM document_pdf p JOIN document d ON d.id = p.document_pk WHERE d.document_id = %s",
+        (document_id,),
+    ).fetchone() is not None
+
+
+def store_pdf(conn, document_id: str, pdf_bytes: bytes) -> None:
+    """Lưu (hoặc thay) PDF gốc của một văn bản đã có trong bảng document."""
+    conn.execute(
+        "INSERT INTO document_pdf (document_pk, sha256, pdf) SELECT id, %s, %s FROM document WHERE document_id = %s "
+        "ON CONFLICT (document_pk) DO UPDATE SET sha256 = EXCLUDED.sha256, pdf = EXCLUDED.pdf",
+        (hashlib.sha256(pdf_bytes).hexdigest(), pdf_bytes, document_id),
+    )
+
+
+def get_pdf(conn, document_id: str) -> bytes | None:
+    row = conn.execute(
+        "SELECT p.pdf FROM document_pdf p JOIN document d ON d.id = p.document_pk WHERE d.document_id = %s",
+        (document_id,),
+    ).fetchone()
+    return bytes(row["pdf"]) if row else None
+
+
+def get_pdf_with_sha(conn, document_id: str) -> tuple[bytes, str] | None:
+    row = conn.execute(
+        "SELECT p.pdf, p.sha256 FROM document_pdf p JOIN document d ON d.id = p.document_pk WHERE d.document_id = %s",
+        (document_id,),
+    ).fetchone()
+    return (bytes(row["pdf"]), row["sha256"]) if row else None
+
+
+def get_page_words(conn, pdf_sha256: str, page: int, engine: str) -> list | None:
+    row = conn.execute(
+        "SELECT words FROM page_words WHERE pdf_sha256 = %s AND page = %s AND engine = %s", (pdf_sha256, page, engine)
+    ).fetchone()
+    return row["words"] if row else None
+
+
+def put_page_words(conn, pdf_sha256: str, page: int, engine: str, words: list) -> None:
+    from psycopg.types.json import Jsonb
+
+    conn.execute(
+        "INSERT INTO page_words (pdf_sha256, page, engine, words) VALUES (%s, %s, %s, %s) "
+        "ON CONFLICT (pdf_sha256, page, engine) DO UPDATE SET words = EXCLUDED.words, created_at = now()",
+        (pdf_sha256, page, engine, Jsonb(words)),
+    )
+
+
+def pages_with_words(conn, pdf_sha256: str, engine: str) -> set[int]:
+    rows = conn.execute("SELECT page FROM page_words WHERE pdf_sha256 = %s AND engine = %s", (pdf_sha256, engine))
+    return {row["page"] for row in rows.fetchall()}
+
+
+def find_document_by_pdf(conn, sha256: str) -> str | None:
+    """Mã văn bản có PDF gốc trùng byte (theo sha256); None nếu chưa có."""
+    row = conn.execute(
+        "SELECT d.document_id FROM document_pdf p JOIN document d ON d.id = p.document_pk WHERE p.sha256 = %s "
+        "ORDER BY d.document_id LIMIT 1",
+        (sha256,),
+    ).fetchone()
+    return row["document_id"] if row else None
+
+
+# ---- danh mục (bảng category, document_category) ----
+
+
+def upsert_category(conn, code: str, name: str, position: int) -> None:
+    """Tạo danh mục, hoặc cập nhật tên/thứ tự khi thư mục được đổi tên (mã số La Mã giữ nguyên)."""
+    conn.execute(
+        "INSERT INTO category (code, name, position) VALUES (%s, %s, %s) "
+        "ON CONFLICT (code) DO UPDATE SET name = EXCLUDED.name, position = EXCLUDED.position",
+        (code, name, position),
+    )
+
+
+def category_exists(conn, code: str) -> bool:
+    return conn.execute("SELECT 1 FROM category WHERE code = %s", (code,)).fetchone() is not None
+
+
+def link_category(conn, document_id: str, code: str, rank: int) -> None:
+    """Xếp văn bản vào danh mục (đã có thì chỉ cập nhật thứ tự). Văn bản hoặc danh mục chưa có thì không làm gì."""
+    conn.execute(
+        "INSERT INTO document_category (category_id, document_pk, rank) "
+        "SELECT c.id, d.id, %s FROM category c, document d WHERE c.code = %s AND d.document_id = %s "
+        "ON CONFLICT (category_id, document_pk) DO UPDATE SET rank = EXCLUDED.rank",
+        (rank, code, document_id),
+    )
+
+
+def get_category_links(conn, document_id: str) -> list[dict]:
+    """[{code, rank}] của một văn bản, để giữ lại khi văn bản được nhập lại (replace xóa rồi tạo lại dòng document)."""
+    return conn.execute(
+        "SELECT c.code, dc.rank FROM document_category dc JOIN category c ON c.id = dc.category_id "
+        "JOIN document d ON d.id = dc.document_pk WHERE d.document_id = %s ORDER BY c.position, c.code",
+        (document_id,),
+    ).fetchall()
+
+
+def list_categories(conn) -> list[dict]:
+    return conn.execute("SELECT code, name, position FROM category ORDER BY position, name").fetchall()
+
+
+def list_category_links(conn) -> list[dict]:
+    """Mọi cặp (văn bản, danh mục) kèm thứ tự trong danh mục."""
+    return conn.execute(
+        "SELECT d.document_id, c.code, dc.rank FROM document_category dc "
+        "JOIN category c ON c.id = dc.category_id JOIN document d ON d.id = dc.document_pk "
+        "ORDER BY c.position, c.code, dc.rank, d.document_id"
+    ).fetchall()
 
 
 def get_units(conn, document_pk: int) -> list[dict]:
@@ -105,7 +225,7 @@ def get_units(conn, document_pk: int) -> list[dict]:
 
 # ---- thẩm định (bảng review_event, chỉ ghi thêm) ----
 
-_EVENT_COLUMNS = "id, unit_id, action, reviewer, note, content_before, content_after, created_at"
+_EVENT_COLUMNS = "id, unit_id, action, reviewer, note, content_before, content_after, created_at, track"
 
 
 def get_events(conn, document_id: str) -> list[dict]:
@@ -137,8 +257,9 @@ def lock_unit(conn, document_id: str, unit_id: str) -> None:
 
 def insert_event(conn, document_id: str, unit_id: str, fields: dict) -> dict:
     return conn.execute(
-        "INSERT INTO review_event (document_id, unit_id, action, reviewer, note, content_before, content_after) "
-        "VALUES (%(document_id)s, %(unit_id)s, %(action)s, %(reviewer)s, %(note)s, %(content_before)s, %(content_after)s) "
+        "INSERT INTO review_event (document_id, unit_id, action, reviewer, note, content_before, content_after, track) "
+        "VALUES (%(document_id)s, %(unit_id)s, %(action)s, %(reviewer)s, %(note)s, %(content_before)s, %(content_after)s, "
+        "%(track)s) "
         f"RETURNING {_EVENT_COLUMNS}",
         {"document_id": document_id, "unit_id": unit_id, **fields},
     ).fetchone()
@@ -148,10 +269,44 @@ def get_events_of_existing_units(conn) -> list[dict]:
     """Sự kiện của mọi văn bản, chỉ các đơn vị còn tồn tại (để đếm tiến độ ở màn hình danh sách)."""
     return conn.execute(
         "SELECT e.document_id, e.id, e.unit_id, e.action, e.reviewer, e.note, e.content_before, e.content_after, "
-        "e.created_at FROM review_event e "
+        "e.created_at, e.track FROM review_event e "
         "JOIN document d ON d.document_id = e.document_id "
         "JOIN legal_unit u ON u.document_pk = d.id AND u.unit_id = e.unit_id ORDER BY e.id"
     ).fetchall()
+
+
+# ---- quy trình: phân công, hoàn thành, phê duyệt (bảng workflow_event, chỉ ghi thêm) ----
+
+_WORKFLOW_COLUMNS = "id, document_id, action, actor, target_user, target_role, note, created_at"
+
+
+def lock_workflow(conn, document_id: str, shared: bool = False) -> None:
+    """Khóa quy trình của một văn bản tới hết giao dịch. Thao tác thẩm định giữ khóa chia sẻ (chạy song song với nhau);
+    Hoàn thành / Trả lại / Hoàn tất giữ khóa độc quyền nên chờ các thao tác đang ghi xong, và ngược lại."""
+    function = "pg_advisory_xact_lock_shared" if shared else "pg_advisory_xact_lock"
+    conn.execute(f"SELECT {function}(hashtext(%s))", (f"workflow:{document_id}",))
+
+
+def get_workflow_events(conn, document_id: str | None = None) -> list[dict]:
+    """Sự kiện quy trình của một văn bản (hoặc mọi văn bản), theo thứ tự thời gian."""
+    if document_id is None:
+        return conn.execute(f"SELECT {_WORKFLOW_COLUMNS} FROM workflow_event ORDER BY id").fetchall()
+    return conn.execute(
+        f"SELECT {_WORKFLOW_COLUMNS} FROM workflow_event WHERE document_id = %s ORDER BY id", (document_id,)
+    ).fetchall()
+
+
+def insert_workflow_event(conn, document_id: str, fields: dict) -> dict:
+    return conn.execute(
+        "INSERT INTO workflow_event (document_id, action, actor, target_user, target_role, note) "
+        "VALUES (%(document_id)s, %(action)s, %(actor)s, %(target_user)s, %(target_role)s, %(note)s) "
+        f"RETURNING {_WORKFLOW_COLUMNS}",
+        {"document_id": document_id, **fields},
+    ).fetchone()
+
+
+def get_unit_ids(conn, document_pk: int) -> list[str]:
+    return [r["unit_id"] for r in conn.execute("SELECT unit_id FROM legal_unit WHERE document_pk = %s", (document_pk,))]
 
 
 # ---- tài khoản người soát, phân quyền & tiến trình cá nhân ----
@@ -164,7 +319,8 @@ def get_account(conn, username: str) -> dict | None:
     ).fetchone()
 
 
-def create_account(conn, username: str, display_name: str, password_hash: str, role: str = "viewer", is_approved: bool = False) -> dict:
+def create_account(conn, username: str, display_name: str, password_hash: str, role: str = "reviewer",
+                   is_approved: bool = True) -> dict:
     return conn.execute(
         "INSERT INTO reviewer_account (username, display_name, password_hash, role, is_approved) "
         "VALUES (%s, %s, %s, %s, %s) "

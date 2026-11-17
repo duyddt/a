@@ -1,62 +1,34 @@
-﻿{% extends "base.html" %}
+{% extends "base.html" %}
 {% block title %}Đăng nhập hệ thống thẩm định{% endblock %}
+{% from "partials/password_input.html" import password_input %}
 {% block body %}
 <header class="topbar">
   <h1>🗂 Hệ thống Thẩm định Dữ liệu Pháp lý</h1>
-  <a href="/?guest=1" class="button-link" style="margin-left:auto;">👁 Vào xem nhanh (Chế độ Khách - Chỉ xem)</a>
+  <div class="topbar-actions">
+    {% include "partials/theme_toggle.html" %}
+  </div>
 </header>
-<main class="narrow" style="max-width: 820px; margin-top: 24px;">
+<main class="narrow login-main">
   {% if err %}
-    <div style="padding:12px 16px; background:#fef2f2; border:2px solid #dc2626; color:#991b1b; border-radius:6px; margin-bottom:16px; font-weight:600;">
-      ⚠ {{ err }}
-    </div>
+    <div class="alert error" role="alert">⚠ {{ err }}</div>
   {% endif %}
   {% if msg %}
-    <div style="padding:12px 16px; background:#f0fdf4; border:2px solid #16a34a; color:#166534; border-radius:6px; margin-bottom:16px; font-weight:600;">
-      ✓ {{ msg }}
-    </div>
+    <div class="alert success" role="status">✓ {{ msg }}</div>
   {% endif %}
 
-  <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr)); gap: 20px;">
-    <!-- Cột 1: Đăng nhập -->
-    <section class="pane" style="padding: 20px;">
-      <h2 style="margin-top:0; font-size:18px; border-bottom:1px solid var(--border); padding-bottom:10px;">🔐 Đăng nhập tài khoản</h2>
-      <form method="post" action="/account/login">
-        <input type="hidden" name="redirect_to" value="{{ next or '/' }}">
-        <label class="field" style="margin-bottom:12px;">Tên tài khoản
-          <input type="text" name="username" required placeholder="Nhập tên tài khoản" autocomplete="username">
-        </label>
-        <label class="field" style="margin-bottom:16px;">Mật khẩu
-          <input type="password" name="password" required placeholder="Nhập mật khẩu" autocomplete="current-password">
-        </label>
-        <button type="submit" class="ribbon-btn save" style="width:100%; justify-content:center; min-height:40px;">
-          Đăng nhập vào hệ thống
-        </button>
-      </form>
-    </section>
-
-    <!-- Cột 2: Tạo tài khoản -->
-    <section class="pane" style="padding: 20px;">
-      <h2 style="margin-top:0; font-size:18px; border-bottom:1px solid var(--border); padding-bottom:10px;">📝 Tạo tài khoản</h2>
-      <form method="post" action="/account/register">
-        <input type="hidden" name="redirect_to" value="{{ next or '/' }}">
-        <label class="field" style="margin-bottom:10px;">Tên đăng nhập
-          <input type="text" name="username" required minlength="3" maxlength="64" pattern="[A-Za-z0-9_.\-]{3,64}" title="3–64 ký tự: chữ không dấu, số, dấu chấm, gạch dưới, gạch ngang" placeholder="Ví dụ: nguyen_van_a" autocomplete="username">
-        </label>
-        <label class="field" style="margin-bottom:10px;">Họ và tên hiển thị
-          <input type="text" name="display_name" maxlength="100" placeholder="Nhập họ và tên hiển thị">
-        </label>
-        <label class="field" style="margin-bottom:16px;">Mật khẩu (tối thiểu 8 ký tự)
-          <input type="password" name="password" required minlength="8" placeholder="Nhập mật khẩu" autocomplete="new-password">
-        </label>
-        <button type="submit" class="ribbon-btn edit-toggle" style="width:100%; justify-content:center; min-height:40px;">
-          Tạo tài khoản
-        </button>
-      </form>
-      <p class="muted small" style="margin-top:12px;">
-        ℹ️ <strong>Lưu ý phân quyền:</strong> Tài khoản mới tạo sẽ ở chế độ <strong>Chỉ xem (Viewer)</strong>. Khi được <strong>Admin cấp quyền soát</strong>, các nút <em>Duyệt / Sửa chữ / Gắn cờ</em> sẽ tự động mở khóa.
-      </p>
-    </section>
-  </div>
+  <section class="pane login-card" aria-labelledby="login-title">
+    <h2 id="login-title">🔐 Đăng nhập</h2>
+    <form method="post" action="/account/login">
+      <input type="hidden" name="redirect_to" value="{{ next or '/' }}">
+      <label class="field">Tên tài khoản
+        <input type="text" name="username" required placeholder="Nhập tên tài khoản" autocomplete="username" autofocus>
+      </label>
+      <label class="field">Mật khẩu
+        {{ password_input() }}
+      </label>
+      <button type="submit" class="ribbon-btn save login-submit">Đăng nhập</button>
+    </form>
+    <p class="muted small login-note">Tài khoản do Admin cấp. Chưa có tài khoản hoặc quên mật khẩu, hãy liên hệ Admin.</p>
+  </section>
 </main>
 {% endblock %}

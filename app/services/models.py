@@ -11,6 +11,7 @@ from app.contracts import LegalDocument, LegalUnit
 from .render_pdf import render_page
 
 DOC_ID_RE = re.compile(r"^[A-Za-z0-9_-]{1,64}$")
+PERSON_COLORS = 8  # số màu phân biệt người chỉnh sửa (biến CSS --person-1 .. --person-8)
 MAX_PROBLEMS_SHOWN = 50
 
 
@@ -36,6 +37,8 @@ class DocumentSummary:
     unit_count: int | None = None
     problem: ImportProblem | None = None
     progress: dict | None = None  # đếm theo trạng thái thẩm định; None khi chưa có PostgreSQL
+    categories: dict[str, int] = field(default_factory=dict)  # mã danh mục -> thứ tự trong danh mục (chỉ PostgreSQL)
+    workflow: object | None = None  # workflow.Workflow: phân công và trạng thái quy trình (chỉ PostgreSQL)
 
 
 @dataclass
@@ -48,10 +51,42 @@ class LoadedDocument:
     can_review: bool = False  # chỉ chế độ PostgreSQL mới lưu được thao tác thẩm định
     reviews: dict = field(default_factory=dict)  # unit_id -> UnitReview
     events: list = field(default_factory=list)  # mọi ReviewEvent của văn bản, theo thời gian
+    pdf_sha256: str | None = None  # chế độ PostgreSQL: khóa của toạ độ chữ OCR (page_words.py)
+    word_cache: object | None = None  # nơi lưu toạ độ chữ OCR; None = tệp trong thư mục bộ đệm của văn bản
+    # Bản riêng của từng người (review.fold_tracks). `doc`, `reviews`, `events` ở trên là của bản đang xem (`version`).
+    version: str = "final"  # "final" (bản chốt) hoặc tên người chỉnh sửa
+    tracks: object | None = None  # review.Tracks: mọi bản của văn bản
+    original_units: list = field(default_factory=list)  # nội dung OCR gốc, chưa áp dụng bản sửa nào
+    workflow: object | None = None  # workflow.Workflow (chỉ PostgreSQL)
 
     @cached_property
     def units_by_id(self) -> dict[str, LegalUnit]:
         return {unit.unit_id: unit for unit in self.doc.legal_units}
+
+    @cached_property
+    def original_text(self) -> dict[str, str]:
+        return {unit.unit_id: unit.content for unit in (self.original_units or self.doc.legal_units)}
+
+    @property
+    def people(self) -> list[str]:
+        """Người chỉnh sửa của văn bản (màu 1, 2, ...): người được giao theo thứ tự giao, rồi người khác đã thao tác
+        theo thứ tự lần thao tác đầu tiên (ví dụ người đã bị gỡ phân công)."""
+        assigned = list(self.workflow.editors) if self.workflow is not None else []
+        acted = self.tracks.people if self.tracks is not None else []
+        return assigned + [person for person in acted if person not in assigned]
+
+    def color_of(self, person: str) -> int | None:
+        """Số màu (1..PERSON_COLORS) của một người chỉnh sửa trong văn bản này; None nếu chưa thao tác."""
+        people = self.people
+        return people.index(person) % PERSON_COLORS + 1 if person in people else None
+
+    def text_of(self, unit_id: str, version: str) -> str:
+        """Chữ của đơn vị trong một bản: "ocr" (bản OCR gốc), "final" (bản chốt) hoặc tên người chỉnh sửa."""
+        original = self.original_text.get(unit_id, "")
+        if version == "ocr" or self.tracks is None:
+            return original
+        state = self.tracks.reviews_of(version).get(unit_id)
+        return state.edited_content if state is not None and state.edited_content is not None else original
 
     def events_of(self, unit_id: str) -> list:
         return [e for e in self.events if e.unit_id == unit_id]

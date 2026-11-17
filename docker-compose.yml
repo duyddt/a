@@ -38,6 +38,7 @@ services:
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
       SESSION_DAYS: ${SESSION_DAYS:-14}
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      OCR_WORKERS: ${OCR_WORKERS:-}
       # Khi khởi động, nhập mọi văn bản trong ./data (đã nhập rồi thì bỏ qua).
       # Đặt DOCKER_AUTO_IMPORT_DIR= (rỗng) trong .env để tắt.
       AUTO_IMPORT_DIR: ${DOCKER_AUTO_IMPORT_DIR-/seed}

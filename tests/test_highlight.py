@@ -138,6 +138,15 @@ def test_unit_click_highlights_on_first_page(client_factory):
     assert f"/documents/{DOC}/pages/3" in response.text and 'class="page-highlight"' in response.text
 
 
+def test_unit_click_shows_first_page_whole_with_highlight(client_factory):
+    html = client_factory().get(f"/documents/{DOC}/units/ND254_2026_D9_K1").text  # đơn vị nằm ở trang 1–2
+    assert 'class="page-stack fit"' in html and html.count('class="page-frame"') == 1
+    assert f"/documents/{DOC}/pages/1" in html and 'class="page-highlight"' in html
+    assert f"/documents/{DOC}/viewer?page=2&amp;zoom=0&amp;unit=ND254_2026_D9_K1" in html  # nút sang trang 2
+    # khung trái không giữ mức phóng to cũ: chọn đơn vị luôn quay về "Vừa trang"
+    assert 'class="page-stack fit"' in client_factory().get(f"/documents/{DOC}/units/ND254_2026_D9_K1?zoom=200").text
+
+
 @pytest.fixture
 def client_factory(data_dir, tmp_path):
     pytest.importorskip("fastapi")
@@ -147,8 +156,16 @@ def client_factory(data_dir, tmp_path):
     from app.config import Settings
     from app.main import create_app
 
+    clients = []
+
     def make():
         settings = Settings(data_dir=data_dir, storage_dir=tmp_path / "storage", conninfo=None, auto_import_dir=None)
-        return TestClient(create_app(settings, catalog=DocumentStore(data_dir)))
+        client = TestClient(create_app(settings, catalog=DocumentStore(data_dir)))
+        client.__enter__()  # chạy lifespan: tạo tài khoản admin
+        clients.append(client)
+        client.post("/account/login", data={"username": "admin", "password": "admin123"})
+        return client
 
-    return make
+    yield make
+    for client in clients:
+        client.__exit__(None, None, None)

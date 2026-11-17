@@ -81,7 +81,7 @@ def test_configured_admin_password_replaces_default(data_dir, storage):
 
 def test_admin_password_setting_resets_password_and_restores_role(tmp_path):
     accounts = AccountService(DocumentStore(tmp_path))
-    accounts.create("admin", "Admin", "old-password-1", role="viewer", is_approved=False)
+    accounts.create("admin", "Admin", "old-password-1", role="reviewer", is_approved=False)
     accounts.ensure_admin("admin", "new-password-1")
     account = accounts.authenticate("admin", "new-password-1")
     assert account and account["role"] == "admin" and account["is_approved"]
@@ -164,42 +164,65 @@ def test_login_throttle_window():
     assert throttle.retry_after("1.2.3.4", "duy") == 0
 
 
-def test_registration_validates_input_and_never_overwrites_accounts(client):
-    def register(username, password, display_name=""):
-        return client.post(
-            "/account/register",
-            data={"username": username, "password": password, "display_name": display_name},
-            follow_redirects=False,
-        )
-
-    assert register("ab", "12345678").status_code == 400  # tên quá ngắn
-    assert register("có dấu", "12345678").status_code == 400
-    assert register("nguoi_moi", "1234").status_code == 400  # mật khẩu quá ngắn
-    assert register("ADMIN", "hijacked-pass").status_code == 400  # không chiếm được tài khoản admin
-    assert login(client, "admin", "hijacked-pass").status_code == 401
-    assert login(client, "admin", ADMIN_PW).status_code == 303
-
-    client.cookies.clear()
-    assert register("Nguoi_Moi", "matkhau-moi-1", "Người mới").status_code == 303
-    account = client.app.state.accounts.get("nguoi_moi")
-    assert account["role"] == "viewer" and not account["is_approved"]  # chờ Admin cấp quyền
+def test_self_registration_and_guest_mode_are_gone(client):
+    """Chỉ Admin tạo tài khoản; không còn khách xem nhanh: mọi trang và API đều phải đăng nhập."""
+    form = {"username": "nguoi_moi", "password": "matkhau-moi-1"}
+    assert_sent_to_login(client.post("/account/register", data=form, follow_redirects=False))
+    assert client.post("/account/register", data=form, auth=("admin", ADMIN_PW)).status_code in (404, 405)
+    assert client.app.state.accounts.get("nguoi_moi") is None
+    page = client.get("/login").text
+    assert "/account/register" not in page and "guest" not in page and "Vào xem nhanh" not in page
+    for url in ("/", "/?guest=1", f"/documents/{DOC}", f"/documents/{DOC}?guest=1", f"/documents/{DOC}/pages/1"):
+        assert_sent_to_login(client.get(url, follow_redirects=False))
+    for url in ("/api/documents", f"/api/documents/{DOC}", "/api/categories", f"/api/documents/{DOC}/pages/1"):
+        response = client.get(url)
+        assert response.status_code == 401 and response.headers["www-authenticate"].startswith("Basic"), url
+    assert client.get("/healthz").status_code == 200 and client.get("/login").status_code == 200
 
 
-def test_admin_pages_and_actions_require_admin(client):
-    add_account(client, "khach", role="viewer", approved=False)
-    assert login(client, "khach", USER_PW).status_code == 303
+@pytest.mark.parametrize("role", ["reviewer", "approver"])
+def test_admin_pages_and_actions_require_admin(client, role):
+    add_account(client, "nhan_vien", role=role)
+    assert login(client, "nhan_vien", USER_PW).status_code == 303
     assert_sent_to_login(client.get("/admin/users", follow_redirects=False))
     create = client.post("/admin/users/create", data={"username": "moi_tao", "password": "12345678", "role": "admin"})
     assert create.status_code == 403 and client.app.state.accounts.get("moi_tao") is None
-    grant = client.post("/admin/users/khach/permission", data={"grant": "admin"})
-    assert grant.status_code == 403 and client.app.state.accounts.get("khach")["role"] == "viewer"
+    grant = client.post("/admin/users/nhan_vien/permission", data={"grant": "admin"})
+    assert grant.status_code == 403 and client.app.state.accounts.get("nhan_vien")["role"] == role
 
 
-def test_admin_cannot_demote_themselves(client):
+def test_admin_creates_accounts_with_three_roles_and_can_lock_them(client):
     assert login(client, "admin", ADMIN_PW).status_code == 303
-    response = client.post("/admin/users/admin/permission", data={"grant": "revoke"}, follow_redirects=False)
-    assert response.status_code == 303 and "err=" in response.headers["location"]
-    assert client.app.state.accounts.get("admin")["role"] == "admin"
+    page = client.get("/admin/users").text
+    roles = page.split('name="role"')[1].split("</select>")[0]
+    assert ('value="reviewer"' in roles and 'value="approver"' in roles and 'value="admin"' in roles
+            and 'value="viewer"' not in roles)
+    for name, role in (("bt1", "reviewer"), ("pd1", "approver"), ("ad2", "admin"), ("cu_xem", "viewer")):
+        client.post("/admin/users/create", data={"username": name, "password": "matkhau-12345", "role": role})
+    accounts = client.app.state.accounts
+    assert [(n, accounts.get(n)["role"], accounts.get(n)["is_approved"]) for n in ("bt1", "pd1", "ad2", "cu_xem")] == [
+        ("bt1", "reviewer", True), ("pd1", "approver", True), ("ad2", "admin", True), ("cu_xem", "reviewer", True)]
+
+    client.post("/admin/users/pd1/permission", data={"grant": "lock"})
+    assert accounts.get("pd1")["role"] == "approver" and not accounts.get("pd1")["is_approved"]  # khóa: giữ vai trò
+    client.post("/admin/users/pd1/permission", data={"grant": "unlock"})
+    assert accounts.get("pd1")["is_approved"]
+    client.post("/admin/users/bt1/permission", data={"grant": "approver"})
+    assert accounts.get("bt1")["role"] == "approver"
+
+
+def test_unknown_or_legacy_viewer_role_becomes_reviewer(tmp_path):
+    accounts = AccountService(DocumentStore(tmp_path))
+    accounts.create("cu", "Tài khoản cũ", "matkhau-12345", role="viewer", is_approved=False)
+    assert accounts.get("cu")["role"] == "reviewer" and not accounts.get("cu")["is_approved"]
+
+
+def test_admin_cannot_demote_or_lock_themselves(client):
+    assert login(client, "admin", ADMIN_PW).status_code == 303
+    for grant in ("lock", "reviewer"):
+        response = client.post("/admin/users/admin/permission", data={"grant": grant}, follow_redirects=False)
+        assert response.status_code == 303 and "err=" in response.headers["location"]
+    assert client.app.state.accounts.get("admin")["role"] == "admin" and client.app.state.accounts.get("admin")["is_approved"]
 
 
 # ---- thêm / xóa văn bản ----
@@ -225,20 +248,28 @@ def test_only_admin_can_delete(client, data_dir):
     assert not (data_dir / DOC).exists()
 
 
-def test_upload_requires_an_account_with_review_permission(client, sample_pdf, sample_json):
+@pytest.mark.parametrize(("role", "approved"), [("reviewer", True), ("approver", True), ("reviewer", False)])
+def test_only_admin_uploads_documents(client, sample_pdf, sample_json, role, approved):
     files = {"pdf": ("source.pdf", sample_pdf), "document": ("document.json", sample_json)}
     assert_sent_to_login(client.post("/documents/upload", files=files, follow_redirects=False))
-    add_account(client, "khach", role="viewer", approved=False)
-    assert login(client, "khach", USER_PW).status_code == 303
-    viewer = client.post("/documents/upload", files=files, follow_redirects=False)
-    assert viewer.status_code == 303 and "err=" in viewer.headers["location"]
+    add_account(client, "nhan_vien", role=role, approved=approved)
+    assert login(client, "nhan_vien", USER_PW).status_code == 303
+    denied = client.post("/documents/upload", files=files, follow_redirects=False)
+    assert denied.status_code == 303 and "err=" in denied.headers["location"]
 
 
-def test_list_page_hides_upload_and_delete_from_non_admins(client):
-    add_account(client, "khach", role="viewer", approved=False)
-    assert login(client, "khach", USER_PW).status_code == 303
+@pytest.mark.parametrize("role", ["reviewer", "approver"])
+def test_list_page_hides_upload_and_delete_from_non_admins(client, role):
+    add_account(client, "nhan_vien", role=role)
+    assert login(client, "nhan_vien", USER_PW).status_code == 303
     page = client.get("/")
     assert page.status_code == 200 and 'action="/documents/upload"' not in page.text and "/delete" not in page.text
+
+
+def test_locked_account_can_sign_in_but_sees_that_it_is_locked(client):
+    add_account(client, "bi_khoa", approved=False)
+    assert login(client, "bi_khoa", USER_PW).status_code == 303
+    assert "đang bị khóa" in client.get("/").text
 
 
 # ---- ổn định / triển khai ----
@@ -277,8 +308,26 @@ def test_unreachable_database_falls_back_to_read_only(data_dir, storage):
     started = time.monotonic()
     with TestClient(create_app(settings)) as client:
         assert time.monotonic() - started < 20
-        page = client.get("/?guest=1")
-        assert page.status_code == 200 and "Chưa kết nối được PostgreSQL" in page.text and DOC in page.text
-        assert "p@" not in page.text and ":p@" not in page.text
         assert client.get("/healthz").json()["database"] is False
         assert login(client, "admin", ADMIN_PW).status_code == 303
+        page = client.get("/")
+        assert page.status_code == 200 and "Chưa kết nối được PostgreSQL" in page.text and DOC in page.text
+        assert "p@" not in page.text and ":p@" not in page.text
+
+
+# ---- ô mật khẩu: nút con mắt bật/tắt hiện mật khẩu ----
+
+def password_inputs_have_toggles(html):
+    """Mỗi ô mật khẩu nằm trong .password-field kèm đúng một nút bật/tắt, mặc định đang ẩn chữ."""
+    fields = html.split('class="password-field"')[1:]
+    assert len(fields) == html.count('type="password"') >= 1
+    for field in fields:
+        head = field.split("</span>")[0]
+        assert 'type="password"' in head and "data-password-toggle" in head
+        assert 'aria-pressed="false"' in head and 'aria-label="Hiện mật khẩu"' in head and 'type="button"' in head
+
+
+def test_login_and_account_forms_have_a_show_password_toggle(client):
+    password_inputs_have_toggles(client.get("/login").text)
+    assert login(client, "admin", ADMIN_PW).status_code == 303
+    password_inputs_have_toggles(client.get("/admin/users").text)

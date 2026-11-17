@@ -1,28 +1,32 @@
 {% extends "base.html" %}
 {% block title %}Quản trị tài khoản & Phân quyền{% endblock %}
+{% from "partials/password_input.html" import password_input %}
 {% block body %}
 <header class="topbar">
   <a href="/" class="button-link">&larr; Về Danh sách văn bản</a>
-  <h1>🛡 Quản lý Tài khoản &amp; Cấp quyền Người soát</h1>
-  <div style="margin-left:auto; display:flex; align-items:center; gap:10px;">
+  <h1>🛡 Quản lý tài khoản</h1>
+  <div class="topbar-actions">
+    <a href="/admin/stats" class="button-link">📊 Thống kê</a>
+    <a href="/admin/assign" class="button-link">🧑‍💼 Phân công</a>
     <span class="tag edited">Admin: <strong>{{ current_user.username }}</strong></span>
     <form method="post" action="/account/logout" style="margin:0;">
       <button type="submit" class="button-link">Đăng xuất</button>
     </form>
+    {% include "partials/theme_toggle.html" %}
   </div>
 </header>
 
 <main class="narrow">
   {% if err %}
-    <div style="padding:10px 14px; background:#fef2f2; border:1px solid #dc2626; color:#991b1b; border-radius:4px; margin-bottom:14px; font-weight:600;">⚠ {{ err }}</div>
+    <div class="alert error">⚠ {{ err }}</div>
   {% endif %}
   {% if msg %}
-    <div style="padding:10px 14px; background:#f0fdf4; border:1px solid #16a34a; color:#166534; border-radius:4px; margin-bottom:14px; font-weight:600;">✓ {{ msg }}</div>
+    <div class="alert success">✓ {{ msg }}</div>
   {% endif %}
 
   <!-- Khung Admin tạo trực tiếp tài khoản cho người soát -->
   <section class="pane" style="padding:16px; margin-bottom:20px;">
-    <h2 style="margin:0 0 12px; font-size:16px;">➕ Tạo tài khoản mới (Được cấp quyền ngay)</h2>
+    <h2 style="margin:0 0 12px; font-size:16px;">➕ Tạo tài khoản mới</h2>
     <form method="post" action="/admin/users/create" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:10px; align-items:end;">
       <label class="field">Tên đăng nhập
         <input type="text" name="username" required minlength="3" maxlength="64" pattern="[A-Za-z0-9_.\-]{3,64}" title="3–64 ký tự: chữ không dấu, số, dấu chấm, gạch dưới, gạch ngang" placeholder="Ví dụ: duy_reviewer">
@@ -31,12 +35,12 @@
         <input type="text" name="display_name" placeholder="Ví dụ: Nguyễn Đức Duy">
       </label>
       <label class="field">Mật khẩu
-        <input type="password" name="password" required minlength="8" placeholder="Mật khẩu (>= 8 ký tự)" autocomplete="new-password">
+        {{ password_input(autocomplete="new-password", placeholder="Mật khẩu (>= 8 ký tự)", minlength=8) }}
       </label>
-      <label class="field">Quyền hạn
+      <label class="field">Vai trò
         <select name="role">
-          <option value="reviewer" selected>Người soát (Được Duyệt/Sửa chữ)</option>
-          <option value="viewer">Chỉ xem (Chưa cho phép soát)</option>
+          <option value="reviewer" selected>Người chỉnh sửa (Reviewer)</option>
+          <option value="approver">Người phê duyệt (Approver)</option>
           <option value="admin">Quản trị viên (Admin)</option>
         </select>
       </label>
@@ -52,42 +56,45 @@
         <tr>
           <th>Tên tài khoản</th>
           <th>Tên hiển thị</th>
-          <th>Trạng thái &amp; Quyền hiện tại</th>
-          <th>Thao tác phân quyền của Admin</th>
+          <th>Vai trò</th>
+          <th>Trạng thái</th>
+          <th>Thao tác của Admin</th>
         </tr>
       </thead>
       <tbody>
       {% for acc in accounts %}
+        {% set is_me = acc.username == current_user.username %}
         <tr>
-          <td><strong><code>{{ acc.username }}</code></strong></td>
+          <td><strong><code>{{ acc.username }}</code></strong>{% if is_me %} <span class="muted small">(bạn)</span>{% endif %}</td>
           <td>{{ acc.display_name }}</td>
+          <td><span class="tag role-{{ acc.role }}">{{ ROLE_LABELS[acc.role] }}</span></td>
           <td>
-            {% if acc.role == 'admin' %}
-              <span class="tag edited" style="background:#dcfce7; color:#14532d; border-color:#16a34a;">🛡 Admin (Toàn quyền)</span>
-            {% elif acc.is_approved and acc.role == 'reviewer' %}
-              <span class="tag edited">✓ Đã cấp quyền soát (Reviewer)</span>
-            {% else %}
-              <span class="tag warn">👁 Chỉ xem (Chờ Admin duyệt quyền)</span>
-            {% endif %}
+            {% if acc.is_approved %}<span class="tag ok">● Đang hoạt động</span>
+            {% else %}<span class="tag warn">🔒 Đã khóa</span>{% endif %}
           </td>
           <td>
-            <form method="post" action="/admin/users/{{ acc.username|urlencode }}/permission" style="display:flex; gap:6px; margin:0;">
-              {% if not (acc.is_approved and acc.role in ('reviewer', 'admin')) %}
-                <button type="submit" name="grant" value="approve" class="ribbon-btn approve" style="min-height:30px; font-size:12px;">
-                  ✓ Cấp quyền soát
-                </button>
-              {% endif %}
-              {% if acc.username != 'admin' and (acc.is_approved or acc.role != 'viewer') %}
-                <button type="submit" name="grant" value="revoke" class="ribbon-btn flag" style="min-height:30px; font-size:12px;">
-                  🔒 Thu hồi về Chỉ xem
-                </button>
-              {% endif %}
-              {% if acc.role != 'admin' %}
-                <button type="submit" name="grant" value="admin" class="ribbon-btn" style="min-height:30px; font-size:12px;">
-                  ⬆ Đặt làm Admin
-                </button>
-              {% endif %}
-            </form>
+            {% if is_me %}
+              <span class="muted small">Không tự đổi vai trò hoặc khóa chính mình</span>
+            {% else %}
+            <div class="account-actions">
+              <form method="post" action="/admin/users/{{ acc.username|urlencode }}/permission">
+                <label class="sr-only" for="role-{{ loop.index }}">Vai trò của {{ acc.username }}</label>
+                <select id="role-{{ loop.index }}" name="grant">
+                  {% for r in ("reviewer", "approver", "admin") %}
+                  <option value="{{ r }}"{% if acc.role == r %} selected{% endif %}>{{ ROLE_LABELS[r] }}</option>
+                  {% endfor %}
+                </select>
+                <button type="submit" class="ribbon-btn">Đổi vai trò</button>
+              </form>
+              <form method="post" action="/admin/users/{{ acc.username|urlencode }}/permission">
+                {% if acc.is_approved %}
+                <button type="submit" name="grant" value="lock" class="ribbon-btn flag">🔒 Khóa</button>
+                {% else %}
+                <button type="submit" name="grant" value="unlock" class="ribbon-btn approve">🔓 Mở khóa</button>
+                {% endif %}
+              </form>
+            </div>
+            {% endif %}
           </td>
         </tr>
       {% endfor %}

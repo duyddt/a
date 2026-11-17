@@ -1,0 +1,49 @@
+{#- Thanh quy trình của văn bản (review.html): trạng thái, người được giao (mỗi người chỉnh sửa một màu), ghi chú trả lại
+    và các nút Hoàn thành / Trả lại / Hoàn tất phê duyệt / Mở lại. Cần: doc, wf (workflow.Workflow), wf_can, people_colors,
+    progress, msg, err. -#}
+{% if wf %}
+{% set action_url = "/documents/" ~ (doc.document_id|urlencode) ~ "/workflow" %}
+<section class="workflow-bar" aria-label="Quy trình của văn bản">
+  <div class="wf-line">
+    <span class="wf-status wf-{{ wf.status }}">{{ wf.status_label }}</span>
+    {% if wf.editors %}
+    <span class="wf-people small"><span class="muted">Chỉnh sửa:</span>
+      {% for name, done in wf.editors.items() %}<span class="person-chip person-{{ people_colors.get(name, 1) }}" title="{{ 'Đã bấm Hoàn thành' if done else 'Đang làm' }}">{{ name }}{% if done %} <span aria-label="đã hoàn thành">✓</span>{% endif %}</span>{% endfor %}
+    </span>
+    <span class="wf-people small"><span class="muted">Phê duyệt:</span> <strong>{{ wf.approver or "mọi người phê duyệt" }}</strong></span>
+    {% elif current_user and current_user.role == 'admin' %}
+    <a class="small" href="/admin/assign">Phân công văn bản này &rarr;</a>
+    {% endif %}
+    <div class="wf-actions">
+      {% if wf_can.submit %}
+      <form method="post" action="{{ action_url }}" data-confirm="Hoàn thành văn bản này? Bản của bạn còn {{ progress.unreviewed }} đơn vị chưa soát. Sau khi bấm, bạn chỉ xem được bản của mình cho tới khi người phê duyệt trả lại." onsubmit="return confirm(this.dataset.confirm);">
+        <input type="hidden" name="action" value="submit">
+        <button type="submit" class="ribbon-btn approve">✔ Hoàn thành văn bản</button>
+      </form>
+      {% endif %}
+      {% if wf_can['return'] %}
+      <form method="post" action="{{ action_url }}" class="wf-return">
+        <input type="hidden" name="action" value="return">
+        <input type="text" name="note" required maxlength="2000" placeholder="Ghi chú chỗ còn sai sót" aria-label="Ghi chú khi trả lại">
+        <button type="submit" class="ribbon-btn flag">↩ Trả lại</button>
+      </form>
+      {% endif %}
+      {% if wf_can.finalize %}
+      <form method="post" action="{{ action_url }}" data-confirm="Hoàn tất phê duyệt văn bản này? Mọi đơn vị trên bản chốt phải đã được duyệt." onsubmit="return confirm(this.dataset.confirm);">
+        <input type="hidden" name="action" value="finalize">
+        <button type="submit" class="ribbon-btn approve" title="Cần duyệt hết các đơn vị trên bản chốt">✔ Hoàn tất phê duyệt</button>
+      </form>
+      {% endif %}
+      {% if wf_can.reopen %}
+      <form method="post" action="{{ action_url }}">
+        <input type="hidden" name="action" value="reopen">
+        <button type="submit" class="ribbon-btn">↺ Mở lại</button>
+      </form>
+      {% endif %}
+    </div>
+  </div>
+  {% if wf.returned_note %}<p class="wf-return-note" role="status">↩ <strong>{{ wf.returned_by }}</strong> trả lại: {{ wf.returned_note }}</p>{% endif %}
+  {% if err %}<p class="alert error" role="alert">⚠ {{ err }}</p>{% endif %}
+  {% if msg %}<p class="alert success" role="status">✓ {{ msg }}</p>{% endif %}
+</section>
+{% endif %}
