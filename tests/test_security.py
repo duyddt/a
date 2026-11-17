@@ -10,11 +10,10 @@ pytest.importorskip("httpx")
 
 from fastapi.testclient import TestClient  # noqa: E402
 
-from app.config import Settings, load_settings  # noqa: E402
+from app.config import DEFAULT_ADMIN_PASSWORD, Settings, load_settings  # noqa: E402
 from app.main import create_app  # noqa: E402
 from app.services.accounts import AccountService  # noqa: E402
 from app.services.auth import (  # noqa: E402
-    LEGACY_DEFAULT_ADMIN_PASSWORD,
     LoginThrottle,
     load_or_create_secret,
     sign_session,
@@ -61,31 +60,29 @@ def assert_sent_to_login(response):
     assert response.status_code == 303 and response.headers["location"].startswith("/login")
 
 
-# ---- mật khẩu admin & khóa ký phiên: không còn giá trị mặc định trong mã nguồn ----
+# ---- mật khẩu admin (ADMIN_PASSWORD, mặc định admin123) & khóa ký phiên ----
 
-def test_admin_gets_random_password_when_none_configured(data_dir, storage):
+def test_admin_logs_in_with_default_password_when_none_configured(data_dir, storage):
+    assert DEFAULT_ADMIN_PASSWORD == "admin123"
+    assert load_settings({}, env_file=storage / "khong_co.env").admin_password == DEFAULT_ADMIN_PASSWORD
+    assert load_settings({"ADMIN_PASSWORD": ""}, env_file=storage / "khong_co.env").admin_password == "admin123"
     app = create_app(make_settings(data_dir, storage), catalog=DocumentStore(data_dir))
     with TestClient(app) as client:
-        assert login(client, "admin", LEGACY_DEFAULT_ADMIN_PASSWORD).status_code == 401
-        text = (storage / "initial_admin_password.txt").read_text(encoding="utf-8")
-        password = text.split("Mật khẩu: ", 1)[1].splitlines()[0]
-        assert len(password) >= 12 and password != LEGACY_DEFAULT_ADMIN_PASSWORD
-        response = login(client, "admin", password)
+        response = login(client, "admin", "admin123")
         assert response.status_code == 303 and "session_token=" in response.headers["set-cookie"]
 
 
-def test_legacy_default_admin_password_is_rotated(tmp_path):
-    accounts = AccountService(DocumentStore(tmp_path))
-    accounts.create("admin", "Admin", LEGACY_DEFAULT_ADMIN_PASSWORD, role="admin", is_approved=True)
-    accounts.ensure_admin("admin", None, tmp_path)
-    assert accounts.authenticate("admin", LEGACY_DEFAULT_ADMIN_PASSWORD) is None
-    assert (tmp_path / "initial_admin_password.txt").is_file()
+def test_configured_admin_password_replaces_default(data_dir, storage):
+    app = create_app(make_settings(data_dir, storage, admin_password=ADMIN_PW), catalog=DocumentStore(data_dir))
+    with TestClient(app) as client:
+        assert login(client, "admin", "admin123").status_code == 401
+        assert login(client, "admin", ADMIN_PW).status_code == 303
 
 
 def test_admin_password_setting_resets_password_and_restores_role(tmp_path):
     accounts = AccountService(DocumentStore(tmp_path))
     accounts.create("admin", "Admin", "old-password-1", role="viewer", is_approved=False)
-    accounts.ensure_admin("admin", "new-password-1", tmp_path)
+    accounts.ensure_admin("admin", "new-password-1")
     account = accounts.authenticate("admin", "new-password-1")
     assert account and account["role"] == "admin" and account["is_approved"]
     assert accounts.authenticate("admin", "old-password-1") is None

@@ -1,10 +1,8 @@
 """Xác thực: băm mật khẩu (PBKDF2-HMAC-SHA256), ký/kiểm tra token phiên có hạn dùng, khóa ký theo từng máy,
 giới hạn số lần đăng nhập sai và kiểm tra tên tài khoản / mật khẩu.
 
-Không có khóa hay mật khẩu mặc định nào trong mã nguồn:
-- SECRET_KEY không đặt thì tự sinh một lần và lưu ở <storage_dir>/.secret_key (giữ nguyên qua các lần khởi động).
-- ADMIN_PASSWORD không đặt thì tài khoản admin được tạo với mật khẩu ngẫu nhiên, in ra log và ghi vào
-  <storage_dir>/initial_admin_password.txt.
+SECRET_KEY không đặt thì tự sinh một lần và lưu ở <storage_dir>/.secret_key (giữ nguyên qua các lần khởi động).
+Mật khẩu tài khoản admin lấy từ ADMIN_PASSWORD (mặc định admin123, xem app/config.py).
 """
 from __future__ import annotations
 
@@ -22,11 +20,9 @@ from pathlib import Path
 log = logging.getLogger("review-app")
 
 PBKDF2_ITERATIONS = 100_000
-LEGACY_DEFAULT_ADMIN_PASSWORD = "admin123"  # chỉ dùng để phát hiện và thay mật khẩu mặc định cũ
 USERNAME_RE = re.compile(r"^[A-Za-z0-9_.-]{3,64}$")
 MIN_PASSWORD_LENGTH = 8
 SECRET_FILE_NAME = ".secret_key"
-INITIAL_ADMIN_PASSWORD_FILE = "initial_admin_password.txt"
 
 
 def hash_password(password: str, salt: str | None = None) -> str:
@@ -59,10 +55,6 @@ def validate_password(password: str) -> str | None:
     if len(password or "") < MIN_PASSWORD_LENGTH:
         return f"Mật khẩu phải có ít nhất {MIN_PASSWORD_LENGTH} ký tự."
     return None
-
-
-def generate_password() -> str:
-    return secrets.token_urlsafe(12)
 
 
 # ---- khóa ký phiên ----
@@ -161,17 +153,3 @@ class LoginThrottle:
     def succeeded(self, ip: str, username: str) -> None:
         with self._lock:
             self._failures.pop((ip, (username or "").lower()), None)
-
-
-def write_initial_admin_password(storage_dir: Path, username: str, password: str) -> Path | None:
-    path = Path(storage_dir) / INITIAL_ADMIN_PASSWORD_FILE
-    try:
-        _write_private(
-            path,
-            f"Tài khoản: {username}\nMật khẩu: {password}\n"
-            "Hãy đăng nhập rồi đặt ADMIN_PASSWORD trong .env (hoặc giữ file này ở nơi an toàn) và xóa file này.\n",
-        )
-        return path
-    except OSError as exc:
-        log.warning("Không ghi được %s: %s", path, exc)
-        return None

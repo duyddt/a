@@ -7,15 +7,8 @@ from __future__ import annotations
 
 import logging
 import threading
-from pathlib import Path
 
-from .auth import (
-    LEGACY_DEFAULT_ADMIN_PASSWORD,
-    generate_password,
-    hash_password,
-    verify_password,
-    write_initial_admin_password,
-)
+from .auth import hash_password, verify_password
 
 log = logging.getLogger("review-app")
 
@@ -120,39 +113,20 @@ class AccountService:
 
     # ---- admin mặc định (chạy một lần khi khởi động) ----
 
-    def ensure_admin(self, username: str, configured_password: str | None, storage_dir: Path) -> None:
-        """Bảo đảm có tài khoản admin.
+    def ensure_admin(self, username: str, password: str) -> None:
+        """Bảo đảm có tài khoản admin, đúng quyền admin và đăng nhập được bằng `password` (ADMIN_PASSWORD).
 
-        - Chưa có: tạo với ADMIN_PASSWORD, hoặc mật khẩu ngẫu nhiên (in ra log + ghi file) nếu không đặt.
-        - Đã có: giữ quyền admin; nếu đặt ADMIN_PASSWORD khác mật khẩu hiện tại thì cập nhật (cách lấy lại quyền);
-          nếu vẫn dùng mật khẩu mặc định cũ "admin123" thì thay bằng mật khẩu ngẫu nhiên.
-        """
+        Gọi mỗi lần khởi động: mật khẩu bị đổi ở chỗ khác sẽ được đặt lại theo ADMIN_PASSWORD, nên đổi ADMIN_PASSWORD
+        rồi khởi động lại cũng là cách lấy lại quyền admin khi quên mật khẩu."""
         acc = self.get(username)
         if acc is None:
-            password = configured_password or generate_password()
             self.create(username, "Quản trị viên (Admin)", password, role="admin", is_approved=True)
-            if not configured_password:
-                self._announce(username, password, storage_dir, "Đã tạo tài khoản admin")
             return
         if acc.get("role") != "admin" or not acc.get("is_approved"):
             self.set_permission(username, "admin", True)
-        stored = acc.get("password_hash") or ""
-        if configured_password:
-            if not verify_password(configured_password, stored):
-                self.set_password(username, configured_password)
-                log.warning("Đã cập nhật mật khẩu tài khoản %s theo ADMIN_PASSWORD.", username)
-        elif not stored or verify_password(LEGACY_DEFAULT_ADMIN_PASSWORD, stored):
-            password = generate_password()
+        if not verify_password(password, acc.get("password_hash") or ""):
             self.set_password(username, password)
-            self._announce(username, password, storage_dir, "Đã thay mật khẩu mặc định cũ (admin123) của tài khoản admin")
-
-    @staticmethod
-    def _announce(username: str, password: str, storage_dir: Path, action: str) -> None:
-        path = write_initial_admin_password(storage_dir, username, password)
-        log.warning(
-            "%s. Đăng nhập: %s / %s%s. Đặt ADMIN_PASSWORD trong .env để tự chọn mật khẩu.",
-            action, username, password, f" (đã lưu tại {path})" if path else "",
-        )
+            log.warning("Đã đặt lại mật khẩu tài khoản %s theo ADMIN_PASSWORD.", username)
 
     # ---- vị trí đang soát ----
 

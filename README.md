@@ -22,13 +22,13 @@ Chỉ cần cài **Docker Desktop** (Windows/macOS) hoặc Docker Engine + Compo
 Copy-Item .env.example .env        # macOS/Linux: cp .env.example .env
 # Mở .env, đặt POSTGRES_PASSWORD (và ADMIN_PASSWORD nếu muốn tự chọn mật khẩu admin). File .env không đưa lên Git.
 docker compose up --build -d
-docker compose logs api            # lần đầu: tìm dòng "Đã tạo tài khoản admin. Đăng nhập: admin / ..."
+docker compose logs api            # xem log khởi động
 ```
 
 Mở <http://127.0.0.1:8080>. Lần đầu khởi động, ứng dụng tự chạy các file migration (`001` đến `004`), tạo tài khoản `admin` và nhập các văn bản trong thư mục `./data`. Khi khởi động lại, văn bản có cùng mã băm SHA-256 được bỏ qua để không tạo bản trùng.
 
 * REST API và tài liệu thử trực tiếp: <http://127.0.0.1:8080/docs>.
-* Mật khẩu admin lần đầu cũng được lưu trong volume: `docker compose exec api cat /storage/initial_admin_password.txt`.
+* Đăng nhập quản trị: **`admin` / `admin123`** (đổi bằng `ADMIN_PASSWORD` trong `.env`).
 * Cổng 8080 đã bị chiếm: đặt `APP_PORT=8090` trong `.env`. Cho máy khác trong mạng LAN truy cập: `APP_BIND=0.0.0.0`.
 * Nâng cấp từ bản cũ (container từng chạy bằng root) mà gặp lỗi ghi `/storage`: `docker compose run --rm --user root api chown -R 1000:1000 /storage`.
 * Xóa sạch dữ liệu để khởi tạo lại từ đầu: `docker compose down -v`.
@@ -47,7 +47,7 @@ Copy-Item .env.example .env            # sửa POSTGRES_PASSWORD / POSTGRES_HOST
 python -m uvicorn app.main:app --port 8080
 ```
 
-Mở <http://127.0.0.1:8080>. Mật khẩu admin lần đầu được in ra console và lưu ở `storage/initial_admin_password.txt`.
+Mở <http://127.0.0.1:8080> và đăng nhập **`admin` / `admin123`**.
 
 ### Chế độ đầy đủ chức năng (có PostgreSQL)
 
@@ -79,7 +79,7 @@ Chỉ cần khi tải lên PDF **scan mới** (không có lớp chữ và không
 
 ### Đăng nhập & bảo mật
 
-* **Không có mật khẩu mặc định.** Lần đầu chạy, tài khoản `ADMIN_USERNAME` (mặc định `admin`) được tạo với mật khẩu ngẫu nhiên, in ra log và lưu ở `<STORAGE_DIR>/initial_admin_password.txt`. Muốn tự chọn mật khẩu thì đặt `ADMIN_PASSWORD` trong `.env`. **Quên mật khẩu admin:** đặt `ADMIN_PASSWORD` mới rồi khởi động lại. Tài khoản còn dùng mật khẩu cũ `admin123` sẽ tự được đổi sang mật khẩu ngẫu nhiên.
+* **Tài khoản quản trị mặc định: `admin` / `admin123`**, để ai clone dự án về cũng chạy thử được ngay với vai trò admin. Mỗi lần khởi động, tài khoản `ADMIN_USERNAME` (mặc định `admin`) được tạo nếu chưa có, được trả lại quyền admin và đặt lại mật khẩu theo `ADMIN_PASSWORD` (để trống = `admin123`). **Khi cho người khác truy cập (server, mạng LAN) phải đặt `ADMIN_PASSWORD` riêng** trong `.env`, vì `admin123` ai cũng biết; app ghi cảnh báo vào log khi còn dùng mật khẩu mặc định. **Quên mật khẩu admin:** đặt `ADMIN_PASSWORD` mới rồi khởi động lại.
 * Tên tài khoản dài 3–64 ký tự (chữ không dấu, số, `.`, `_`, `-`); mật khẩu tối thiểu 8 ký tự. Đăng ký không bao giờ ghi đè tài khoản đã có.
 * Phiên đăng nhập là cookie `HttpOnly`, ký HMAC bằng `SECRET_KEY` (để trống thì tự sinh và lưu ở `<STORAGE_DIR>/.secret_key`) và hết hạn sau `SESSION_DAYS` ngày. Đổi khóa hoặc xóa file này sẽ đăng xuất mọi người.
 * Sai mật khẩu 10 lần trong 15 phút: tạm khóa đăng nhập theo (địa chỉ IP, tài khoản).

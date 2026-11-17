@@ -34,7 +34,7 @@ services:
       # Khóa ký phiên đăng nhập: để trống thì tự sinh và lưu trong volume storage
       SECRET_KEY: ${SECRET_KEY:-}
       ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
-      # Để trống: lần đầu tạo admin với mật khẩu ngẫu nhiên (xem log). Có giá trị: admin dùng mật khẩu này.
+      # Để trống: admin / admin123 (chỉ để chạy thử). Có giá trị: admin dùng mật khẩu này.
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
       SESSION_DAYS: ${SESSION_DAYS:-14}
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}

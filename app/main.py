@@ -15,7 +15,7 @@ from fastapi.templating import Jinja2Templates
 
 from app.api import MAX_UPLOAD_BYTES, get_catalog, load_or_404
 from app.api import router as api_router
-from app.config import Settings, load_settings
+from app.config import DEFAULT_ADMIN_PASSWORD, Settings, load_settings
 from app.services.accounts import AccountService, can_review, is_admin
 from app.services.auth import LoginThrottle, load_or_create_secret, sign_session, validate_password, validate_username
 from app.services.models import DOC_ID_RE, ImportProblem
@@ -97,7 +97,13 @@ def create_app(settings: Settings | None = None, catalog=None) -> FastAPI:
         app.state.accounts = AccountService(new_catalog) if new_catalog is not None else None
 
     def ensure_admin(app: FastAPI) -> None:
-        app.state.accounts.ensure_admin(settings.admin_username, settings.admin_password, settings.storage_dir)
+        app.state.accounts.ensure_admin(settings.admin_username, settings.admin_password)
+        if settings.admin_password == DEFAULT_ADMIN_PASSWORD:
+            log.warning(
+                "Tài khoản quản trị: %s / %s (mật khẩu mặc định, chỉ dùng để chạy thử trên máy cá nhân). "
+                "Khi cho người khác truy cập, hãy đặt ADMIN_PASSWORD trong .env.",
+                settings.admin_username, DEFAULT_ADMIN_PASSWORD,
+            )
 
     def detail_context(request: Request, loaded, unit, **extra) -> dict:
         unit_review = loaded.reviews.get(unit.unit_id) if unit else None

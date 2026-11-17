@@ -346,13 +346,10 @@ def test_register_cannot_take_over_existing_accounts(client):
     assert login(client, "admin", ADMIN_PW).status_code == 303
 
 
-def test_legacy_admin123_password_is_replaced_on_startup(client, tmp_path):
-    from app.services.auth import hash_password
-
-    with psycopg.connect(URL) as conn:
-        conn.execute("UPDATE reviewer_account SET password_hash = %s WHERE username = 'admin'", (hash_password("admin123"),))
+def test_admin_password_follows_setting_on_every_startup(client, tmp_path):
+    """Không đặt ADMIN_PASSWORD: admin đăng nhập bằng admin123 (kể cả khi CSDL đang lưu mật khẩu khác)."""
     storage = tmp_path / "storage2"
     app = create_app(Settings(data_dir=tmp_path / "none", storage_dir=storage, conninfo=URL, auto_import_dir=None))
     with TestClient(app) as second:
-        assert login(second, "admin", "admin123").status_code == 401
-        assert (storage / "initial_admin_password.txt").is_file()
+        assert login(second, "admin", "admin123").status_code == 303
+        assert login(second, "admin", ADMIN_PW).status_code == 401
