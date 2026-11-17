@@ -23,7 +23,9 @@ def delete_document(conn, document_id: str) -> None:
 
 
 def insert_document(conn, doc: LegalDocument, page_count: int, content_hash: str) -> int:
-    from psycopg.types.json import Jsonb  # nhập tại đây để phần còn lại của app không cần psycopg khi chạy chế độ thư mục file
+    from psycopg.types.json import (
+        Jsonb,  # nhập tại đây để phần còn lại của app không cần psycopg khi chạy chế độ thư mục file
+    )
 
     row = conn.execute(
         "INSERT INTO document (document_id, document_no, document_type, title, issuer, issued_date, "

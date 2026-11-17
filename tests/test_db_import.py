@@ -20,11 +20,11 @@ psycopg = pytest.importorskip("psycopg")
 URL = os.environ.get("TEST_DATABASE_URL")
 pytestmark = pytest.mark.skipif(not URL, reason="đặt TEST_DATABASE_URL để chạy test PostgreSQL")
 
+from app.config import Settings  # noqa: E402
+from app.services.models import ImportProblem  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 
-from app.config import Settings  # noqa: E402
 from app.main import create_app  # noqa: E402
-from app.services.models import ImportProblem  # noqa: E402
 
 DOC = "ND254_2026"
 ADMIN_PW = "admin-pass-for-tests"
@@ -664,7 +664,7 @@ def test_two_reviewers_edit_the_same_unit_independently_and_the_approver_picks_o
 
 def test_review_page_shows_each_version_in_its_own_colour_to_the_approver(loaded):
     client = loaded
-    bt1, bt2, pd1 = add_account(client, "bt1"), add_account(client, "bt2"), add_account(client, "pd1", role="approver")
+    bt1, bt2, _pd1 = add_account(client, "bt1"), add_account(client, "bt2"), add_account(client, "pd1", role="approver")
     assign(client, "bt1", "bt2", approver="pd1")
     review(client, "edit", auth=bt1, content="Bản sửa của bt1")
     review(client, "flag", auth=bt2, note="ảnh trang mờ")
@@ -971,7 +971,7 @@ def test_backfill_ocrs_only_scanned_pages_without_word_boxes(client, sample_pdf,
 
 def test_admin_sees_progress_per_person_and_per_document(loaded):
     client = loaded
-    bt1, bt2, pd1 = add_account(client, "bt1", "Bình"), add_account(client, "bt2"), add_account(client, "pd1", role="approver")
+    bt1, _bt2, pd1 = add_account(client, "bt1", "Bình"), add_account(client, "bt2"), add_account(client, "pd1", role="approver")
     assign(client, "bt1", "bt2", approver="pd1")
     review(client, "approve", auth=bt1)
     workflow(client, "submit", bt1)

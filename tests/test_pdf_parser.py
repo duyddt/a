@@ -12,7 +12,6 @@ from pathlib import Path
 
 import pypdfium2 as pdfium
 import pytest
-
 from app.services import pdf_parser
 from app.services.models import ImportProblem
 from app.services.pdf_parser import auto_build_json_from_pdf, build_document_from_pages

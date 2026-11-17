@@ -2,7 +2,6 @@
 import zipfile
 
 import pytest
-
 from app.services.categories import Category, category_from_folder, position_in_folder, read_catalog_order
 
 # ---------------------------------------------------------------- tên thư mục -> danh mục

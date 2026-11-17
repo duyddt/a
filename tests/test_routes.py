@@ -6,11 +6,11 @@ import pytest
 pytest.importorskip("fastapi")
 pytest.importorskip("httpx")
 
+from app.config import Settings  # noqa: E402
+from app.services.store import DocumentStore  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 
-from app.config import Settings  # noqa: E402
 from app.main import create_app  # noqa: E402
-from app.services.store import DocumentStore  # noqa: E402
 
 DOC = "ND254_2026"
 

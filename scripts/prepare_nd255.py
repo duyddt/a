@@ -17,9 +17,10 @@ if sys.stdout and hasattr(sys.stdout, "reconfigure"):
 if sys.stderr and hasattr(sys.stderr, "reconfigure"):
     sys.stderr.reconfigure(encoding="utf-8")
 
-import pypdfium2 as pdfium
-from app.contracts import LegalDocument, make_document_id, make_unit_id
-from app.services.store import check_source_pages
+import pypdfium2 as pdfium  # noqa: E402
+from app.services.store import check_source_pages  # noqa: E402
+
+from app.contracts import LegalDocument, make_document_id, make_unit_id  # noqa: E402
 
 DOCUMENT_TYPE = "Nghị định"
 DOCUMENT_NO = "255/2026/NĐ-CP"
@@ -84,7 +85,7 @@ class Article(Node):
 
 def extract_page_lines_from_pdf(page_text: str) -> list[str]:
     """Tách và ghép dòng từ PDF thành danh sách đoạn văn hoàn chỉnh trên một trang."""
-    raw_lines = [l.strip() for l in page_text.splitlines() if l.strip() and not re.match(r"^-{3,}$", l.strip())]
+    raw_lines = [line.strip() for line in page_text.splitlines() if line.strip() and not re.match(r"^-{3,}$", line.strip())]
     paras: list[str] = []
     curr: list[str] = []
 
@@ -332,7 +333,7 @@ def build_appendix_units(document_id: str, pages_dir: Path) -> list[dict]:
     ]
 
     pl_indices: list[int] = []
-    for suffix, header, roman, title in pl_markers:
+    for _suffix, header, _roman, _title in pl_markers:
         found = False
         for i, p in enumerate(all_paras):
             if p.text.strip() == header:
@@ -345,7 +346,7 @@ def build_appendix_units(document_id: str, pages_dir: Path) -> list[dict]:
     pl_indices.append(len(all_paras))
 
     units: list[dict] = []
-    for idx, (suffix, header, roman, title) in enumerate(pl_markers):
+    for idx, (suffix, _header, roman, title) in enumerate(pl_markers):
         start = pl_indices[idx]
         end = pl_indices[idx + 1]
         pl_paras = all_paras[start:end]

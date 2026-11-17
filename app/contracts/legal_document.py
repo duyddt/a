@@ -50,7 +50,7 @@ class LegalDocument(BaseModel):
     legal_units: list[LegalUnit] = Field(default_factory=list)
 
     @model_validator(mode="after")
-    def _check_units(self) -> "LegalDocument":
+    def _check_units(self) -> LegalDocument:
         errors: list[str] = []
         index: dict[str, int] = {}
         for position, unit in enumerate(self.legal_units):

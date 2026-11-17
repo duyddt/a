@@ -9,9 +9,9 @@ import sys
 from pathlib import Path
 
 import pytest
+from app.services.store import check_source_pages
 
 from app.contracts import LegalDocument
-from app.services.store import check_source_pages
 
 ROOT = Path(__file__).resolve().parent.parent
 DOC_DIR = ROOT / "data" / "ND254_2026"

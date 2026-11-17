@@ -2,12 +2,12 @@
 import random
 
 import pytest
-from PIL import Image, ImageDraw
-
-from app.contracts import LegalUnit
 from app.services import highlight
 from app.services.highlight import NO_HIGHLIGHT, locate
 from app.services.store import DocumentStore
+from PIL import Image, ImageDraw
+
+from app.contracts import LegalUnit
 
 DOC = "ND254_2026"
 
@@ -151,9 +151,9 @@ def test_unit_click_shows_first_page_whole_with_highlight(client_factory):
 def client_factory(data_dir, tmp_path):
     pytest.importorskip("fastapi")
     pytest.importorskip("httpx")
+    from app.config import Settings
     from fastapi.testclient import TestClient
 
-    from app.config import Settings
     from app.main import create_app
 
     clients = []

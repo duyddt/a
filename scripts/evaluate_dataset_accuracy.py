@@ -35,11 +35,10 @@ sys.path.insert(0, str(ROOT))
 if sys.stdout and hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 
-import pypdfium2 as pdfium
-
-from app.services import review
-from app.services.models import ImportProblem
-from app.services.pdf_parser import (
+import pypdfium2 as pdfium  # noqa: E402
+from app.services import review  # noqa: E402
+from app.services.models import ImportProblem  # noqa: E402
+from app.services.pdf_parser import (  # noqa: E402
     auto_build_json_from_pdf,
     build_document_from_pages,
     extract_pages_text,

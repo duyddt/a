@@ -3,12 +3,11 @@ import os
 from pathlib import Path
 
 import pytest
-from jinja2 import Environment, FileSystemLoader, select_autoescape
-
-from app.services.store import DocumentStore
 from app.services.models import ImportProblem
+from app.services.store import DocumentStore
 from app.services.tree import build_tree, decorate_for_page
 from app.services.views import FIT, first_page_of, nearest_zoom, viewer_context, vn_time
+from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 TEMPLATES = Path(__file__).resolve().parent.parent / "app" / "templates"
 DOC = "ND254_2026"

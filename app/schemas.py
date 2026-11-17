@@ -53,7 +53,7 @@ class UnitNodeOut(BaseModel):
     review_status: Literal["unreviewed", "approved", "flagged", "structure_error"]
     review_status_label: str
     source_pages: list[int] = Field(description="Số trang PDF (đếm từ 1) chứa đơn vị; khung trái nhảy tới trang đầu tiên")
-    children: list["UnitNodeOut"] = Field(default_factory=list)
+    children: list[UnitNodeOut] = Field(default_factory=list)
 
 
 UnitNodeOut.model_rebuild()

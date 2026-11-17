@@ -2,13 +2,13 @@
 import json
 
 import pytest
-from PIL import Image
-
-from app.contracts import LegalUnit
 from app.services import highlight, page_words
 from app.services.highlight import locate
 from app.services.page_words import Word
 from app.services.store import DocumentStore
+from PIL import Image
+
+from app.contracts import LegalUnit
 
 LINE_H = 0.02
 

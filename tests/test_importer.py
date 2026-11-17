@@ -2,7 +2,6 @@
 import json
 
 import pytest
-
 from app.services.importer import content_hash_of, prepare_import
 from app.services.models import ImportProblem
 

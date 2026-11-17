@@ -18,8 +18,14 @@ from app.api import MAX_UPLOAD_BYTES, get_catalog, load_or_404, sees_every_versi
 from app.api import router as api_router
 from app.config import DEFAULT_ADMIN_PASSWORD, Settings, load_settings
 from app.services.accounts import ROLE_LABELS, ROLES, AccountService, can_review, is_active, is_admin
+from app.services.auth import (
+    LoginThrottle,
+    load_or_create_secret,
+    sign_session,
+    validate_password,
+    validate_username,
+)
 from app.services.categories import group_into_folders
-from app.services.auth import LoginThrottle, load_or_create_secret, sign_session, validate_password, validate_username
 from app.services.models import DOC_ID_RE, ImportProblem
 from app.services.review import (
     ACTION_LABELS,
@@ -33,7 +39,15 @@ from app.services.review import (
 )
 from app.services.store import DocumentStore
 from app.services.tree import build_tree, decorate_for_page, person_marks
-from app.services.views import DEFAULT_ZOOM, FIT, first_page_of, nearest_zoom, unit_versions, viewer_context, vn_time
+from app.services.views import (
+    DEFAULT_ZOOM,
+    FIT,
+    first_page_of,
+    nearest_zoom,
+    unit_versions,
+    viewer_context,
+    vn_time,
+)
 from app.services.workflow import ACTION_LABELS as WORKFLOW_LABELS
 from app.services.workflow import EDITOR, STATUS_LABELS, available_actions, can_act_problem
 from app.web_auth import (
@@ -645,7 +659,7 @@ def create_app(settings: Settings | None = None, catalog=None) -> FastAPI:
         try:
             catalog.record_workflow(document_id, action, user, note)
         except KeyError:
-            raise HTTPException(status_code=404, detail="Không có văn bản này")
+            raise HTTPException(status_code=404, detail="Không có văn bản này") from None
         except ReviewProblem as exc:
             return RedirectResponse(url=back + "err=" + quote("; ".join(exc.problems)), status_code=303)
         return RedirectResponse(url=back + "msg=" + quote(f"Đã {WORKFLOW_LABELS[action].lower()} văn bản"), status_code=303)
@@ -659,7 +673,7 @@ def create_app(settings: Settings | None = None, catalog=None) -> FastAPI:
             image = loaded.page_image(page)
         except Exception:
             log.exception("Không render được trang %s của %s", page, document_id)
-            raise HTTPException(status_code=500, detail=f"Không render được trang {page}")
+            raise HTTPException(status_code=500, detail=f"Không render được trang {page}") from None
         return FileResponse(image, media_type="image/png")
 
     @app.get("/documents/{document_id}/viewer", include_in_schema=False)

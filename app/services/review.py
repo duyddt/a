@@ -11,10 +11,10 @@ Bao gồm:
 from __future__ import annotations
 
 from collections import Counter
+from collections.abc import Iterable
 from dataclasses import dataclass, field
 from datetime import datetime
 from difflib import SequenceMatcher
-from typing import Iterable
 
 from app.contracts import LegalDocument, LegalUnit
 

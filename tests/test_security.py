@@ -8,10 +8,7 @@ import pytest
 pytest.importorskip("fastapi")
 pytest.importorskip("httpx")
 
-from fastapi.testclient import TestClient  # noqa: E402
-
 from app.config import DEFAULT_ADMIN_PASSWORD, Settings, load_settings  # noqa: E402
-from app.main import create_app  # noqa: E402
 from app.services.accounts import AccountService  # noqa: E402
 from app.services.auth import (  # noqa: E402
     LoginThrottle,
@@ -21,6 +18,9 @@ from app.services.auth import (  # noqa: E402
 )
 from app.services.store import DocumentStore  # noqa: E402
 from app.web_auth import safe_next  # noqa: E402
+from fastapi.testclient import TestClient  # noqa: E402
+
+from app.main import create_app  # noqa: E402
 
 DOC = "ND254_2026"
 ADMIN_PW = "admin-pass-for-tests"

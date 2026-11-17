@@ -189,7 +189,7 @@ def _text_layer(pdf_path: str, stamp: tuple[int, int], page: int) -> _TextLayer 
     if len(normalized) < 15:
         return None
     boxes: list[Rect | None] = []
-    for ch, (left, bottom, right, top) in zip(raw, raw_boxes):
+    for ch, (left, bottom, right, top) in zip(raw, raw_boxes, strict=False):
         visible = not ch.isspace() and right > left and top > bottom
         boxes.append((left / width, 1 - top / height, right / width, 1 - bottom / height) if visible else None)
     return _TextLayer(normalized, tuple(origin), raw, tuple(boxes))

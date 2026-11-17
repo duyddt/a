@@ -41,8 +41,9 @@ if sys.stderr and hasattr(sys.stderr, "reconfigure"):
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from app.contracts import LegalDocument, make_document_id, make_unit_id  # noqa: E402
 from app.services.store import check_source_pages  # noqa: E402
+
+from app.contracts import LegalDocument, make_document_id, make_unit_id  # noqa: E402
 
 # ---- Thông tin văn bản (đọc từ trang 1 và Điều 43 khoản 1; chưa xác minh với nguồn chính thức) ----
 DOCUMENT_TYPE = "Nghị định"

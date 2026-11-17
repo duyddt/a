@@ -1,6 +1,5 @@
 """Quy trình phân công → hoàn thành → phê duyệt (app/services/workflow.py): thuần Python, không cần DB."""
 import pytest
-
 from app.services.review import ReviewProblem
 from app.services.workflow import (
     WorkflowEvent,
@@ -135,7 +134,10 @@ def test_buttons_follow_role_and_state():
     editing = fold_workflow(assigned())
     pending = fold_workflow(assigned(ev("submit", "bt1"), ev("submit", "bt2")))
     approved = fold_workflow(assigned(ev("submit", "bt1"), ev("submit", "bt2"), ev("finalize", "pd1")))
-    on = lambda state, user: sorted(k for k, v in available_actions(state, user).items() if v)
+
+    def on(state, user):
+        return sorted(k for k, v in available_actions(state, user).items() if v)
+
     assert on(editing, BT1) == ["submit"] and on(editing, PD1) == [] and on(editing, ADMIN) == ["finalize"]
     assert on(pending, BT1) == [] and on(pending, PD1) == ["finalize", "return"] and on(pending, PD2) == []
     assert on(approved, ADMIN) == ["reopen"] and on(approved, PD1) == []

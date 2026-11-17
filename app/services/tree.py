@@ -6,6 +6,7 @@ from urllib.parse import quote
 from app.contracts import LegalUnit
 
 from .review import STATUS_LABELS as REVIEW_STATUS_LABELS  # noqa: F401  (giữ tên cũ cho nơi khác dùng)
+
 SNIPPET_LENGTH = 80
 
 

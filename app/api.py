@@ -8,16 +8,28 @@ from fastapi.responses import FileResponse, JSONResponse
 
 from app.contracts import LegalUnit
 from app.schemas import (
-    CategoryOut, CategoryRefOut, DocumentOut, DocumentSummaryOut, ImportResultOut, ProgressOut, ReviewEventOut,
-    DocumentStatsOut, PersonStatsOut, ReviewRequest, ReviewResultOut, StatsOut, VersionOut, WorkflowEditorOut, WorkflowOut,
+    CategoryOut,
+    CategoryRefOut,
+    DocumentOut,
+    DocumentStatsOut,
+    DocumentSummaryOut,
+    ImportResultOut,
+    PersonStatsOut,
+    ProgressOut,
+    ReviewEventOut,
+    ReviewRequest,
+    ReviewResultOut,
+    StatsOut,
+    VersionOut,
+    WorkflowEditorOut,
+    WorkflowOut,
     WorkflowRequest,
 )
 from app.services.categories import Category, group_into_folders
 from app.services.importer import AlreadyImported
-from app.services.models import ImportProblem
-from app.services.review import ReviewProblem, build_export, build_ocr_report, progress
+from app.services.models import PERSON_COLORS, ImportProblem
+from app.services.review import build_export, build_ocr_report, progress
 from app.services.tree import build_tree
-from app.services.models import PERSON_COLORS
 from app.services.views import unit_versions
 from app.web_auth import current_user, require_admin, require_reviewer
 
@@ -40,7 +52,7 @@ def load_or_404(catalog, document_id: str, viewer: dict | None = None, version: 
     try:
         return catalog.get(document_id, viewer=viewer, version=version)
     except KeyError:
-        raise HTTPException(status_code=404, detail="Không có văn bản này")
+        raise HTTPException(status_code=404, detail="Không có văn bản này") from None
 
 
 def sees_every_version(user: dict | None) -> bool:
@@ -89,7 +101,7 @@ def get_workflow(document_id: str, catalog=Depends(get_catalog)):
     try:
         return workflow_out(_workflow_catalog(catalog).workflow(document_id))
     except KeyError:
-        raise HTTPException(status_code=404, detail="Không có văn bản này")
+        raise HTTPException(status_code=404, detail="Không có văn bản này") from None
 
 
 @router.post("/documents/{document_id}/workflow", response_model=WorkflowOut,
@@ -103,7 +115,7 @@ def post_workflow(request: Request, document_id: str, body: WorkflowRequest, cat
         catalog.record_workflow(document_id, body.action, user, body.note, body.target_user, body.target_role)
         return workflow_out(catalog.workflow(document_id))
     except KeyError:
-        raise HTTPException(status_code=404, detail="Không có văn bản này")
+        raise HTTPException(status_code=404, detail="Không có văn bản này") from None
 
 
 def _progress(loaded):
@@ -204,7 +216,7 @@ def get_page_image(document_id: str, page: int, catalog=Depends(get_catalog)):
         image = loaded.page_image(page)
     except Exception:  # thiếu source.pdf, PDF hỏng, thiếu quyền ghi...
         log.exception("Không render được trang %s của %s", page, document_id)
-        raise HTTPException(status_code=500, detail=f"Không render được trang {page}")
+        raise HTTPException(status_code=500, detail=f"Không render được trang {page}") from None
     return FileResponse(image, media_type="image/png")
 
 
@@ -245,7 +257,7 @@ def import_document(
         except ImportProblem:
             raise  # đã có lý do cụ thể (ví dụ PDF scan chưa OCR được)
         except Exception as exc:
-            raise ImportProblem(pdf.filename or "document", [f"Không tự tách được cấu trúc từ PDF: {type(exc).__name__}"])
+            raise ImportProblem(pdf.filename or "document", [f"Không tự tách được cấu trúc từ PDF: {type(exc).__name__}"]) from exc
     try:
         result = importer.import_bytes(pdf_bytes, json_bytes, replace=replace, category=(category or "").strip() or None,
                                        page_words=words)
@@ -253,7 +265,7 @@ def import_document(
         raise HTTPException(
             status_code=409,
             detail=f"Đã có văn bản {exc.document_id} với nội dung khác. Gửi replace=true để thay bản cũ.",
-        )
+        ) from exc
     if result.status == "unchanged":
         response.status_code = 200
     return ImportResultOut(**result.__dict__)
@@ -310,7 +322,7 @@ def post_review(request: Request, document_id: str, unit_id: str, body: ReviewRe
         event = catalog.record_review(document_id, unit_id, body.action, user["username"], body.note, body.content,
                                       role=user["role"], source=body.source)
     except KeyError:
-        raise HTTPException(status_code=404, detail="Không có văn bản hoặc đơn vị này")
+        raise HTTPException(status_code=404, detail="Không có văn bản hoặc đơn vị này") from None
     loaded = catalog.get(document_id, viewer=user)
     return ReviewResultOut(
         event=ReviewEventOut(**event.__dict__),

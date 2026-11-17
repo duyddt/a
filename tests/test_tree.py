@@ -1,5 +1,6 @@
-from app.contracts import LegalDocument
 from app.services.tree import build_tree, unit_label, unit_snippet
+
+from app.contracts import LegalDocument
 
 
 def unit(unit_id, **kwargs):
