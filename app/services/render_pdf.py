@@ -8,6 +8,7 @@ Chế độ PostgreSQL render TOÀN BỘ trang ngay lúc nhập (render_all); ch
 """
 from __future__ import annotations
 
+import threading
 from pathlib import Path
 
 import pypdfium2 as pdfium
@@ -15,13 +16,18 @@ import pypdfium2 as pdfium
 DPI = 150
 STAMP_NAME = ".stamp"
 
+# PDFium không an toàn đa luồng (kể cả với hai tài liệu khác nhau), mà FastAPI chạy route đồng bộ trên nhiều luồng:
+# mọi lời gọi pypdfium2 trong web app phải nằm trong khoá này.
+PDFIUM_LOCK = threading.RLock()
+
 
 def count_pages(pdf_path: Path) -> int:
-    pdf = pdfium.PdfDocument(str(pdf_path))
-    try:
-        return len(pdf)
-    finally:
-        pdf.close()
+    with PDFIUM_LOCK:
+        pdf = pdfium.PdfDocument(str(pdf_path))
+        try:
+            return len(pdf)
+        finally:
+            pdf.close()
 
 
 def _pdf_stamp(pdf_path: Path) -> str:
@@ -41,11 +47,13 @@ def _drop_stale_images(pdf_path: Path, pages_dir: Path) -> None:
 
 
 def _render_to(pdf: pdfium.PdfDocument, index: int, out: Path, dpi: int) -> None:
-    page = pdf[index]
-    try:
-        page.render(scale=dpi / 72).to_pil().save(out)
-    finally:
-        page.close()
+    with PDFIUM_LOCK:
+        page = pdf[index]
+        try:
+            image = page.render(scale=dpi / 72).to_pil().copy()  # bản sao: bitmap của pdfium được giải phóng ngay trong khoá
+        finally:
+            page.close()
+    image.save(out)  # nén PNG không cần giữ khoá
 
 
 def render_page(pdf_path: Path, pages_dir: Path, page: int, dpi: int = DPI) -> Path:
@@ -54,24 +62,28 @@ def render_page(pdf_path: Path, pages_dir: Path, page: int, dpi: int = DPI) -> P
     out = pages_dir / f"p{page:03d}.png"
     if out.is_file():
         return out
-    pdf = pdfium.PdfDocument(str(pdf_path))
+    with PDFIUM_LOCK:
+        pdf = pdfium.PdfDocument(str(pdf_path))
     try:
         _render_to(pdf, page - 1, out, dpi)
     finally:
-        pdf.close()
+        with PDFIUM_LOCK:
+            pdf.close()
     return out
 
 
 def render_all(pdf_path: Path, pages_dir: Path, dpi: int = DPI) -> int:
     """Render mọi trang vào pages_dir (mở PDF một lần), trả về số trang."""
     _drop_stale_images(pdf_path, pages_dir)
-    pdf = pdfium.PdfDocument(str(pdf_path))
-    try:
+    with PDFIUM_LOCK:
+        pdf = pdfium.PdfDocument(str(pdf_path))
         count = len(pdf)
-        for index in range(count):
+    try:
+        for index in range(count):  # khoá theo từng trang để request xem trang khác không phải chờ cả văn bản
             out = pages_dir / f"p{index + 1:03d}.png"
             if not out.is_file():
                 _render_to(pdf, index, out, dpi)
         return count
     finally:
-        pdf.close()
+        with PDFIUM_LOCK:
+            pdf.close()

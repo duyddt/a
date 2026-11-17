@@ -20,7 +20,7 @@ from app import repository
 from app.contracts import LegalDocument
 
 from .models import DOC_ID_RE, ImportProblem, check_parents_exist, check_source_pages
-from .render_pdf import render_all
+from .render_pdf import PDFIUM_LOCK, render_all
 
 UPLOAD_NAME = "(tệp tải lên)"
 
@@ -77,11 +77,12 @@ def prepare_import(pdf_bytes: bytes, json_bytes: bytes) -> Prepared:
     if not pdf_bytes.startswith(b"%PDF"):
         raise ImportProblem(name, ["Tệp PDF không hợp lệ (không bắt đầu bằng %PDF)"])
     try:
-        pdf = pdfium.PdfDocument(pdf_bytes)
-        try:
-            page_count = len(pdf)
-        finally:
-            pdf.close()
+        with PDFIUM_LOCK:
+            pdf = pdfium.PdfDocument(pdf_bytes)
+            try:
+                page_count = len(pdf)
+            finally:
+                pdf.close()
     except Exception as exc:
         raise ImportProblem(name, [f"Không đọc được PDF: {exc}"]) from exc
 
