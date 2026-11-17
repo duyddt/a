@@ -30,7 +30,7 @@ docker compose up --build -d
 docker compose logs api            # xem log khởi động
 ```
 
-Mở <http://127.0.0.1:8080>. Lần đầu khởi động, ứng dụng tự chạy các file migration (`001` đến `005`), tạo tài khoản `admin` và nhập các văn bản trong thư mục `./data`. Khi khởi động lại, văn bản có cùng mã băm SHA-256 được bỏ qua để không tạo bản trùng.
+Mở <http://127.0.0.1:8080>. Lần đầu khởi động, ứng dụng tự chạy các file migration (`001` đến `010`), tạo tài khoản `admin` và nhập các văn bản trong thư mục `./data`. Khi khởi động lại, văn bản có cùng mã băm SHA-256 được bỏ qua để không tạo bản trùng.
 
 * REST API và tài liệu thử trực tiếp: <http://127.0.0.1:8080/docs>.
 * Đăng nhập quản trị: **`admin` / `admin123`** (đổi bằng `ADMIN_PASSWORD` trong `.env`).
@@ -205,7 +205,8 @@ Mỗi đơn vị có nhiều **bản** độc lập với nhau:
   đều được giữ, cùng với trạng thái (duyệt / gắn cờ / lỗi cấu trúc) riêng của mỗi người.
 * Người phê duyệt và Admin thấy khung **⇄ So sánh các bản** ở mỗi đơn vị: bản OCR gốc, rồi bản của từng người chỉnh sửa.
   Mỗi người một màu (8 màu, có bản cho giao diện tối): chip tên, vạch màu trên cây thư mục, và phần chữ khác bản OCR gốc
-  tô theo màu người đó. Màu gán theo thứ tự người thao tác đầu tiên trên văn bản.
+  tô theo màu người đó. Màu gán theo thứ tự phân công; người đã bị gỡ phân công
+  nhưng có thao tác thì xếp sau, theo lần thao tác đầu tiên.
 * **⇩ Chọn bản này** chép chữ của bản được chọn vào bản chốt (sự kiện `adopt`, ghi chú "Chọn bản của bt2"). Server tự lấy
   chữ của bản nguồn, không tin chữ do trình duyệt gửi lên. Bản chốt đổi chữ thì phải Duyệt lại.
 * Tiến độ trên danh sách và thanh trên cùng tính theo bản của người đang xem: người chỉnh sửa thấy tiến độ của mình,
@@ -219,7 +220,7 @@ Mỗi đơn vị có nhiều **bản** độc lập với nhau:
 
 ## 5. Thang đo Độ chính xác Hệ thống & Phân tích Lỗi OCR
 
-Tuân thủ nguyên tắc **"Không đoán"**, hệ thống chỉ tính toán độ chính xác trên các đơn vị **đã được người soát duyệt (`approved`)** — đóng vai trò là nhãn chuẩn (*Ground Truth*):
+Tuân thủ nguyên tắc **"Không đoán"**, hệ thống chỉ tính toán độ chính xác trên các đơn vị **đã duyệt (`approved`)** — đóng vai trò là nhãn chuẩn (*Ground Truth*). `GET /api/documents/{document_id}/ocr-report` và xuất JSON dùng **bản chốt**; báo cáo trên trang văn bản tính theo bản người đang xem (người chỉnh sửa thấy số liệu của bản mình):
 
 1. **CAR & CER (Character Accuracy / Error Rate – Chuẩn UNLV ISRI & ICDAR):**
 
@@ -229,7 +230,7 @@ $$\text{CER} = \frac{S + D + I}{N_{\text{GT}}}, \quad \text{CAR} = \max(0, 100\%
 
 *(Trong đó $S, D, I$ là số ký tự thay thế, xóa, thêm giữa bản OCR gốc và bản chuẩn đã duyệt; $N_{\text{GT}}$ là tổng số ký tự bản chuẩn).*
 2. **WAR & WER (Word Accuracy / Error Rate):** Đo tỷ lệ chính xác và tỷ lệ lỗi ở cấp độ từ/tiếng (đặc biệt nhạy với lỗi mất dấu hoặc sai dấu thanh trong tiếng Việt).
-3. **UEM (Unit Exact Match):** Tỷ lệ % đơn vị pháp lý được trích xuất chính xác hoàn toàn ngay từ đầu (được bấm *Duyệt* mà không cần qua bước *Sửa chữ*).
+3. **UEM (Unit Exact Match):** Tỷ lệ % đơn vị pháp lý được trích xuất chính xác hoàn toàn ngay từ đầu (chữ được *Duyệt* trùng hoàn toàn bản OCR gốc, không phải *Sửa chữ* hay chọn bản khác).
 4. **SFI (Structural Fidelity Index):** Chỉ số toàn vẹn cấu trúc phân cấp `Điều → Khoản → Điểm` (tỷ lệ đơn vị đã soát không bị lỗi cấu trúc).
 5. **Điểm tổng hợp hệ thống (Composite Legal-OCR Score):**
 
@@ -297,7 +298,7 @@ docker run --rm --network container:review-db -e OCR_WORKERS=4 `
 Đang chạy bằng Docker Compose (mục 1) thì chỉ cần
 `docker compose run --rm -v "${PWD}/bo du lieu:/dataset:ro" api python -m app.cli import-pdfs /dataset`.
 
-**Qua REST API** (cần tài khoản có quyền soát; `replace=true` chỉ dành cho Admin):
+**Qua REST API** (chỉ Admin):
 
 ```powershell
 curl.exe -u admin:<mật_khẩu> -F "pdf=@data/ND254_2026/source.pdf" -F "document=@data/ND254_2026/document.json" http://127.0.0.1:8080/api/documents
@@ -344,7 +345,7 @@ không dùng được GPU.
 | `GET /api/documents/{document_id}/units/{unit_id}` | Thông tin và nội dung của một đơn vị (`LegalUnit`) trong bản của người gọi. Người phê duyệt / Admin thêm `?version=<tên người chỉnh sửa>` để xem bản của người đó. |
 | `GET /api/documents/{document_id}/units/{unit_id}/versions` | Các bản của đơn vị: `ocr`, bản của từng người chỉnh sửa (kèm trạng thái, ghi chú, số màu), `final`. Người chỉnh sửa chỉ nhận `ocr` và bản của mình. |
 | `GET /api/documents/{document_id}/pages/{page}` | Ảnh PNG của trang PDF thứ `page` (đếm từ 1). |
-| `POST /api/documents` | Tải lên và nhập một văn bản mới (`pdf` + `document` + `replace` + `category`). Bỏ trống `document` thì app tự tách từ PDF (mục 6). `category` là mã thư mục đã có (ví dụ `II`); mã không có thì trả 422 và không lưu gì. Cần đăng nhập (người soát/Admin). |
+| `POST /api/documents` | Tải lên và nhập một văn bản mới (`pdf` + `document` + `replace` + `category`). Bỏ trống `document` thì app tự tách từ PDF (mục 6). `category` là mã thư mục đã có (ví dụ `II`); mã không có thì trả 422 và không lưu gì. Chỉ Admin. |
 | `GET /api/documents/{document_id}/progress` | Thống kê số lượng đơn vị theo từng trạng thái thẩm định. |
 | `GET /api/documents/{document_id}/ocr-report` | Báo cáo chi tiết độ chính xác (`CAR, WAR, UEM, SFI, Score`), danh sách lỗi ký tự OCR và giải pháp khắc phục. |
 | `GET /api/documents/{document_id}/units/{unit_id}/reviews` | Lịch sử các sự kiện thẩm định của một đơn vị trong bản của người gọi (mới nhất xếp trước). Người phê duyệt / Admin: `?version=all` lấy mọi bản; mỗi sự kiện có `track`. |
@@ -397,12 +398,13 @@ review-app/
 │   │   └── tree.py, views.py, render_pdf.py, models.py
 │   ├── templates/                 # Giao diện Jinja2 (login, admin_users, admin_assign, admin_stats, list, review, partials/)
 │   └── static/                    # CSS File Explorer (style.css) & htmx.min.js nội bộ
-├── data/ND254_2026/               # Dữ liệu Nghị định 254/2026/NĐ-CP (source.pdf, document.json, ocr_pages/)
+├── data/ND254_2026/, ND255_2026/  # Văn bản mẫu: Nghị định 254/2026/NĐ-CP và 255/2026/NĐ-CP (source.pdf, document.json, ocr_pages/)
 ├── docs/                          # Tài liệu kỹ thuật: đo độ chính xác, báo cáo kiểm thử, tô vàng bản scan, ADR
 ├── scripts/
 │   ├── build_legal_document.py    # Script dựng document.json từ ocr_pages/*.txt
 │   ├── evaluate_dataset_accuracy.py  # Đo độ chính xác luồng nhập PDF trên cả bộ dữ liệu (docs/do-chinh-xac-ocr.md, mục 7)
-│   └── make_sample_pdf.py         # Script tạo PDF mẫu cho kiểm thử
+│   ├── make_sample_pdf.py         # Script tạo PDF mẫu cho kiểm thử
+│   └── prepare_nd255.py           # Dựng ocr_pages/ và document.json cho ND255_2026 theo cấu trúc ND254_2026
 └── tests/                         # Bộ kiểm thử tự động pytest
 
 ```
