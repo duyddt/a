@@ -55,6 +55,7 @@
   --err: #c8102e;
   --shadow: rgba(21, 24, 29, 0.12);
   --shadow-strong: rgba(21, 24, 29, 0.24);
+  --tour-scrim: rgba(21, 24, 29, 0.55);  /* vùng tối quanh phần tử đang được hướng dẫn */
   --compare-font-size: 18px;
   --radius-pane: 0;
   --radius-control: 0;
@@ -113,6 +114,7 @@
   --err: #ff7a8a;
   --shadow: rgba(0, 0, 0, 0.4);
   --shadow-strong: rgba(0, 0, 0, 0.6);
+  --tour-scrim: rgba(0, 0, 0, 0.6);
 }
 
 /* ===== 2. NỀN TẢNG ===== */
@@ -755,6 +757,50 @@ body.focus-edit .focus-editor { display: flex; flex-direction: column; gap: 8px;
 .login-submit { width: 100%; min-height: 36px; margin-top: 4px; }
 .login-note { margin: 16px 0 0; }
 .page > .login-card { margin: 4vh auto 24px; }
+
+/* ===== 9a. HƯỚNG DẪN TỪNG BƯỚC (static/tour.js), MENU HƯỚNG DẪN, BẢNG PHÍM TẮT ===== */
+/* Lớp chặn (60) < khung sáng (61) < hộp hướng dẫn (62): trên thanh trên cùng (20), menu (30), cây phủ (40). */
+/* Lớp chặn tô tối cả màn hình; tour.js khoét lỗ (clip-path) đúng chỗ phần tử đang chỉ, nên bấm được phần tử đó. */
+.tour-block { position: fixed; inset: 0; z-index: 60; background: var(--tour-scrim); }
+.tour-block.tour-pass { pointer-events: none; }  /* bước thực hành: người dùng bấm được mọi chỗ trên trang */
+.tour-spot { position: fixed; z-index: 61; pointer-events: none; border: 2px solid var(--accent-border); }
+.tour-pop {
+  position: fixed; z-index: 62; width: min(360px, calc(100vw - 24px)); padding: 14px 16px 12px;
+  background: var(--surface); color: var(--text); border: 1px solid var(--border); border-top: 3px solid var(--accent-border);
+  box-shadow: 0 16px 48px var(--shadow-strong);
+}
+.tour-pop:focus { outline: none; }
+.tour-pop.tour-center { left: 50% !important; top: 50% !important; transform: translate(-50%, -50%); }
+.tour-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.tour-count { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.tour-close { min-height: 28px; min-width: 28px; font-size: 18px; line-height: 1; }
+.tour-title { margin: 4px 0 6px; font-size: 16px; font-weight: 600; }
+.tour-text p { margin: 0 0 8px; font-size: 14px; color: var(--text-2); }
+.tour-task { margin: 0 0 8px; padding: 6px 10px; font-size: 13px; background: var(--info-bg); border-left: 3px solid var(--info-border); color: var(--info-text); }
+.tour-pop kbd, .tour-invite kbd, .shortcut-table kbd, .menu-kbd {
+  display: inline-block; min-width: 20px; padding: 0 5px; font-family: var(--font-mono); font-size: 12px; text-align: center;
+  background: var(--surface-2); border: 1px solid var(--border-strong); border-bottom-width: 2px; border-radius: 3px; color: var(--text);
+}
+.tour-foot { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
+.tour-invite {
+  position: fixed; right: 16px; bottom: 16px; z-index: 45; width: min(340px, calc(100vw - 32px)); padding: 12px 14px;
+  background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent-border);
+  box-shadow: 0 8px 24px var(--shadow-strong);
+}
+.tour-invite p { margin: 0 0 10px; font-size: 14px; }
+.tour-invite-actions { display: flex; gap: 8px; }
+body.tour-on .tour-invite { display: none; }
+.menu-kbd { margin-left: auto; }
+.shortcut-table { width: 100%; border-collapse: collapse; margin: 0 0 16px; font-size: 14px; }
+.shortcut-table caption { text-align: left; font-weight: 600; padding: 4px 0 6px; }
+.shortcut-table td { padding: 6px 8px 6px 0; border-top: 1px solid var(--border); vertical-align: top; }
+.shortcut-table td:first-child { width: 132px; white-space: nowrap; }
+@media (max-width: 767px) {
+  .tour-pop.tour-sheet, .tour-pop.tour-center.tour-sheet {
+    left: 0 !important; right: 0; top: auto !important; bottom: 0; width: auto; transform: none;
+  }
+  .tour-invite { left: 16px; right: 16px; width: auto; }
+}
 
 /* ===== 10. MÀN HÌNH HẸP ===== */
 @media (max-width: 1100px) {

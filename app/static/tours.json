@@ -1,0 +1,325 @@
+{
+  "version": 1,
+  "about": "Nội dung tour cho static/tour.js. screen khớp body[data-screen]; roles lọc theo body[data-role] (admin, approver, reviewer). Mỗi bước: selector (bỏ trống: hộp ở giữa màn hình), title, body (chuỗi hoặc mảng đoạn; [[A]] hiện thành phím), placement (bottom/top/left/right), roles, navOpen (mở cây cấu trúc ở màn hẹp), later (phần tử chỉ xuất hiện sau thao tác ở bước trước), advanceOn {event, selector, hint}. {\"include\": id} chèn các bước của tour khác. next ở cuối tour: chuyển sang màn hình khác và chạy tiếp tour ở đó.",
+  "tours": [
+    {
+      "id": "shell",
+      "title": "Thanh trên cùng",
+      "steps": [
+        {
+          "selector": "nav.tabs",
+          "title": "Các mục chính",
+          "body": "Trang đầu tiên là việc của bạn. Mục Văn bản là kho toàn bộ văn bản. Admin có thêm Phân công, Thống kê và Tài khoản."
+        },
+        {
+          "selector": ".topbar-search",
+          "title": "Tìm văn bản",
+          "body": "Gõ số hiệu (ví dụ 254/2026) hoặc một phần tên văn bản rồi nhấn Enter để mở kho văn bản đã lọc."
+        },
+        {
+          "selector": ".help-menu",
+          "title": "Hướng dẫn luôn ở đây",
+          "body": ["Mở lại hướng dẫn của màn hình đang xem, xem bảng phím tắt hoặc mở trang hướng dẫn đầy đủ.", "Nhấn [[?]] ở bất kỳ đâu để mở bảng phím tắt."]
+        },
+        {
+          "selector": ".account-menu",
+          "title": "Tài khoản",
+          "body": "Xem vai trò của bạn, đổi mật khẩu và đăng xuất. Tài khoản do Admin cấp; quên mật khẩu thì nhờ Admin đặt lại."
+        },
+        {
+          "selector": ".btn-theme-toggle",
+          "title": "Giao diện sáng hoặc tối",
+          "body": "Đổi màu nền cho dễ đọc. Lựa chọn được nhớ trên trình duyệt này."
+        }
+      ]
+    },
+    {
+      "id": "home-reviewer",
+      "screen": "home",
+      "roles": ["reviewer"],
+      "title": "Việc của tôi",
+      "next": { "label": "Mở văn bản đầu tiên", "hrefFrom": ".worklist .work-title", "tour": "review" },
+      "steps": [
+        {
+          "title": "Chào mừng bạn",
+          "body": ["Bạn là người chỉnh sửa: so chữ OCR của từng đơn vị (Điều, Khoản, Điểm) với bản PDF gốc, sửa chỗ sai rồi duyệt.", "Hướng dẫn này đi qua màn hình Việc của tôi rồi mở màn soát văn bản."]
+        },
+        { "include": "shell" },
+        {
+          "selector": "section.resume",
+          "title": "Tiếp tục chỗ đang làm",
+          "body": "App nhớ đơn vị bạn soát gần nhất. Bấm Tiếp tục để quay lại đúng chỗ đó."
+        },
+        {
+          "selector": "section[aria-labelledby=\"returned-title\"]",
+          "title": "Bị trả lại, cần sửa",
+          "body": "Văn bản người phê duyệt trả lại nằm ở đây, kèm ghi chú chỗ còn sai. Làm những văn bản này trước."
+        },
+        {
+          "selector": "section[aria-labelledby=\"doing-title\"]",
+          "title": "Đang làm",
+          "body": "Các văn bản Admin đã giao cho bạn và bạn chưa bấm Hoàn thành."
+        },
+        {
+          "selector": "section[aria-labelledby=\"submitted-title\"]",
+          "title": "Đã nộp",
+          "body": "Văn bản bạn đã bấm Hoàn thành. Bạn chỉ xem được bản của mình cho tới khi người phê duyệt trả lại."
+        }
+      ]
+    },
+    {
+      "id": "home-approver",
+      "screen": "home",
+      "roles": ["approver"],
+      "title": "Việc phê duyệt",
+      "next": { "label": "Mở văn bản đầu tiên", "hrefFrom": ".worklist .work-title", "tour": "review" },
+      "steps": [
+        {
+          "title": "Chào mừng bạn",
+          "body": ["Bạn là người phê duyệt: so các bản của người chỉnh sửa, chọn bản đúng làm bản chốt, duyệt từng đơn vị rồi hoàn tất hoặc trả lại văn bản.", "Người phê duyệt không sửa chữ trực tiếp."]
+        },
+        { "include": "shell" },
+        {
+          "selector": "section[aria-labelledby=\"waiting-title\"]",
+          "title": "Chờ tôi phê duyệt",
+          "body": "Văn bản mà mọi người chỉnh sửa được giao đã bấm Hoàn thành. Đây là việc chính của bạn."
+        },
+        {
+          "selector": "section[aria-labelledby=\"editing-title\"]",
+          "title": "Đang chỉnh sửa",
+          "body": "Văn bản còn người chỉnh sửa chưa nộp. Bạn xem được tiến độ nhưng chưa phê duyệt được."
+        },
+        {
+          "selector": "section[aria-labelledby=\"approved-title\"]",
+          "title": "Đã phê duyệt",
+          "body": "Văn bản đã hoàn tất. Cần sửa lại thì nhờ Admin mở lại."
+        }
+      ]
+    },
+    {
+      "id": "home-admin",
+      "screen": "home",
+      "roles": ["admin"],
+      "title": "Tổng quan",
+      "next": { "label": "Sang Phân công", "href": "/admin/assign", "tour": "assign" },
+      "steps": [
+        {
+          "title": "Chào mừng Admin",
+          "body": "Admin cấp tài khoản, nhập văn bản, giao việc cho người chỉnh sửa và người phê duyệt, theo dõi tiến độ, mở lại văn bản khi cần."
+        },
+        { "include": "shell" },
+        {
+          "selector": ".stat-row",
+          "title": "Số văn bản theo trạng thái",
+          "body": "Bấm một ô để mở kho văn bản đã lọc theo trạng thái đó: Chưa giao, Đang chỉnh sửa, Bị trả lại, Chờ phê duyệt, Đã phê duyệt."
+        },
+        {
+          "selector": "section[aria-labelledby=\"attn-title\"]",
+          "title": "Cần chú ý",
+          "body": "Văn bản chờ phê duyệt, bị trả lại hoặc chưa giao cho ai. Xử lý danh sách này mỗi ngày."
+        },
+        {
+          "selector": "section[aria-labelledby=\"topics-title\"]",
+          "title": "Theo chủ đề",
+          "body": "Tiến độ của từng chủ đề I đến X. Bấm tên chủ đề để xem các văn bản trong đó."
+        }
+      ]
+    },
+    {
+      "id": "library",
+      "screen": "library",
+      "title": "Kho văn bản",
+      "next": { "label": "Mở văn bản đầu tiên", "hrefFrom": "#document-table tr[data-href]", "tour": "review" },
+      "steps": [
+        {
+          "selector": "aside.facets",
+          "title": "Lọc theo chủ đề và trạng thái",
+          "body": "Chọn một chủ đề (I đến X) hoặc một trạng thái quy trình để thu hẹp danh sách. Bộ lọc kết hợp được với nhau."
+        },
+        {
+          "selector": ".filter-chips",
+          "title": "Bộ lọc đang áp dụng",
+          "body": "Mỗi bộ lọc hiện thành một thẻ. Bấm dấu × trên thẻ để bỏ bộ lọc đó."
+        },
+        {
+          "selector": "#document-table",
+          "title": "Danh sách văn bản",
+          "body": ["Bấm vào một hàng để mở màn soát văn bản. Bấm tiêu đề cột để sắp xếp.", "Cột tiến độ cho biết bao nhiêu đơn vị đã được duyệt."]
+        },
+        {
+          "selector": "[data-open-dialog=\"upload-dialog\"]",
+          "roles": ["admin"],
+          "title": "Tải văn bản lên",
+          "body": "Admin tải PDF (kèm JSON nếu có) vào một chủ đề. App tự tách Chương, Điều, Khoản, Điểm; bản scan được nhận dạng chữ (OCR)."
+        }
+      ]
+    },
+    {
+      "id": "review",
+      "screen": "review",
+      "title": "Màn soát văn bản",
+      "steps": [
+        {
+          "title": "Màn soát văn bản",
+          "body": ["Màn hình chia ba khung: cây cấu trúc bên trái, đơn vị đang soát ở giữa, trang PDF gốc bên phải.", "Cách làm: mở từng đơn vị, so chữ ở giữa với vùng tô vàng trên PDF, rồi duyệt, sửa hoặc gắn cờ."]
+        },
+        {
+          "selector": ".doc-head .doc-title",
+          "title": "Thông tin văn bản",
+          "body": "Số hiệu, trạng thái quy trình, người chỉnh sửa (mỗi người một màu, có dấu ✓ khi đã nộp), người phê duyệt và thanh tiến độ."
+        },
+        {
+          "selector": "#navpane",
+          "navOpen": true,
+          "placement": "right",
+          "title": "Cây cấu trúc",
+          "body": ["Mỗi hàng là một đơn vị. Chấm màu cho biết trạng thái: xám chưa soát, xanh lá đã duyệt, xanh dương gắn cờ, hổ phách lỗi cấu trúc.", "Nhãn Không chắc: bộ tách văn bản không chắc đơn vị này tách đúng, nên soát kỹ."]
+        },
+        {
+          "selector": ".tree-filters",
+          "navOpen": true,
+          "placement": "right",
+          "title": "Lọc theo trạng thái",
+          "body": "Chỉ hiện các đơn vị chưa soát, gắn cờ, lỗi cấu trúc hoặc không chắc. Số bên cạnh là số đơn vị. Ô tìm phía trên lọc theo chữ trong nội dung."
+        },
+        {
+          "selector": "#detail .unit-body",
+          "placement": "right",
+          "title": "Đơn vị đang soát",
+          "body": ["Chữ OCR của đơn vị, đánh số dòng ở lề trái. Nút A− và A+ đổi cỡ chữ.", "Nhãn Bản của bạn: mỗi người chỉnh sửa có bản riêng, người khác không thấy và không sửa được."]
+        },
+        {
+          "selector": "#detail section.versions",
+          "roles": ["approver", "admin"],
+          "title": "So sánh các bản",
+          "body": ["Bản OCR gốc và bản của từng người chỉnh sửa, mỗi người một màu. Phần khác bản gốc được tô màu.", "Bấm Chọn bản này để lấy một bản làm bản chốt, rồi Duyệt."]
+        },
+        {
+          "selector": "#viewer",
+          "placement": "left",
+          "title": "Trang PDF gốc",
+          "body": ["Khung vàng là vị trí của đơn vị trên trang. Khung nét đứt là vị trí ước lượng (bản scan không có lớp chữ).", "Bấm vào trang để phóng to đúng chỗ đó. Nút Vừa trang và Chiều rộng đổi cách hiển thị."]
+        },
+        {
+          "selector": "#detail .action-row",
+          "placement": "top",
+          "title": "Các nút thẩm định",
+          "body": ["Màu ô đầu nút là trạng thái nút tạo ra.", "[[A]] Duyệt và sang đơn vị chưa soát kế tiếp. [[E]] Sửa chữ. [[F]] Gắn cờ, cần ghi lý do. Lỗi cấu trúc dùng khi đơn vị tách sai (gộp hai khoản, cắt đôi một điểm). [[J]] [[K]] sang đơn vị kế tiếp hoặc trước đó."]
+        },
+        {
+          "selector": "#detail [data-go=\"next\"]",
+          "placement": "top",
+          "title": "Thử chuyển đơn vị",
+          "body": "Chuyển đơn vị không thay đổi dữ liệu, cứ thử thoải mái.",
+          "advanceOn": { "event": "htmx:afterSwap", "selector": "#detail", "hint": "nhấn [[J]] hoặc bấm Tiếp" }
+        },
+        {
+          "selector": "#detail [data-key=\"f\"]",
+          "placement": "top",
+          "title": "Thử mở ô lý do",
+          "body": "Gắn cờ khi chữ trên PDF không đọc rõ hoặc cần hỏi lại. Ô lý do hiện ra bên dưới; bấm Hủy nếu chỉ đang thử.",
+          "advanceOn": { "event": "click", "selector": "[data-key=\"f\"]", "hint": "nhấn [[F]] hoặc bấm Gắn cờ" }
+        },
+        {
+          "selector": "#reason-row",
+          "later": true,
+          "placement": "top",
+          "title": "Ô lý do",
+          "body": "Ghi lý do cụ thể, ví dụ: dòng 3 mờ, không đọc được số tiền. Bấm Gắn cờ để lưu hoặc Hủy để đóng. Lỗi cấu trúc dùng cùng ô này để ghi chỗ tách sai."
+        },
+        {
+          "selector": "#detail [data-key=\"e\"]",
+          "placement": "top",
+          "title": "Sửa chữ",
+          "body": ["Nhấn [[E]]: màn hình chỉ còn trang PDF và ô sửa. Chọn loại lỗi OCR nếu biết (sai dấu, sai số, thiếu chữ).", "[[Ctrl]] + [[Enter]] để lưu, [[Esc]] để hủy. Sửa xong vẫn phải Duyệt."]
+        },
+        {
+          "selector": "#progress",
+          "title": "Tiến độ",
+          "body": "Số đơn vị đã duyệt trên tổng số. App tự lưu vị trí, lần sau mở lại đúng đơn vị đang soát."
+        },
+        {
+          "selector": ".doc-actions",
+          "title": "Nút của cả văn bản",
+          "body": ["Người chỉnh sửa: Hoàn thành văn bản khi đã soát hết. Sau khi bấm, bản của bạn chỉ còn xem được.", "Người phê duyệt: Trả lại (bắt buộc ghi chú) hoặc Hoàn tất phê duyệt khi mọi đơn vị trên bản chốt đã duyệt. Menu Khác có độ chính xác OCR và xuất JSON."]
+        },
+        {
+          "title": "Bắt đầu soát",
+          "body": ["Nhấn [[?]] bất cứ lúc nào để xem lại phím tắt. Menu Hướng dẫn trên thanh trên cùng mở lại hướng dẫn này.", "Muốn tập trước trên dữ liệu mẫu: mở Trang hướng dẫn đầy đủ, mục Bài tập thực hành."]
+        }
+      ]
+    },
+    {
+      "id": "assign",
+      "screen": "assign",
+      "roles": ["admin"],
+      "title": "Phân công",
+      "next": { "label": "Sang Tài khoản", "href": "/admin/users", "tour": "users" },
+      "steps": [
+        {
+          "selector": "nav.filter-chips",
+          "title": "Chọn chủ đề",
+          "body": "Lọc bảng theo chủ đề I đến X. Nút Giao cả chủ đề ở thanh dưới chỉ dùng được khi đang lọc một chủ đề."
+        },
+        {
+          "selector": "[data-filter-scope=\".assign-table\"]",
+          "title": "Lọc nhanh",
+          "body": "Gõ số hiệu hoặc tên để chỉ hiện các văn bản khớp."
+        },
+        {
+          "selector": "table.assign-table",
+          "title": "Đánh dấu văn bản",
+          "body": "Tích ô đầu hàng để chọn văn bản cần giao. Ô trên tiêu đề chọn mọi văn bản đang hiện. Bấm × cạnh tên một người để bỏ giao người đó."
+        },
+        {
+          "selector": "#assign-form",
+          "placement": "top",
+          "title": "Giao việc",
+          "body": ["Chọn một hoặc nhiều người chỉnh sửa và một người phê duyệt, rồi bấm Giao văn bản đã đánh dấu.", "Mỗi người chỉnh sửa làm trên bản riêng; người phê duyệt chọn bản chốt sau khi tất cả đã nộp."]
+        }
+      ]
+    },
+    {
+      "id": "users",
+      "screen": "users",
+      "roles": ["admin"],
+      "title": "Tài khoản",
+      "next": { "label": "Sang Thống kê", "href": "/admin/stats", "tour": "stats" },
+      "steps": [
+        {
+          "selector": "[data-open-dialog=\"create-dialog\"]",
+          "title": "Tạo tài khoản",
+          "body": "Không có đăng ký tự do: chỉ Admin tạo tài khoản. Chọn vai trò Người chỉnh sửa, Người phê duyệt hoặc Admin, đặt mật khẩu ban đầu rồi gửi cho người dùng."
+        },
+        {
+          "selector": "#accounts-table",
+          "title": "Quản lý tài khoản",
+          "body": ["Đổi vai trò, khóa hoặc mở khóa, đặt lại mật khẩu cho từng người.", "Tài khoản bị khóa không đăng nhập được nhưng lịch sử thẩm định vẫn giữ nguyên."]
+        }
+      ]
+    },
+    {
+      "id": "stats",
+      "screen": "stats",
+      "roles": ["admin"],
+      "title": "Thống kê",
+      "steps": [
+        {
+          "selector": ".stat-row",
+          "title": "Tổng quan",
+          "body": "Số văn bản theo trạng thái trong phạm vi chủ đề đang chọn."
+        },
+        {
+          "selector": "section[aria-labelledby=\"people-title\"]",
+          "title": "Theo người",
+          "body": "Số đơn vị mỗi người đã duyệt, sửa, gắn cờ. Dùng để cân lại khối lượng khi phân công."
+        },
+        {
+          "selector": "section[aria-labelledby=\"docs-title\"]",
+          "title": "Theo văn bản",
+          "body": "Tiến độ từng văn bản. Bấm tiêu đề cột để sắp xếp, ví dụ theo số đơn vị gắn cờ."
+        }
+      ]
+    }
+  ]
+}

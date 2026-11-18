@@ -113,6 +113,26 @@ Bỏ trống cả `DATABASE_URL` và `POSTGRES_HOST`: ứng dụng đọc trực
 
 ## 4. Thao tác thẩm định trên giao diện
 
+**Hướng dẫn sử dụng.** Có hai dạng, nội dung bám theo mục này:
+
+- **Hướng dẫn từng bước trong app.** Lần đầu mở một màn hình, góc dưới phải hiện lời mời xem hướng dẫn. Xem lại bất cứ lúc
+  nào qua menu **Hướng dẫn** trên thanh trên cùng.
+  - Mỗi bước tô sáng một vùng của màn hình, bước chọn theo vai trò của tài khoản.
+  - Ở màn soát có hai bước thực hành (nhấn **J**, nhấn **F**): hướng dẫn chỉ sang bước sau khi người dùng làm đúng thao tác.
+  - Phím **?** mở bảng phím tắt ở mọi màn hình.
+  - Mã nằm ở `app/static/tour.js`, nội dung ở `app/static/tours.json`.
+- **Trang hướng dẫn đầy đủ** `/help` (`app/static/guide/`), mở được không cần đăng nhập. Mở trực tiếp tệp
+  `index.html` thì không cần chạy app. Trang gồm:
+  - vai trò;
+  - sơ đồ quy trình bấm được;
+  - ảnh chụp từng màn hình có điểm nóng;
+  - phím tắt;
+  - 7 bài thực hành trên bàn soát mô phỏng;
+  - quản trị;
+  - câu hỏi thường gặp.
+
+  Cách chụp lại ảnh khi giao diện đổi: `app/static/guide/README.md`.
+
 **Trang chủ theo vai trò (`/`).** Cần PostgreSQL; chế độ thư mục file chuyển thẳng sang trang Văn bản.
 
 - Người chỉnh sửa (**Việc của tôi**): thẻ **Tiếp tục** mở lại văn bản gần nhất đúng đơn vị và trang đã dừng (bảng
@@ -425,11 +445,12 @@ review-app/
 │   │   ├── store.py               # Nguồn dữ liệu chế độ thư mục file
 │   │   └── tree.py, views.py, render_pdf.py, models.py
 │   ├── templates/                 # Giao diện Jinja2 (login, home, library, review, admin_users, admin_assign, admin_stats, partials/)
-│   └── static/                    # style.css (bố cục, token màu), shell.js (thanh chia, bảng, lọc cây, hộp thoại), viewer.js (khung PDF), icons.svg (Fluent), fonts/ (Source Sans 3, Literata, Roboto Mono tự host, OFL), htmx.min.js
+│   └── static/                    # style.css (bố cục, token màu), shell.js (thanh chia, bảng, lọc cây, hộp thoại), viewer.js (khung PDF), tour.js + tours.json (hướng dẫn từng bước), guide/ (trang /help), icons.svg (Fluent), fonts/ (Source Sans 3, Literata, Roboto Mono tự host, OFL), htmx.min.js
 ├── data/ND254_2026/, ND255_2026/  # Văn bản mẫu: Nghị định 254/2026/NĐ-CP và 255/2026/NĐ-CP (source.pdf, document.json, ocr_pages/)
 ├── docs/                          # Tài liệu kỹ thuật: đo độ chính xác, báo cáo kiểm thử, tô vàng bản scan, ADR
 ├── scripts/
 │   ├── build_icons.py             # Dựng lại app/static/icons.svg từ Fluent System Icons (chạy khi thêm icon)
+│   ├── build_guide_exercises.py   # Cắt ảnh vùng PDF cho bài tập của trang hướng dẫn (app/static/guide/img/ex-*.webp)
 │   ├── build_legal_document.py    # Script dựng document.json từ ocr_pages/*.txt
 │   ├── evaluate_dataset_accuracy.py  # Đo độ chính xác luồng nhập PDF trên cả bộ dữ liệu (docs/do-chinh-xac-ocr.md, mục 7)
 │   ├── make_sample_pdf.py         # Script tạo PDF mẫu cho kiểm thử

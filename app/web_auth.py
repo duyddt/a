@@ -90,7 +90,7 @@ LOGIN_HINT = "Cần đăng nhập (cookie phiên hoặc HTTP Basic: curl -u tai_
 
 # Đường dẫn xem được khi chưa đăng nhập; mọi đường dẫn khác (trang web lẫn /api) đều cần tài khoản.
 # Tài liệu API (/docs, /redoc, /openapi.json) cũng cần đăng nhập vì là tool nội bộ.
-PUBLIC_PATHS = frozenset({"/login", "/account/login", "/account/logout", "/healthz", "/favicon.ico"})
+PUBLIC_PATHS = frozenset({"/login", "/account/login", "/account/logout", "/healthz", "/favicon.ico", "/help"})
 
 
 def is_public_path(path: str) -> bool:

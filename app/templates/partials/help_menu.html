@@ -1,0 +1,13 @@
+{#- Menu Hướng dẫn trên thanh tiêu đề: tour của màn hình đang mở (static/tour.js), bảng phím tắt, trang hướng dẫn đầy đủ.
+    Nút tour bị ẩn khi màn hình không có tour cho vai trò hiện tại. -#}
+{% from "partials/icon.html" import icon %}
+{% if current_user is defined and current_user %}
+<details class="menu help-menu">
+  <summary class="cmd" title="Hướng dẫn sử dụng">{{ icon("question") }}<span class="cmd-label">Hướng dẫn</span>{{ icon("chevron-down") }}</summary>
+  <div class="menu-panel">
+    <button type="button" class="menu-item" data-tour-start hidden>{{ icon("info") }}Xem hướng dẫn màn hình này</button>
+    <button type="button" class="menu-item" data-open-dialog="shortcuts-dialog">{{ icon("keyboard") }}Phím tắt<kbd class="menu-kbd">?</kbd></button>
+    <a class="menu-item" href="/help" target="_blank" rel="noopener">{{ icon("document") }}Trang hướng dẫn đầy đủ</a>
+  </div>
+</details>
+{% endif %}

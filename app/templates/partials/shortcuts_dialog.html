@@ -1,0 +1,30 @@
+{#- Bảng phím tắt: mở bằng phím ? ở mọi màn hình (static/tour.js) hoặc menu Hướng dẫn.
+    Giữ khớp với bộ xử lý phím trong review.html và static/shell.js. -#}
+<dialog class="modal" id="shortcuts-dialog" aria-labelledby="shortcuts-title">
+  <div class="modal-body">
+    <h2 id="shortcuts-title">Phím tắt</h2>
+    <p class="muted small">Phím tắt không chạy khi con trỏ đang ở trong ô nhập chữ.</p>
+    <table class="shortcut-table">
+      <caption>Màn soát văn bản</caption>
+      <tbody>
+        <tr><td><kbd>A</kbd></td><td>Duyệt đơn vị đang mở rồi sang đơn vị chưa soát kế tiếp</td></tr>
+        <tr><td><kbd>E</kbd></td><td>Sửa chữ: chỉ còn trang PDF và ô sửa của đơn vị</td></tr>
+        <tr><td><kbd>F</kbd></td><td>Gắn cờ: mở ô ghi lý do</td></tr>
+        <tr><td><kbd>J</kbd></td><td>Sang đơn vị kế tiếp</td></tr>
+        <tr><td><kbd>K</kbd></td><td>Về đơn vị trước</td></tr>
+        <tr><td><kbd>Ctrl</kbd> + <kbd>Enter</kbd></td><td>Lưu chữ đã sửa (khi đang sửa chữ)</td></tr>
+        <tr><td><kbd>Esc</kbd></td><td>Hủy sửa chữ, đóng ô lý do, đóng menu</td></tr>
+        <tr><td><kbd>←</kbd> <kbd>→</kbd></td><td>Đổi độ rộng khung khi đang chọn thanh chia giữa hai khung</td></tr>
+      </tbody>
+    </table>
+    <table class="shortcut-table">
+      <caption>Mọi màn hình</caption>
+      <tbody>
+        <tr><td><kbd>?</kbd></td><td>Mở bảng phím tắt này</td></tr>
+        <tr><td><kbd>←</kbd> <kbd>→</kbd></td><td>Bước trước, bước sau khi đang xem hướng dẫn</td></tr>
+        <tr><td><kbd>Esc</kbd></td><td>Đóng hướng dẫn hoặc hộp thoại</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="modal-foot"><button type="button" class="btn" data-close-dialog>Đóng</button></div>
+</dialog>

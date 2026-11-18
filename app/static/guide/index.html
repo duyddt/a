@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hướng dẫn sử dụng - Thẩm định văn bản pháp lý</title>
+<meta name="description" content="Hướng dẫn sử dụng app thẩm định văn bản pháp lý: vai trò, quy trình, từng màn hình, phím tắt, bài tập thực hành và câu hỏi thường gặp.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../style.css?v=2">
+<link rel="stylesheet" href="guide.css?v=1">
+<script>
+  /* cùng khóa theme với app: mở từ app thì giữ lựa chọn sáng/tối của người dùng */
+  (function () {
+    var saved = null; try { saved = localStorage.getItem('law_theme'); } catch (e) {}
+    saved = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', saved);
+  })();
+</script>
+</head>
+<body class="guide">
+<a class="skip-link" href="#main">Bỏ qua tới nội dung</a>
+<header class="topbar guide-top">
+  <a class="brand" href="/" title="Về app"><svg class="icon icon-lg" aria-hidden="true"><use href="../icons.svg?v=2#app"></use></svg><span class="brand-name">Hướng dẫn sử dụng</span></a>
+  <div class="topbar-end">
+    <div class="role-switch" role="radiogroup" aria-label="Xem hướng dẫn cho vai trò">
+      <span class="muted small role-switch-label">Vai trò:</span>
+      <button type="button" role="radio" data-role-pick="all" aria-checked="true">Tất cả</button>
+      <button type="button" role="radio" data-role-pick="reviewer" aria-checked="false">Người chỉnh sửa</button>
+      <button type="button" role="radio" data-role-pick="approver" aria-checked="false">Người phê duyệt</button>
+      <button type="button" role="radio" data-role-pick="admin" aria-checked="false">Admin</button>
+    </div>
+    <button type="button" class="icon-btn btn-theme-toggle" data-theme-toggle title="Chuyển giao diện sáng/tối" aria-label="Chuyển giao diện sáng/tối">
+      <svg class="icon icon-moon" aria-hidden="true"><use href="../icons.svg?v=2#moon"></use></svg><svg class="icon icon-sun" aria-hidden="true"><use href="../icons.svg?v=2#sun"></use></svg>
+    </button>
+  </div>
+</header>
+
+<div class="guide-layout">
+  <nav class="guide-toc" aria-label="Mục lục">
+    <ol>
+      <li><a href="#roles">Vai trò</a></li>
+      <li><a href="#workflow">Quy trình thẩm định</a></li>
+      <li><a href="#screens">Từng màn hình</a></li>
+      <li><a href="#shortcuts">Phím tắt</a></li>
+      <li><a href="#practice">Bài tập thực hành</a></li>
+      <li data-roles="admin"><a href="#admin">Quản trị</a></li>
+      <li><a href="#faq">Câu hỏi thường gặp</a></li>
+    </ol>
+    <p class="muted small toc-note">Trong app: menu Hướng dẫn trên thanh trên cùng mở hướng dẫn từng bước của màn hình đang xem.</p>
+  </nav>
+
+  <main id="main" class="guide-main">
+    <section id="roles" class="guide-section" aria-labelledby="roles-title">
+      <h1 id="roles-title">Thẩm định văn bản pháp lý</h1>
+      <p class="lead">App dùng để soát chữ của văn bản pháp luật đã nhận dạng (OCR) với bản PDF gốc, theo từng đơn vị Chương, Điều, Khoản, Điểm, rồi phê duyệt bản cuối. Chọn vai trò của bạn để trang chỉ hiện phần liên quan.</p>
+      <div class="role-cards" id="role-cards"></div>
+    </section>
+
+    <section id="workflow" class="guide-section" aria-labelledby="workflow-title">
+      <h2 id="workflow-title">Quy trình thẩm định</h2>
+      <p class="lead">Một văn bản đi qua các trạng thái dưới đây. Bấm vào một trạng thái để xem ai làm gì ở bước đó.</p>
+      <div class="flow">
+        <svg class="flow-svg" id="flow-svg" viewBox="0 0 800 250" role="group" aria-label="Sơ đồ trạng thái văn bản"></svg>
+        <div class="flow-detail panel" id="flow-detail" aria-live="polite"></div>
+      </div>
+      <h3>Trạng thái của từng đơn vị</h3>
+      <ul class="unit-states" id="unit-states"></ul>
+    </section>
+
+    <section id="screens" class="guide-section" aria-labelledby="screens-title">
+      <h2 id="screens-title">Từng màn hình</h2>
+      <p class="lead">Ảnh chụp app thật. Bấm số trên ảnh hoặc mục trong danh sách để xem giải thích.</p>
+      <div class="screen-tabs" role="tablist" aria-label="Chọn màn hình" id="screen-tabs"></div>
+      <div class="screen-view" id="screen-view"></div>
+    </section>
+
+    <section id="shortcuts" class="guide-section" aria-labelledby="shortcuts-title">
+      <h2 id="shortcuts-title">Phím tắt</h2>
+      <p class="lead">Phím tắt không chạy khi con trỏ đang ở trong ô nhập chữ. Trong app, nhấn <kbd>?</kbd> để mở bảng này.</p>
+      <div class="keys-wrap">
+        <table class="shortcut-table guide-keys" id="keys-table"></table>
+        <div class="key-try panel" id="key-try" tabindex="0" role="group" aria-label="Ô thử phím tắt" aria-describedby="key-try-out">
+          <p class="key-try-head">Thử ngay</p>
+          <p class="muted small">Bấm vào ô này rồi nhấn một phím tắt.</p>
+          <p class="key-try-out" id="key-try-out" aria-live="polite">Chưa nhấn phím nào.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="practice" class="guide-section" aria-labelledby="practice-title">
+      <h2 id="practice-title">Bài tập thực hành</h2>
+      <p class="lead">Bàn soát mô phỏng với 7 đơn vị lấy từ Nghị định 254/2026/NĐ-CP, một số đã cài lỗi OCR. So chữ với ảnh PDF rồi chọn thao tác như trong app. Bài tập chạy trên trang này, không ghi gì vào hệ thống.</p>
+      <div class="practice panel" id="practice-app"></div>
+    </section>
+
+    <section id="admin" class="guide-section" data-roles="admin" aria-labelledby="admin-title">
+      <h2 id="admin-title">Quản trị</h2>
+      <p class="lead">Các việc thường làm của Admin, theo thứ tự khi bắt đầu một đợt thẩm định.</p>
+      <div class="admin-cards" id="admin-cards"></div>
+    </section>
+
+    <section id="faq" class="guide-section" aria-labelledby="faq-title">
+      <h2 id="faq-title">Câu hỏi thường gặp</h2>
+      <div class="search-box faq-search">
+        <svg class="icon" aria-hidden="true"><use href="../icons.svg?v=2#search"></use></svg>
+        <input type="search" id="faq-filter" autocomplete="off" placeholder="Lọc câu hỏi" aria-label="Lọc câu hỏi thường gặp">
+      </div>
+      <p class="muted small" id="faq-status" role="status"></p>
+      <div class="faq-list" id="faq-list"></div>
+    </section>
+  </main>
+</div>
+
+<script src="data.js?v=1"></script>
+<script src="guide.js?v=1"></script>
+</body>
+</html>

@@ -83,6 +83,8 @@ ICONS = {
     "collapse-all": "arrow_collapse_all_20_regular",
     "gauge": "gauge_20_regular",
     "compare": "split_vertical_20_regular",
+    "question": "question_circle_20_regular",
+    "keyboard": "keyboard_20_regular",
 }
 
 SVG_RE = re.compile(r"<svg\b([^>]*)>(.*)</svg>", re.S)

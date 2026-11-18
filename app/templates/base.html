@@ -6,7 +6,7 @@
 <title>{% block title %}Thẩm định văn bản pháp lý{% endblock %}</title>
 <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/static/fonts/fonts.css">
-<link rel="stylesheet" href="/static/style.css">
+<link rel="stylesheet" href="/static/style.css?v=2">
 <script>
   /* Áp dụng theme ngay khi nạp để không chớp màn hình */
   (function () {
@@ -18,7 +18,18 @@
 <script src="/static/htmx.min.js"></script>
 </head>
 {% from "partials/icon.html" import icon %}
-<body class="{% block body_class %}{% endblock %}">
+{#- data-screen / data-role: static/tour.js chọn tour theo màn hình và lọc bước theo vai trò -#}
+{%- set _path = request.url.path if request is defined else "" -%}
+{%- if _path == "/" %}{% set screen = "home" %}
+{%- elif _path == "/documents" %}{% set screen = "library" %}
+{%- elif _path.startswith("/documents/") %}{% set screen = "review" %}
+{%- elif _path.startswith("/admin/assign") %}{% set screen = "assign" %}
+{%- elif _path.startswith("/admin/users") %}{% set screen = "users" %}
+{%- elif _path.startswith("/admin/stats") %}{% set screen = "stats" %}
+{%- elif _path.startswith("/account/password") %}{% set screen = "password" %}
+{%- elif _path in ("/login", "/account/login") %}{% set screen = "login" %}
+{%- else %}{% set screen = "other" %}{% endif %}
+<body class="{% block body_class %}{% endblock %}" data-screen="{{ screen }}" data-role="{{ current_user.role if current_user is defined and current_user else 'none' }}">
 {#- Khung chung: một thanh trên cùng (tên app, tab chính, ô tìm văn bản, tài khoản, sáng/tối) rồi tới nội dung.
     Trang thường điền page_header (tiêu đề, tóm tắt, nút của trang), flash (thông báo) và content.
     Màn soát thay cả block main bằng thanh văn bản + ba khung (review.html). -#}
@@ -35,6 +46,7 @@
         <input type="search" name="q" autocomplete="off" placeholder="Tìm văn bản theo số hiệu, tên" aria-label="Tìm văn bản theo số hiệu, tên">
       </form>
       {% endif %}
+      {% include "partials/help_menu.html" %}
       {% include "partials/account_menu.html" %}
       {% include "partials/theme_toggle.html" %}
     </div>
@@ -48,8 +60,10 @@
   </main>
   {% endblock %}
 </div>
+{% if current_user is defined and current_user %}{% include "partials/shortcuts_dialog.html" %}{% endif %}
 {% endblock %}
-<script src="/static/shell.js"></script>
+<script src="/static/shell.js?v=2"></script>
+<script src="/static/tour.js?v=1"></script>
 <script src="/static/viewer.js"></script>
 {% block scripts %}{% endblock %}
 </body>

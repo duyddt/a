@@ -72,7 +72,7 @@
       document.body.classList.toggle('nav-open');
       return;
     }
-    if (document.body.classList.contains('nav-open') && !target.closest('.navpane')) {
+    if (document.body.classList.contains('nav-open') && !target.closest('.navpane, .tour-pop, .tour-block')) {
       document.body.classList.remove('nav-open');
     }
 

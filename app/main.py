@@ -308,6 +308,11 @@ def create_app(settings: Settings | None = None, catalog=None) -> FastAPI:
         """Kiểm tra sống (Docker HEALTHCHECK, giám sát). `database` = false khi đang chạy chế độ chỉ xem."""
         return {"status": "ok", "database": app.state.importer is not None, "db_error": app.state.db_error is not None}
 
+    @app.get("/help", include_in_schema=False)
+    def help_page():
+        """Trang hướng dẫn sử dụng (tệp tĩnh static/guide/, mở được cả khi không chạy app). Không cần đăng nhập."""
+        return RedirectResponse(url="/static/guide/index.html", status_code=302)
+
     # ---- ĐĂNG NHẬP / ĐĂNG XUẤT / QUẢN TRỊ TÀI KHOẢN (chỉ Admin tạo tài khoản) ----
 
     def login_page_response(request: Request, next_url: str, err: str = "", msg: str = "", status_code: int = 200):

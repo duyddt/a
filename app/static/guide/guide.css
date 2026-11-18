@@ -1,0 +1,176 @@
+/* Trang hướng dẫn (guide/index.html). Dùng lại token và thành phần của ../style.css (nút, kbd, chấm trạng thái,
+   nhãn quy trình, thông báo); tệp này chỉ thêm bố cục và các phần tương tác riêng của trang. Không có mã màu. */
+
+body.guide { background: var(--bg); }
+.guide-top { gap: 8px 16px; }
+.role-switch { display: flex; align-items: center; gap: 2px; padding: 2px; background: var(--surface-2); border: 1px solid var(--border); }
+.role-switch-label { padding: 0 6px; }
+.role-switch button {
+  min-height: 28px; padding: 0 10px; font-size: 13px; color: var(--text-2); background: transparent; border: 1px solid transparent;
+}
+.role-switch button:hover { background: var(--hover); }
+.role-switch button[aria-checked="true"] { color: var(--on-primary); background: var(--primary); border-color: var(--primary-border); font-weight: 600; }
+.text-toggle { min-width: 0; padding: 0 8px; font-size: 12px; }
+
+.guide-layout {
+  display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 32px;
+  width: 100%; max-width: 1320px; margin: 0 auto; padding: 24px 16px 64px;
+}
+.guide-toc { position: sticky; top: 76px; align-self: start; }
+.guide-toc ol { list-style: none; margin: 0; padding: 0; border-left: 2px solid var(--border); }
+.guide-toc a { display: block; padding: 6px 12px; margin-left: -2px; color: var(--text-2); border-left: 2px solid transparent; }
+.guide-toc a:hover { color: var(--text); border-left-color: var(--accent-border); text-decoration: none; background: var(--hover); }
+.toc-note { margin: 16px 0 0; padding-left: 12px; }
+
+.guide-main { min-width: 0; }
+.guide-section { padding: 8px 0 40px; scroll-margin-top: 64px; }
+.guide-section + .guide-section { border-top: 1px solid var(--border); padding-top: 32px; }
+.guide-section h1 { margin: 0 0 8px; font-size: 28px; font-weight: 600; }
+.guide-section h2 { margin: 0 0 8px; font-size: 22px; font-weight: 600; }
+.guide-section h3 { margin: 24px 0 10px; font-size: 16px; font-weight: 600; }
+.guide-section .lead { max-width: 75ch; margin: 0 0 20px; color: var(--text-2); }
+
+/* Vai trò */
+.role-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.role-card { display: flex; flex-direction: column; gap: 8px; padding: 16px 18px; border-top: 3px solid var(--border); }
+.role-card.picked { border-top-color: var(--accent-border); background: var(--accent-selected); }
+.role-card h2 { margin: 0; font-size: 17px; }
+.role-card p { margin: 0; color: var(--text-2); font-size: 14px; }
+.role-tasks { margin: 0 0 4px; padding-left: 20px; font-size: 14px; }
+.role-tasks li + li { margin-top: 2px; }
+.role-card .btn { align-self: flex-start; margin-top: auto; }
+
+/* Quy trình */
+.flow { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 16px; align-items: start; }
+.flow-svg { width: 100%; height: auto; display: block; background: var(--surface); border: 1px solid var(--border); }
+.flow-edge { fill: none; stroke: var(--border-strong); stroke-width: 1.5; }
+.flow-arrowhead { fill: var(--border-strong); }
+.flow-edge-label { font-size: 11px; fill: var(--muted); font-family: var(--font); }
+.flow-node { cursor: pointer; }
+.flow-node rect { fill: var(--surface-2); stroke: var(--border-strong); stroke-width: 1.5; }
+.flow-node text { font-size: 13px; font-weight: 600; fill: var(--text); font-family: var(--font); pointer-events: none; }
+.flow-node.wf-editing rect { stroke: var(--info-border); }
+.flow-node.wf-pending rect { stroke: var(--accent); }
+.flow-node.wf-approved rect { stroke: var(--ok-border); }
+.flow-node.wf-returned rect { stroke: var(--warn-soft-border); }
+.flow-node:hover rect { fill: var(--hover); }
+.flow-node.selected rect { fill: var(--accent-selected); stroke-width: 3; }
+.flow-node:focus { outline: none; }
+.flow-node:focus-visible rect { stroke: var(--accent-border); stroke-width: 3; stroke-dasharray: 4 2; }
+.flow-detail { padding: 14px 16px; }
+.flow-detail h3 { margin: 0 0 10px; font-size: 12px; }
+.flow-facts { margin: 0; font-size: 14px; }
+.flow-facts dt { font-weight: 600; color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .03em; }
+.flow-facts dd { margin: 2px 0 10px; }
+.unit-states { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 8px 24px; font-size: 14px; }
+.unit-states li { display: flex; align-items: baseline; gap: 8px; }
+.unit-states strong { white-space: nowrap; }
+
+/* Từng màn hình */
+.screen-tabs { display: flex; flex-wrap: wrap; gap: 4px; margin: 0 0 12px; border-bottom: 1px solid var(--border); }
+.screen-tab {
+  min-height: 34px; padding: 0 12px; margin-bottom: -1px; font-size: 13px; color: var(--text-2);
+  background: transparent; border: 0; border-bottom: 2px solid transparent;
+}
+.screen-tab:hover { color: var(--text); background: var(--hover); }
+.screen-tab[aria-selected="true"] { color: var(--text); font-weight: 600; border-bottom-color: var(--text); }
+.screen-lead { margin: 0 0 12px; color: var(--text-2); }
+.screen-wrap { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 16px; align-items: start; }
+.shot { position: relative; margin: 0; border: 1px solid var(--border); background: var(--surface); line-height: 0; }
+.shot img { display: block; width: 100%; height: auto; }
+.spot-box { position: absolute; border: 2px solid transparent; pointer-events: none; }
+.spot-box.active { border-color: var(--act-edit); background: color-mix(in srgb, var(--act-edit) 10%, transparent); }
+.spot-pin {
+  position: absolute; z-index: 1; width: 24px; height: 24px; margin: -12px 0 0 -12px; padding: 0;
+  font-family: var(--font-mono); font-size: 12px; font-weight: 700; line-height: 22px; text-align: center;
+  color: var(--on-primary); background: var(--primary); border: 1px solid var(--surface); border-radius: 12px;
+  box-shadow: 0 2px 6px var(--shadow-strong);
+}
+.spot-pin:hover, .spot-pin.active { background: var(--act-edit); color: var(--on-badge); }
+.spot-list { position: relative; list-style: none; margin: 0; padding: 0; max-height: 70vh; overflow: auto; border: 1px solid var(--border); background: var(--surface); }
+.spot-list li { border-bottom: 1px solid var(--border); }
+.spot-list li:last-child { border-bottom: 0; }
+.spot-list li.active { background: var(--accent-selected); }
+.spot-item { display: flex; align-items: center; gap: 8px; width: 100%; padding: 10px 12px 2px; text-align: left; background: transparent; border: 0; font-size: 14px; }
+.spot-num {
+  flex: none; width: 22px; height: 22px; font-family: var(--font-mono); font-size: 12px; font-weight: 700; line-height: 22px;
+  text-align: center; color: var(--on-primary); background: var(--primary); border-radius: 11px;
+}
+li.active .spot-num { background: var(--act-edit); color: var(--on-badge); }
+.spot-text { margin: 0; padding: 0 12px 10px 42px; font-size: 13px; color: var(--text-2); }
+
+/* Phím tắt */
+.keys-wrap { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 16px; align-items: start; }
+.guide-keys { margin: 0; }
+.guide-keys .group-row th { padding: 14px 0 6px; text-align: left; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .03em; }
+.guide-keys tr.hit td { background: var(--accent-selected); }
+.key-try { padding: 14px 16px; min-height: 160px; cursor: text; }
+.key-try:focus { outline: 2px solid var(--accent-border); outline-offset: 2px; }
+.key-try-head { margin: 0 0 4px; font-weight: 600; }
+.key-try-out { margin: 12px 0 0; font-size: 15px; }
+
+/* Bài tập */
+.practice { padding: 16px 18px; }
+.practice:focus { outline: none; }
+.practice-head { display: flex; align-items: center; gap: 12px; margin: 0 0 12px; }
+.practice-meter { flex: 1 1 auto; max-width: 240px; }
+.practice-desk { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+.practice-text h3 { margin: 0 0 8px; }
+.practice-text .muted { margin: 0 0 4px; }
+.practice-ocr { margin: 0; font-size: 17px; max-width: none; }
+.practice-pdf { margin: 0; }
+.practice-pdf img { display: block; width: 100%; height: auto; border: 1px solid var(--border); background: var(--reading-bg); }
+.practice-pdf figcaption { margin-top: 4px; }
+.practice-input { margin: 12px 0 0; }
+.practice-input:empty { display: none; }
+.practice-edit { width: 100%; font-family: var(--font-text); font-size: 16px; line-height: 1.6; resize: vertical; }
+.practice-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 8px; }
+.practice-err { color: var(--err); }
+.practice-actions { margin: 14px 0 0; padding-top: 12px; border-top: 1px solid var(--border); }
+.practice-feedback { margin-top: 12px; }
+.practice-feedback:empty { display: none; }
+.practice-feedback p { margin: 6px 0; }
+.practice-feedback .btn { margin-top: 6px; }
+.fix-list { margin: 6px 0; padding-left: 20px; }
+.fix-list del { color: var(--danger-text); }
+.fix-list ins { color: var(--ok-text); text-decoration: none; font-weight: 600; }
+.practice-summary h3 { margin: 0 0 10px; }
+.summary-list { margin: 0 0 12px; padding-left: 20px; }
+.summary-list li { display: list-item; }
+.summary-list .dot { margin-right: 8px; }
+
+/* Quản trị */
+.admin-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.admin-card { padding: 14px 18px; }
+.admin-card h3 { margin: 0 0 8px; }
+.admin-card ol { margin: 0 0 10px; padding-left: 20px; font-size: 14px; }
+
+/* FAQ */
+.faq-search { max-width: 420px; margin: 0 0 6px; }
+.faq-item { border: 1px solid var(--border); background: var(--surface); }
+.faq-item + .faq-item { border-top: 0; }
+.faq-item summary { padding: 12px 16px; cursor: pointer; font-weight: 600; }
+.faq-item summary:hover { background: var(--hover); }
+.faq-item p { margin: 0; padding: 0 16px 14px; color: var(--text-2); max-width: 75ch; }
+
+@media (max-width: 1100px) {
+  .guide-layout { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .guide-toc { position: static; margin: 0 0 16px; }
+  .guide-toc ol { display: flex; flex-wrap: wrap; gap: 4px; border-left: 0; }
+  .guide-toc a { padding: 4px 10px; margin: 0; border: 1px solid var(--border); background: var(--surface); }
+  .toc-note { display: none; }
+  .flow, .screen-wrap, .keys-wrap { grid-template-columns: minmax(0, 1fr); }
+  .spot-list { max-height: none; }
+}
+@media (max-width: 860px) {
+  .guide-top { flex-wrap: wrap; padding-bottom: 8px; }
+  .guide-top .topbar-end { flex: 1 1 100%; justify-content: space-between; }
+  .role-switch { flex-wrap: wrap; }
+  .role-switch-label { display: none; }
+  .practice-desk { grid-template-columns: minmax(0, 1fr); }
+  .practice-pdf { order: -1; }
+}
+@media (max-width: 640px) {
+  .guide-section h1 { font-size: 23px; }
+  .spot-pin { width: 20px; height: 20px; margin: -10px 0 0 -10px; line-height: 18px; font-size: 11px; }
+}

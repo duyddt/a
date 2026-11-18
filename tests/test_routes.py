@@ -166,7 +166,9 @@ def test_openapi_documents_every_endpoint(client):
 
 def test_file_mode_has_no_review_buttons_and_review_api_is_501(client):
     page = client.get(f"/documents/{DOC}")
-    assert "Duyệt" not in page.text and "Xuất JSON đã duyệt" not in page.text and "PostgreSQL" in page.text
+    # nút thẩm định (bảng phím tắt vẫn nhắc tới Duyệt nên kiểm tra nút, không dò chữ)
+    assert 'data-key="a"' not in page.text and "approve-next" not in page.text
+    assert "Xuất JSON đã duyệt" not in page.text and "PostgreSQL" in page.text
     body = {"action": "approve"}
     assert client.post(f"/api/documents/{DOC}/units/ND254_2026_D9/reviews", json=body).status_code == 501
     assert client.get(f"/api/documents/{DOC}/export").status_code == 501
