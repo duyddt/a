@@ -5,7 +5,7 @@ Hệ thống thẩm định dữ liệu pháp lý (*Human-in-the-loop*) thuộc 
 * **Bố cục:** một thanh trên cùng gồm tab chính theo vai trò (Việc của tôi / Việc phê duyệt / Tổng quan, Văn bản; Admin thêm Phân công, Thống kê, Tài khoản), ô tìm văn bản, menu tài khoản và nút sáng/tối. Trang chủ là danh sách việc của người đang đăng nhập; **Văn bản** là một bảng lọc theo chủ đề, trạng thái quy trình và chữ.
 * **Màn soát ba khung:** thanh văn bản (đường dẫn, số hiệu, trạng thái, người, tiến độ, nút của cả văn bản), rồi cây `Điều → Khoản → Điểm` | đơn vị đang soát | trang PDF gốc. Dải nút thẩm định dính ở đáy khung giữa, có **Duyệt & tiếp** (duyệt rồi sang đơn vị chưa soát kế tiếp) và phím tắt `J`/`K`/`A`/`E`/`F`. Các thanh chia kéo được bằng chuột hoặc phím ←/→ và được nhớ trên trình duyệt. Dưới 1100px cây thành lớp phủ (nút **Cấu trúc**); dưới 768px các khung xếp dọc.
 * **Khung PDF gốc:** Hiển thị ảnh trang PDF gốc sắc nét, tự động nhảy tới trang chứa đơn vị đang chọn, hỗ trợ phóng to/thu nhỏ và chuyển trang nhanh.
-* **Tô sáng vùng nội dung trên PDF:** Bấm một Điều/Khoản/Điểm trong cây, vùng nội dung tương ứng trên ảnh trang được tô vàng. Khung PDF mặc định "Vừa trang": cả trang nằm gọn trong khung, đúng tỉ lệ, không phải cuộn; đơn vị sang trang sau thì bấm số trang ở đầu khung. Bấm vào trang để phóng vừa chiều rộng ngay tại chỗ bấm. PDF có lớp chữ (PDF số hoặc đã OCR) được tô đúng từng dòng theo toạ độ ký tự. Trang scan hoặc ảnh chụp được tô đúng từng dòng theo toạ độ từ do Tesseract trả về: toạ độ lưu sẵn lúc nhập văn bản, hoặc nạp bằng lệnh `page-words`. Ảnh chụp tay được cân bằng độ sáng nền trước khi OCR. Chỉ khi trang chưa có toạ độ và máy không có Tesseract thì mới ước lượng theo bố cục đoạn văn (khung viền nét đứt, ghi rõ "ước lượng"). Cơ chế và kết quả kiểm thử: [`docs/to-vang-ban-scan.md`](docs/to-vang-ban-scan.md).
+* **Tô sáng vùng nội dung trên PDF:** Bấm một Điều/Khoản/Điểm trong cây, vùng nội dung tương ứng trên ảnh trang được tô vàng. Khung PDF mặc định "Vừa trang": cả trang nằm gọn trong khung, đúng tỉ lệ, không phải cuộn; đơn vị sang trang sau thì bấm số trang ở đầu khung. Bấm vào trang để phóng vừa chiều rộng ngay tại chỗ bấm. PDF có lớp chữ (PDF số hoặc đã OCR) được tô đúng từng dòng theo toạ độ ký tự. Trang scan hoặc ảnh chụp được tô đúng từng dòng theo toạ độ từ do Tesseract trả về: toạ độ lưu sẵn lúc nhập văn bản, hoặc nạp bằng lệnh `page-words`. Ảnh chụp tay được cân bằng độ sáng nền trước khi OCR. Chỉ khi trang chưa có toạ độ và máy không có Tesseract thì mới ước lượng theo bố cục đoạn văn (khung viền nét đứt, ghi rõ "ước lượng"). Cơ chế và kết quả kiểm thử: [`docs/scanned-page-highlight.md`](docs/scanned-page-highlight.md).
 * **Giao diện sáng/tối:** nút mặt trời/mặt trăng ở góc phải thanh trên cùng; lựa chọn được nhớ trên trình duyệt, chưa chọn thì theo giao diện của hệ điều hành.
 * **Chế độ sửa tập trung:** Bấm **Sửa chữ** thì màn hình chỉ còn hai thứ:
   - trang PDF scan, có vùng tô của mục đang sửa;
@@ -145,7 +145,7 @@ Bỏ trống cả `DATABASE_URL` và `POSTGRES_HOST`: ứng dụng đọc trực
 
 **Trang Văn bản (`/documents`).** Một bảng, bộ lọc ở cột trái:
 
-- **Chủ đề** theo đúng thứ tự của thư mục `bo du lieu`, kèm số văn bản khớp bộ lọc:
+- **Chủ đề** theo đúng thứ tự của bộ dữ liệu `data/sources/` (gốc repo), kèm số văn bản khớp bộ lọc:
   - I. Quản lý thuế
   - II. Hóa đơn điện tử
   - III. Thuế GTGT
@@ -259,7 +259,7 @@ Mỗi đơn vị có nhiều **bản** độc lập với nhau:
   chữ của bản nguồn, không tin chữ do trình duyệt gửi lên. Bản chốt đổi chữ thì phải Duyệt lại.
 * Tiến độ trên trang chủ, trang Văn bản và thanh văn bản tính theo bản của người đang xem: người chỉnh sửa thấy tiến độ của mình,
   người phê duyệt và Admin thấy tiến độ của bản chốt.
-* Thiết kế và lý do: [`docs/adr-001-ban-rieng-tung-nguoi.md`](docs/adr-001-ban-rieng-tung-nguoi.md).
+* Thiết kế và lý do: [`docs/adr-001-per-user-versions.md`](docs/adr-001-per-user-versions.md).
 
 * **Lịch sử bất biến (Append-only):** Mọi sự kiện được ghi thêm vào bảng `review_event`, cột `track` cho biết sự kiện
   thuộc bản riêng (`editor`, của người ở cột `reviewer`) hay bản chốt (`final`). Trigger `review_event_no_update_delete` trong PostgreSQL chặn mọi lệnh `UPDATE` và `DELETE`. Văn bản gốc trong bảng `legal_unit` được giữ nguyên vẹn 100%.
@@ -284,7 +284,7 @@ $$\text{CER} = \frac{S + D + I}{N_{\text{GT}}}, \quad \text{CAR} = \max(0, 100\%
 
 $$\text{Score} = 0.4 \times \text{CAR} + 0.3 \times \text{WAR} + 0.2 \times \text{SFI} + 0.1 \times \text{UEM}$$
 
-Công thức đầy đủ (đúng như mã nguồn), ví dụ tính tay, hạn chế đã biết và cách đo trên cả bộ dữ liệu: [`docs/do-chinh-xac-ocr.md`](docs/do-chinh-xac-ocr.md). Kết quả kiểm thử trên bộ dữ liệu 67 PDF: [`docs/bao-cao-kiem-thu-bo-du-lieu.md`](docs/bao-cao-kiem-thu-bo-du-lieu.md).
+Công thức đầy đủ (đúng như mã nguồn), ví dụ tính tay, hạn chế đã biết và cách đo trên cả bộ dữ liệu: [`docs/ocr-accuracy.md`](docs/ocr-accuracy.md). Kết quả kiểm thử trên bộ dữ liệu 67 PDF: [`docs/dataset-test-report.md`](docs/dataset-test-report.md).
 
 
 
@@ -301,7 +301,7 @@ nhập ghi thẳng vào PostgreSQL, kể cả PDF gốc; không ghi gì ra đĩa
 python -m app.cli import --pdf data/ND254_2026/source.pdf --json data/ND254_2026/document.json
 python -m app.cli import-dir data/ND254_2026
 python -m app.cli import-all data
-python -m app.cli import-pdfs "bo du lieu"      # mọi PDF trong thư mục và thư mục con, không cần document.json
+python -m app.cli import-pdfs ../data/sources    # mọi PDF trong thư mục và thư mục con, không cần document.json
 python -m app.cli page-words                    # OCR toạ độ từ cho trang scan chưa có (để tô vàng đúng dòng)
 ```
 
@@ -322,7 +322,7 @@ python -m app.cli page-words                    # OCR toạ độ từ cho trang
 
 - Thư mục con cấp 1 như `I. Quản lý thuế` là danh mục của mọi PDF bên trong. Mã danh mục là số La Mã (`I`), nên đổi tên
   thư mục thì chỉ cập nhật tên.
-- Nhập riêng một thư mục đánh số, ví dụ `import-pdfs "bo du lieu/II. Hóa đơn điện tử"`, thì PDF trong đó thuộc danh mục II.
+- Nhập riêng một thư mục đánh số, ví dụ `import-pdfs "../data/sources/II. Hóa đơn điện tử"`, thì PDF trong đó thuộc danh mục II.
 - Văn bản đã có, bản trùng byte và bản trùng nội dung đều được xếp **thêm** vào thư mục của tệp. Mỗi dòng kết quả ghi
   `· danh mục …`.
 - Văn bản không bị gỡ khỏi thư mục cũ, và nhập lại bằng `--replace` vẫn giữ các thư mục cũ. Muốn chuyển văn bản sang thư
@@ -330,7 +330,7 @@ python -m app.cli page-words                    # OCR toạ độ từ cho trang
 - Thứ tự trong thư mục lấy từ tệp `.xlsx` ở thư mục gốc (cột "STT" và "Tên file theo quy ước"). Văn bản không có trong
   tệp danh mục xếp sau, theo thứ tự Luật → Nghị định → Thông tư.
 
-Vì văn bản đã có thì không phải tách lại, chạy `import-pdfs "bo du lieu"` trên một DB đã nhập đủ chỉ mất vài giây và chỉ
+Vì văn bản đã có thì không phải tách lại, chạy `import-pdfs ../data/sources` trên một DB đã nhập đủ chỉ mất vài giây và chỉ
 gán thư mục.
 
 **Nhập PDF scan bằng Docker** (máy không cài Tesseract). Image của dự án đã có Tesseract tiếng Việt. Ví dụ dưới đây dùng
@@ -340,11 +340,11 @@ chung mạng với container PostgreSQL tên `review-db` (mục 2), chỉ gắn 
 docker build -t review-app .
 docker run --rm --network container:review-db -e OCR_WORKERS=4 `
   -e DATABASE_URL=postgresql://review:<mật_khẩu>@127.0.0.1:5432/review `
-  -v "${PWD}/bo du lieu:/dataset:ro" review-app python -m app.cli import-pdfs /dataset
+  -v "$(Resolve-Path ..\data\sources):/dataset:ro" review-app python -m app.cli import-pdfs /dataset
 ```
 
 Đang chạy bằng Docker Compose (mục 1) thì chỉ cần
-`docker compose run --rm -v "${PWD}/bo du lieu:/dataset:ro" api python -m app.cli import-pdfs /dataset`.
+`docker compose run --rm -v "$(Resolve-Path ..\data\sources):/dataset:ro" api python -m app.cli import-pdfs /dataset`.
 
 **Qua REST API** (chỉ Admin):
 
@@ -379,7 +379,7 @@ khoảng 12 MB RAM; app chỉ dựng trước tối đa 2 × `OCR_WORKERS` ảnh
 bản scan dài, dùng `import-pdfs` sẽ tiện hơn. Muốn OCR trên GPU thì phải đổi sang bộ OCR khác (chưa làm), vì Tesseract
 không dùng được GPU.
 
-Độ chính xác đo được của luồng này: [`docs/bao-cao-kiem-thu-bo-du-lieu.md`](docs/bao-cao-kiem-thu-bo-du-lieu.md), mục 4.
+Độ chính xác đo được của luồng này: [`docs/dataset-test-report.md`](docs/dataset-test-report.md), mục 4.
 
 ---
 
@@ -408,7 +408,7 @@ không dùng được GPU.
 ## 8. Cấu trúc thư mục dự án
 
 ```text
-review-app/
+review_app/
 ├── docker-compose.yml, Dockerfile, .env.example
 ├── migrations/
 │   ├── 001_init.sql               # Bảng document, legal_unit
@@ -447,12 +447,16 @@ review-app/
 │   ├── templates/                 # Giao diện Jinja2 (login, home, library, review, admin_users, admin_assign, admin_stats, partials/)
 │   └── static/                    # style.css (bố cục, token màu), shell.js (thanh chia, bảng, lọc cây, hộp thoại), viewer.js (khung PDF), tour.js + tours.json (hướng dẫn từng bước), guide/ (trang /help), icons.svg (Fluent), fonts/ (Source Sans 3, Literata, Roboto Mono tự host, OFL), htmx.min.js
 ├── data/ND254_2026/, ND255_2026/  # Văn bản mẫu: Nghị định 254/2026/NĐ-CP và 255/2026/NĐ-CP (source.pdf, document.json, ocr_pages/)
-├── docs/                          # Tài liệu kỹ thuật: đo độ chính xác, báo cáo kiểm thử, tô vàng bản scan, ADR
+├── docs/
+│   ├── ocr-accuracy.md            # Cơ chế đo độ chính xác OCR và tách cấu trúc
+│   ├── dataset-test-report.md     # Báo cáo kiểm thử trên bộ 67 PDF (lỗi L1–L13)
+│   ├── scanned-page-highlight.md  # Tô vàng đúng vùng trên bản scan và ảnh chụp
+│   └── adr-001-per-user-versions.md  # Bản riêng của từng người trong bảng review_event
 ├── scripts/
 │   ├── build_icons.py             # Dựng lại app/static/icons.svg từ Fluent System Icons (chạy khi thêm icon)
 │   ├── build_guide_exercises.py   # Cắt ảnh vùng PDF cho bài tập của trang hướng dẫn (app/static/guide/img/ex-*.webp)
 │   ├── build_legal_document.py    # Script dựng document.json từ ocr_pages/*.txt
-│   ├── evaluate_dataset_accuracy.py  # Đo độ chính xác luồng nhập PDF trên cả bộ dữ liệu (docs/do-chinh-xac-ocr.md, mục 7)
+│   ├── evaluate_dataset_accuracy.py  # Đo độ chính xác luồng nhập PDF trên cả bộ dữ liệu (docs/ocr-accuracy.md, mục 7)
 │   ├── make_sample_pdf.py         # Script tạo PDF mẫu cho kiểm thử
 │   └── prepare_nd255.py           # Dựng ocr_pages/ và document.json cho ND255_2026 theo cấu trúc ND254_2026
 └── tests/                         # Bộ kiểm thử tự động pytest
@@ -473,7 +477,7 @@ python -m pytest
 `tests/test_workflow.py` và `tests/test_stats.py` kiểm tra luật quy trình (ai được làm gì ở trạng thái nào) và cách tính
 thống kê mà không cần DB; luồng đầy đủ qua API và trang web nằm trong `tests/test_db_import.py`.
 `tests/test_security.py` là bộ test hồi quy cho các lỗi bảo mật đã sửa (giả mạo cookie, path traversal khi xóa, open redirect, mật khẩu mặc định...).
-`tests/test_pdf_parser.py` là bộ test hồi quy cho luồng *chỉ tải lên PDF* và hàm khoảng cách của thang đo (lỗi L1–L13 trong `docs/bao-cao-kiem-thu-bo-du-lieu.md`).
+`tests/test_pdf_parser.py` là bộ test hồi quy cho luồng *chỉ tải lên PDF* và hàm khoảng cách của thang đo (lỗi L1–L13 trong `docs/dataset-test-report.md`).
 
 Để chạy thêm bộ kiểm thử tích hợp trên PostgreSQL thật (`tests/test_db_import.py`), trỏ biến `TEST_DATABASE_URL` vào một database dành riêng cho việc test (lưu ý: test sẽ xóa các bảng trong DB đó để kiểm tra lại từ đầu). Ví dụ dùng một container tạm ở cổng riêng:
 

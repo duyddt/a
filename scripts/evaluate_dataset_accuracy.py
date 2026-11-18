@@ -1,8 +1,8 @@
 """Đo độ chính xác của luồng nhập PDF (auto_build_json_from_pdf) trên bộ dữ liệu, bằng chính công thức của app.
 
-    PYTHONUTF8=1 python scripts/evaluate_dataset_accuracy.py "bo du lieu" --seeds data --out eval.json
+    PYTHONUTF8=1 python scripts/evaluate_dataset_accuracy.py ../data/sources --seeds data --out eval.json
 
-Cách làm (chi tiết và giới hạn: docs/do-chinh-xac-ocr.md, mục 7; kết quả: docs/bao-cao-kiem-thu-bo-du-lieu.md).
+Cách làm (chi tiết và giới hạn: docs/ocr-accuracy.md, mục 7; kết quả: docs/dataset-test-report.md).
 Có hai nguồn Ground Truth:
 - (A) Văn bản mẫu trong --seeds (data/<ID>/ocr_pages + document.json do nhóm dựng và soát bằng công cụ khác):
   chạy bộ tách của app trên bản chép chữ từng trang rồi so với document.json. Đây là phép đo ĐỘC LẬP.
@@ -314,7 +314,7 @@ def show(summary: dict) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("dataset", type=Path, nargs="?", help="thư mục bộ dữ liệu PDF (ví dụ 'bo du lieu')")
+    parser.add_argument("dataset", type=Path, nargs="?", help="thư mục bộ dữ liệu PDF (ví dụ ../data/sources)")
     parser.add_argument("--seeds", type=Path, help="thư mục văn bản mẫu có ocr_pages/ và document.json (ví dụ data)")
     parser.add_argument("--ocr", action="store_true",
                         help="với --seeds: OCR source.pdf (cần Tesseract 'vie' hoặc GEMINI_API_KEY) thay cho bản chép chữ")

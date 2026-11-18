@@ -1,6 +1,6 @@
 """Luồng "chỉ tải lên PDF" (app/services/pdf_parser.py) và hàm khoảng cách của thang đo.
 
-Mỗi test ứng với một lỗi trong docs/bao-cao-kiem-thu-bo-du-lieu.md (L1...L13).
+Mỗi test ứng với một lỗi trong docs/dataset-test-report.md (L1...L13).
 """
 import io
 import json

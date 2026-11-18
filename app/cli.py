@@ -3,7 +3,7 @@
     python -m app.cli import --pdf source.pdf --json document.json [--replace]
     python -m app.cli import-dir data/ND254_2026 [--replace]
     python -m app.cli import-all data [--replace]
-    python -m app.cli import-pdfs "bo du lieu" [--replace]
+    python -m app.cli import-pdfs ../data/sources [--replace]
     python -m app.cli page-words [--document ND254_2026 ...] [--workers 4] [--force]
 
 import-pdfs nhận thư mục chỉ có PDF (kể cả thư mục con): tự tách Điều/Khoản/Điểm, OCR bản scan nếu máy có Tesseract

@@ -3,13 +3,13 @@
 ## Phạm vi
 
 - **Dữ liệu:** bộ dữ liệu luuthlong đưa lên `aairlab-ou/HeThongTroLyPhapLy_Project`, nhánh `develop`, gồm 67 PDF chia
-  theo 10 lĩnh vực. Thư mục cục bộ `bo du lieu/` không đưa lên Git.
+  theo 10 lĩnh vực. Bộ dữ liệu nằm ở `data/sources/` của repo (trước 2026-11-18 là thư mục `bo du lieu/` ở gốc).
 - **Đối tượng kiểm thử:** luồng *chỉ tải lên PDF* (`auto_build_json_from_pdf` → `prepare_import` → importer), chạy qua
   hai đường:
   - gọi hàm trực tiếp cho cả 67 tệp;
   - dùng app thật (tài khoản admin, form `/documents/upload`, DB thử `review_test`) cho các tệp tiêu biểu, rồi mở trang
     thẩm định và bấm cây Điều/Khoản bằng trình duyệt.
-- **Cách đo độ chính xác:** xem [`do-chinh-xac-ocr.md`](do-chinh-xac-ocr.md), mục 7. Tái tạo bằng
+- **Cách đo độ chính xác:** xem [`ocr-accuracy.md`](ocr-accuracy.md), mục 7. Tái tạo bằng
   `scripts/evaluate_dataset_accuracy.py` (lệnh ở mục 6).
 - **Trạng thái:** lần kiểm thử đầu tìm ra L1–L10. Cả mười lỗi đã được sửa theo kiểu *viết test hỏng trước, sửa sau*.
   Trong lúc sửa và đo lại bằng OCR thật, tìm thêm L11–L13, cũng đã sửa. Mỗi lỗi có test tương ứng trong
@@ -17,7 +17,7 @@
 - **Đã nhập cả bộ dữ liệu vào PostgreSQL** (mục 7): 65 văn bản, kèm PDF gốc. Kiểm thử dữ liệu sau khi nhập tìm thêm L14
   (số hiệu, tên văn bản đọc từ bản OCR) và L15 (ngoặc lạ do OCR làm mất Điều). Cả hai đã sửa; các văn bản được tách lại
   bằng bộ tách mới (mục 7.1). Kết quả: 16.952 đơn vị; số Điều bị thiếu từ 305 còn 15 (mục 7.1).
-- **Văn bản được sắp theo thư mục chủ đề như `bo du lieu`** (mục 7.2): 10 thư mục I → X, cả 65 văn bản đều đã xếp.
+- **Văn bản được sắp theo thư mục chủ đề như `data/sources/`** (mục 7.2): 10 thư mục I → X, cả 65 văn bản đều đã xếp.
 
 ## 1. Tổng quan bộ dữ liệu
 
@@ -46,7 +46,7 @@ Mức độ: **Cao** = sai hoặc mất dữ liệu; **TB** = kết quả tách 
 | L7 | TB | PDF scan được "nhập thành công" dù **không có OCR**; lỗi OCR bị nuốt bằng `except: pass`; ND252 mất 51 giây chỉ để render 133 trang rồi OCR thất bại | Không có OCR thì từ chối ngay, **không render trang**, nêu rõ cách khắc phục. Lỗi OCR được ghi log. Dockerfile cài `tesseract-ocr` + `tesseract-ocr-vie`, `requirements.txt` thêm `pytesseract`. Đã kiểm tra trong image: Tesseract 5.5.0, có gói `vie`, `ocr_available() = True` | `test_scan_pdf_without_ocr_is_refused_without_rendering_pages`, `test_pages_without_any_text_are_refused`, `test_blank_pages_get_no_placeholder_units_when_articles_were_found` |
 | L8 | Thấp | Nhánh `build_document` / `read_pages` là mã chết (ImportError bị nuốt) | Xóa nhánh này | (mã đã xóa) |
 | L9 | Thấp | `pdf_parser.py` gọi pdfium không qua `PDFIUM_LOCK` | Mọi lệnh pdfium chạy trong khóa; OCR chạy ngoài khóa để không chặn luồng khác | `test_pdfium_is_only_opened_while_holding_the_shared_lock` |
-| L10 | Thấp | Thang đo: `_edit_distance_seq` dùng `SequenceMatcher` (`autojunk=True`) nên **đếm thừa lỗi** tới 36% | Levenshtein chính xác bằng thuật toán song song bit Myers/Hyyrö (`do-chinh-xac-ocr.md`, mục 3.1) | `test_edit_distance_matches_levenshtein_on_random_strings_and_word_lists`, `test_scattered_ocr_errors_in_long_units_are_counted_exactly` |
+| L10 | Thấp | Thang đo: `_edit_distance_seq` dùng `SequenceMatcher` (`autojunk=True`) nên **đếm thừa lỗi** tới 36% | Levenshtein chính xác bằng thuật toán song song bit Myers/Hyyrö (`ocr-accuracy.md`, mục 3.1) | `test_edit_distance_matches_levenshtein_on_random_strings_and_word_lists`, `test_scattered_ocr_errors_in_long_units_are_counted_exactly` |
 | L11 | Cao | *(Tìm ra khi đo bằng OCR thật.)* **Một dấu ngoặc nhiễu làm mất cả phần sau văn bản.** Tesseract đọc vết bẩn thành `" c) Số biên lai…` (ND254 trang 33). Dấu `"` này mở một trích dẫn không bao giờ đóng, nên Điều 24–45 bị coi là trích dẫn; khi van an toàn xả thì đã lỡ quá 3 Điều nên không bắt nhịp lại được. Cùng họ lỗi: `"`` ở trang 43, `chữa bệnh".` (dấu đóng bị hiểu là mở) và `“CẤP LẠI’’` (đóng bằng hai dấu nháy đơn) ở TT25 | Xác định chiều của dấu `"` theo chữ hai bên (dính chữ trước là đóng, dính chữ sau là mở, còn lại là nhiễu). Coi `’’`/`‘‘` là ngoặc kép. Bỏ ký tự nhiễu đầu dòng (`_ | ~ • * ^` …) khi nhận dạng cấu trúc, nhưng giữ nguyên nội dung và đánh dấu. Sau khi van xả thì nhận Điều kế tiếp bất kể khoảng cách, có đánh dấu | `test_stray_ocr_quote_does_not_hide_the_rest_of_the_document`, `test_two_apostrophes_close_a_curly_quote`, `test_ocr_noise_before_an_article_heading_is_ignored_but_flagged`, `test_articles_after_an_unclosed_quote_are_found_again` |
 | L12 | TB | **Hàng đánh số của biểu mẫu nằm trong thân Điều** ("1. Tiền 110", "2. Các khoản nợ phải thu 120"…) và liệt kê a)–e) trong biểu mẫu bị tách thành Khoản/Điểm giả, đẩy Khoản/Điểm thật sang sai chỗ (TT58 Điều 5, 6, 9, 10) | Danh sách đánh số lại từ "1." (hoặc "a)") giữa chừng là danh sách lồng. Khi số tiếp theo hợp với cả hai cách hiểu thì giữ danh sách lồng và đánh dấu để người soát xem | `test_numbered_rows_of_an_embedded_form_are_not_clauses` |
 | L13 | TB | Ký hiệu Khoản/Điểm bị Tesseract đọc lệch nên mất đơn vị: `©)` thay `c)`, `ø)`/`gø)` thay `g)`, `1.Tổ` mất dấu cách, `đ)` ở chỗ phải là `d)` | Nhận các dạng này vì © và ø không có trong tiếng Việt; `đ)`→`d)` đối xứng với quy tắc `d)`→`đ)` đã có. Mọi đơn vị nhận theo cách này đều bị đánh dấu | `test_common_ocr_misreads_of_point_and_clause_markers_are_recognised_and_flagged` |
@@ -128,7 +128,7 @@ OCR vẫn chạy ngay trong request tải lên. Đã giảm thời gian chờ b�
 ```powershell
 $env:PYTHONUTF8 = "1"
 .venv\Scripts\python.exe -m pytest -q tests\test_pdf_parser.py
-.venv\Scripts\python.exe scripts\evaluate_dataset_accuracy.py "bo du lieu" --seeds data --out eval.json   # (A) + (B)
+.venv\Scripts\python.exe scripts\evaluate_dataset_accuracy.py ..\data\sources --seeds data --out eval.json   # (A) + (B)
 
 docker build -t lawproject-review-app:ocr-check .                                                          # (C)
 docker run --rm -e PYTHONUTF8=1 -v "${PWD}/scripts:/app/scripts:ro" -v "${PWD}/data:/seeds:ro" `
@@ -188,10 +188,10 @@ Danh sách văn bản lúc đó cho thấy lỗi L14 (mục 2): nhiều văn b�
 ```powershell
 $env:DATABASE_URL = "postgresql://review:<mật_khẩu>@127.0.0.1:<cổng>/review"
 python -m app.cli import-all data                 # văn bản mẫu (có document.json đã soát)
-python -m app.cli import-pdfs "bo du lieu"        # PDF có lớp chữ; PDF scan bị từ chối nếu máy không có OCR
+python -m app.cli import-pdfs ../data/sources      # PDF có lớp chữ; PDF scan bị từ chối nếu máy không có OCR
 docker run --rm --network container:<container PostgreSQL> -e OCR_WORKERS=4 `
   -e DATABASE_URL=postgresql://review:<mật_khẩu>@127.0.0.1:5432/review `
-  -v "${PWD}/bo du lieu:/dataset:ro" <image của app> python -m app.cli import-pdfs /dataset
+  -v "$(Resolve-Path ..\data\sources):/dataset:ro" <image của app> python -m app.cli import-pdfs /dataset
 ```
 
 Văn bản đã có thì được bỏ qua trước khi OCR, nên chạy lại sau khi bị ngắt không phải OCR lại.
@@ -269,7 +269,7 @@ Bộ dữ liệu chia văn bản vào 10 thư mục, từ "I. Quản lý thuế"
 - màn hình danh sách hiện văn bản theo cây thư mục (README, mục 4);
 - `import-pdfs` tự xếp văn bản vào thư mục theo đường dẫn tệp (README, mục 6).
 
-**Áp dụng lên DB `review`.** Chạy `python -m app.cli import-pdfs "bo du lieu"`, mất khoảng 3 giây. Không văn bản nào phải
+**Áp dụng lên DB `review`.** Chạy `python -m app.cli import-pdfs ../data/sources`, mất khoảng 3 giây. Không văn bản nào phải
 tách hay OCR lại. Dữ liệu cũ không đổi: vẫn 65 văn bản, 0 thao tác thẩm định.
 
 | Thư mục | Số văn bản | Ghi chú |

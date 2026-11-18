@@ -3,7 +3,7 @@
 Tài liệu kỹ thuật cho nhóm phát triển và nhóm thẩm định. Nguồn gốc: tài liệu *"Cơ chế tính độ chính xác OCR — Review App"*
 của nhóm, đã đối chiếu từng công thức với mã nguồn hiện hành (`app/services/review.py`, hàm `build_ocr_report`).
 Mục 7 mô tả cách đo trên cả bộ dữ liệu bằng script; kết quả lần đo gần nhất nằm ở
-[`bao-cao-kiem-thu-bo-du-lieu.md`](bao-cao-kiem-thu-bo-du-lieu.md).
+[`dataset-test-report.md`](dataset-test-report.md).
 
 ## 1. Nguyên lý: Ground Truth do con người xác nhận
 
@@ -170,7 +170,7 @@ dùng khi người dùng chỉ tải lên PDF) trên bộ dữ liệu lớn, dù
 ```powershell
 $env:PYTHONUTF8 = "1"
 # (A) văn bản mẫu + (B) PDF có lớp chữ trong bộ dữ liệu
-.venv\Scripts\python.exe scripts\evaluate_dataset_accuracy.py "bo du lieu" --seeds data --out eval.json
+.venv\Scripts\python.exe scripts\evaluate_dataset_accuracy.py ..\data\sources --seeds data --out eval.json
 
 # (C) OCR thật trên bản scan của văn bản mẫu. Cần Tesseract kèm gói 'vie'; máy không có thì chạy trong Docker image
 docker build -t lawproject-review-app:ocr-check .

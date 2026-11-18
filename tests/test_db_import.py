@@ -229,11 +229,11 @@ def test_cli_import_dir_is_idempotent(client, tmp_path, monkeypatch, capsys, dat
 
 
 def test_cli_import_pdfs_imports_a_dataset_folder(client, tmp_path, monkeypatch, capsys, sample_pdf):
-    """Bộ dữ liệu chỉ có PDF (như 'bo du lieu'): tự tách cấu trúc, bỏ bản trùng, từ chối bản scan khi không có OCR."""
+    """Bộ dữ liệu chỉ có PDF (như data/sources/): tự tách cấu trúc, bỏ bản trùng, từ chối bản scan khi không có OCR."""
     from app.cli import main
     from app.services import pdf_parser
 
-    folder = tmp_path / "bo du lieu"
+    folder = tmp_path / "sources"
     (folder / "I. Thuế").mkdir(parents=True)
     (folder / "II. Hóa đơn").mkdir()
     (folder / "I. Thuế" / "ND254_2026.pdf").write_bytes(sample_pdf)
@@ -274,7 +274,7 @@ def variant(pdf: bytes, tag: str) -> bytes:
 
 @pytest.fixture
 def dataset(tmp_path, monkeypatch, sample_pdf, sample_json):
-    """Bộ dữ liệu như 'bo du lieu': thư mục "I. …", "II. …", tệp danh mục Excel; mọi PDF là bản mẫu ND254 đổi mã."""
+    """Bộ dữ liệu như data/sources/: thư mục "I. …", "II. …", tệp danh mục Excel; mọi PDF là bản mẫu ND254 đổi mã."""
     from app.services import pdf_parser
     from tests.test_categories import HEADER, write_xlsx
 
@@ -286,7 +286,7 @@ def dataset(tmp_path, monkeypatch, sample_pdf, sample_json):
     monkeypatch.setattr(pdf_parser, "auto_build_json_from_pdf", fake_builder)
     monkeypatch.setenv("DATABASE_URL", URL)
 
-    root = tmp_path / "bo du lieu"
+    root = tmp_path / "sources"
     files = {
         "I. Quản lý thuế/ND125_2020.pdf": variant(sample_pdf, "nd125"),
         "I. Quản lý thuế/L108_2025_QH15.pdf": variant(sample_pdf, "l108"),
