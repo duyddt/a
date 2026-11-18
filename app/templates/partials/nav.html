@@ -1,0 +1,17 @@
+{#- Tab chính trên thanh trên cùng. Tab đang mở suy ra từ địa chỉ trang.
+    Trang chủ đổi tên theo vai trò: Việc của tôi (người chỉnh sửa), Việc phê duyệt (người phê duyệt), Tổng quan (Admin). -#}
+{% if current_user is defined and current_user %}
+{% set path = request.url.path %}
+{% set role = current_user.role %}
+{% set home_label = "Tổng quan" if role == "admin" else ("Việc phê duyệt" if role == "approver" else "Việc của tôi") %}
+{% set tabs = [("/", home_label), ("/documents", "Văn bản")] %}
+{% if role == "admin" and current_user.is_approved %}
+{% set tabs = tabs + [("/admin/assign", "Phân công"), ("/admin/stats", "Thống kê"), ("/admin/users", "Tài khoản")] %}
+{% endif %}
+<nav class="tabs" aria-label="Điều hướng chính">
+  {% for href, label in tabs %}
+  {% set active = (path == "/") if href == "/" else (path == href or path.startswith(href ~ "/")) %}
+  <a class="tab" href="{{ href }}"{% if active %} aria-current="page"{% endif %}>{{ label }}</a>
+  {% endfor %}
+</nav>
+{% endif %}

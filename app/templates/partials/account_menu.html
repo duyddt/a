@@ -1,0 +1,20 @@
+{#- Menu tài khoản trên thanh tiêu đề: tên, vai trò, đổi mật khẩu, đăng xuất. -#}
+{% from "partials/icon.html" import icon %}
+{% if current_user is defined and current_user %}
+<details class="menu account-menu">
+  <summary class="cmd" title="Tài khoản {{ current_user.username }}">
+    {{ icon("person") }}<span class="cmd-label">{{ current_user.display_name or current_user.username }}</span>{{ icon("chevron-down") }}
+  </summary>
+  <div class="menu-panel">
+    <div class="menu-head">
+      <strong>{{ current_user.display_name or current_user.username }}</strong>
+      <span class="muted small">{{ current_user.username }}</span>
+      <span class="tag role-{{ current_user.role }}">{{ ROLE_LABELS[current_user.role] }}</span>
+    </div>
+    <a class="menu-item" href="/account/password">{{ icon("key") }}Đổi mật khẩu</a>
+    <form method="post" action="/account/logout">
+      <button type="submit" class="menu-item">{{ icon("sign-out") }}Đăng xuất</button>
+    </form>
+  </div>
+</details>
+{% endif %}

@@ -59,6 +59,14 @@ def sees_every_version(user: dict | None) -> bool:
     return bool(user) and user.get("role") in ("approver", "admin")
 
 
+def require_final_reader(request: Request) -> dict:
+    """Dependency cho dữ liệu lấy từ bản chốt: 401 nếu chưa đăng nhập, 403 nếu không phải người phê duyệt / Admin."""
+    user = require_reviewer(request)
+    if not sees_every_version(user):
+        raise HTTPException(status_code=403, detail="Chỉ người phê duyệt hoặc Admin xem được bản chốt")
+    return user
+
+
 def workflow_out(state) -> WorkflowOut:
     return WorkflowOut(
         document_id=state.document_id,
@@ -336,9 +344,11 @@ def post_review(request: Request, document_id: str, unit_id: str, body: ReviewRe
     summary="Xuất JSON các đơn vị đã duyệt (kèm bản sửa chữ)",
     response_class=JSONResponse,
 )
-def export_approved(document_id: str, catalog=Depends(get_catalog)):
+def export_approved(request: Request, document_id: str, catalog=Depends(get_catalog)):
     """Tệp tải về có cùng các trường như LegalDocument, chỉ gồm đơn vị đã duyệt TRÊN BẢN CHỐT, nội dung là bản chốt.
-    Header `X-Export-Units` cho biết số đơn vị đã xuất / tổng; `X-Export-Parent-Missing` là số đơn vị đã duyệt mà đơn vị cha chưa duyệt."""
+    Header `X-Export-Units` cho biết số đơn vị đã xuất / tổng; `X-Export-Parent-Missing` là số đơn vị đã duyệt mà đơn vị cha chưa duyệt.
+    Chỉ người phê duyệt / Admin: người chỉnh sửa không được xem bản chốt."""
+    require_final_reader(request)
     loaded = load_or_404(catalog, document_id)
     if not loaded.can_review:
         raise HTTPException(status_code=501, detail="Xuất dữ liệu đã duyệt cần PostgreSQL")
@@ -354,8 +364,9 @@ def export_approved(document_id: str, catalog=Depends(get_catalog)):
 
 
 @router.get("/documents/{document_id}/ocr-report", summary="Báo cáo lỗi ký tự OCR, nguyên nhân và độ chính xác (%)")
-def get_ocr_report(document_id: str, catalog=Depends(get_catalog)):
-    """Tính trên bản chốt (chuẩn đối chiếu)."""
+def get_ocr_report(request: Request, document_id: str, catalog=Depends(get_catalog)):
+    """Tính trên bản chốt (chuẩn đối chiếu), nên chỉ người phê duyệt / Admin xem được."""
+    require_final_reader(request)
     loaded = load_or_404(catalog, document_id)
     return build_ocr_report(loaded.doc, loaded.reviews)
 

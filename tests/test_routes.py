@@ -13,19 +13,21 @@ from fastapi.testclient import TestClient  # noqa: E402
 from app.main import create_app  # noqa: E402
 
 DOC = "ND254_2026"
+ADMIN_PW = "admin-pass-for-tests"
 
 
 @pytest.fixture
 def anonymous(data_dir, tmp_path):
-    settings = Settings(data_dir=data_dir, storage_dir=tmp_path / "storage", conninfo=None, auto_import_dir=None)
+    settings = Settings(data_dir=data_dir, storage_dir=tmp_path / "storage", conninfo=None, auto_import_dir=None,
+                        admin_password=ADMIN_PW)
     with TestClient(create_app(settings, catalog=DocumentStore(data_dir))) as test_client:  # lifespan tạo admin
         yield test_client
 
 
 @pytest.fixture
 def client(anonymous):
-    """Đã đăng nhập bằng admin mặc định: mọi trang và API đều cần tài khoản."""
-    login = anonymous.post("/account/login", data={"username": "admin", "password": "admin123"}, follow_redirects=False)
+    """Đã đăng nhập bằng admin: mọi trang và API đều cần tài khoản."""
+    login = anonymous.post("/account/login", data={"username": "admin", "password": ADMIN_PW}, follow_redirects=False)
     assert login.status_code == 303
     return anonymous
 
@@ -44,7 +46,7 @@ def test_pages_send_anonymous_users_to_login_and_come_back(anonymous):
     htmx = anonymous.get(f"/documents/{DOC}/units/ND254_2026_D9", headers={"HX-Request": "true"})
     assert htmx.status_code == 401 and htmx.headers["hx-redirect"].startswith("/login?next=")
     signed_in = anonymous.post("/account/login", follow_redirects=False, data={
-        "username": "admin", "password": "admin123", "redirect_to": f"/documents/{DOC}?unit=ND254_2026_D9"})
+        "username": "admin", "password": ADMIN_PW, "redirect_to": f"/documents/{DOC}?unit=ND254_2026_D9"})
     assert signed_in.headers["location"] == f"/documents/{DOC}?unit=ND254_2026_D9"
 
 
@@ -80,8 +82,8 @@ def test_viewer_partial_changes_page_and_zoom(client):
 def test_every_page_has_sun_moon_theme_toggle(client):
     for url in ("/login", "/", f"/documents/{DOC}"):
         html = client.get(url).text
-        assert html.count('class="btn-theme-toggle"') == 1, url
-        assert 'class="icon-moon"' in html and 'class="icon-sun"' in html
+        assert html.count('btn-theme-toggle"') == 1, url
+        assert "#moon" in html and "#sun" in html  # icon trong sprite /static/icons.svg
     css = client.get("/static/style.css").text
     assert ':root[data-theme="dark"]' in css
 
@@ -145,6 +147,11 @@ def test_api_import_needs_postgres_in_file_mode(client, sample_pdf, sample_json)
     assert response.status_code == 501
 
 
+def test_api_docs_need_login(anonymous):
+    for url in ("/docs", "/redoc", "/openapi.json"):
+        assert anonymous.get(url, follow_redirects=False).headers["location"].startswith("/login"), url
+
+
 def test_openapi_documents_every_endpoint(client):
     assert client.get("/docs").status_code == 200
     paths = client.get("/openapi.json").json()["paths"]
@@ -176,4 +183,24 @@ def test_file_mode_has_no_folders_and_lists_documents_flat(client):
     assert client.get("/api/categories").json() == []
     page = client.get("/").text
     assert 'id="document-table"' in page and 'id="folder-table"' not in page and 'name="category"' not in page
-    assert client.get("/?folder=I", follow_redirects=False).headers["location"].startswith("/?err=")
+    assert client.get("/?folder=I", follow_redirects=False).headers["location"] == "/documents?folder=I"
+    assert client.get("/documents?folder=I", follow_redirects=False).headers["location"].startswith("/documents?err=")
+
+
+def test_home_in_file_mode_goes_to_the_library(client):
+    response = client.get("/", follow_redirects=False)
+    assert response.status_code == 303 and response.headers["location"] == "/documents"
+    assert client.get("/?msg=xong", follow_redirects=False).headers["location"] == "/documents?msg=xong"
+
+
+def test_library_search_filters_rows(client):
+    assert f"/documents/{DOC}" in client.get("/documents?q=254").text
+    page = client.get("/documents?q=khongcovanbannay").text
+    assert "Không có văn bản nào khớp bộ lọc" in page and f"/documents/{DOC}\"" not in page
+
+
+def test_review_page_has_action_bar_tree_filters_and_doc_header(client):
+    page = client.get(f"/documents/{DOC}").text
+    assert 'class="doc-head"' in page and 'class="crumbs"' in page and 'href="/documents"' in page
+    assert 'data-state="unreviewed"' in page and 'id="tree-filter"' in page
+    assert 'class="unit-actions"' in page and 'data-go="next"' in page

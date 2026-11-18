@@ -1,4 +1,4 @@
-"""FastAPI: API JSON (/api, xem /docs) và giao diện kiểu File Explorer có Xác thực & Phân quyền Admin."""
+"""FastAPI: API JSON (/api, xem /docs) và giao diện web theo công việc, có Xác thực & Phân quyền Admin."""
 from __future__ import annotations
 
 import logging
@@ -6,7 +6,7 @@ import math
 import shutil
 from contextlib import asynccontextmanager
 from pathlib import Path
-from urllib.parse import quote
+from urllib.parse import quote, urlsplit
 
 from fastapi import Depends, FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.concurrency import run_in_threadpool
@@ -16,16 +16,16 @@ from fastapi.templating import Jinja2Templates
 
 from app.api import MAX_UPLOAD_BYTES, get_catalog, load_or_404, sees_every_version
 from app.api import router as api_router
-from app.config import DEFAULT_ADMIN_PASSWORD, Settings, load_settings
+from app.config import Settings, load_settings
 from app.services.accounts import ROLE_LABELS, ROLES, AccountService, can_review, is_active, is_admin
 from app.services.auth import (
     LoginThrottle,
     load_or_create_secret,
-    sign_session,
     validate_password,
     validate_username,
+    verify_password,
 )
-from app.services.categories import group_into_folders
+from app.services.categories import Category, group_into_folders
 from app.services.models import DOC_ID_RE, ImportProblem
 from app.services.review import (
     ACTION_LABELS,
@@ -38,7 +38,15 @@ from app.services.review import (
     resume_unit_id,
 )
 from app.services.store import DocumentStore
-from app.services.tree import build_tree, decorate_for_page, person_marks
+from app.services.tree import (
+    build_tree,
+    decorate_for_page,
+    full_label,
+    neighbours,
+    next_unreviewed,
+    person_marks,
+    tree_order,
+)
 from app.services.views import (
     DEFAULT_ZOOM,
     FIT,
@@ -59,10 +67,12 @@ from app.web_auth import (
     current_user,
     is_public_path,
     safe_next,
+    session_token_for,
 )
 
 BASE_DIR = Path(__file__).resolve().parent
 log = logging.getLogger("review-app")
+UNSAFE_METHODS = frozenset({"POST", "PUT", "PATCH", "DELETE"})
 
 SECURITY_HEADERS = {
     "X-Content-Type-Options": "nosniff",
@@ -120,18 +130,23 @@ def create_app(settings: Settings | None = None, catalog=None) -> FastAPI:
     templates.env.globals["OCR_REASONS"] = OCR_REASONS
     templates.env.globals["ROLE_LABELS"] = ROLE_LABELS
 
+    def nav_categories() -> list[Category]:
+        """Thư mục cho ngăn điều hướng của mọi trang (base.html -> partials/nav.html)."""
+        catalog = getattr(app.state, "catalog", None)
+        try:
+            return sorted(catalog.list_categories(), key=Category.sort_key) if catalog is not None else []
+        except Exception:  # CSDL mất kết nối giữa chừng: ngăn điều hướng chỉ thiếu thư mục, trang vẫn hiện
+            log.exception("Không đọc được danh mục cho ngăn điều hướng")
+            return []
+
+    templates.env.globals["nav_categories"] = nav_categories
+
     def set_catalog(app: FastAPI, new_catalog) -> None:
         app.state.catalog = new_catalog
         app.state.accounts = AccountService(new_catalog) if new_catalog is not None else None
 
     def ensure_admin(app: FastAPI) -> None:
-        app.state.accounts.ensure_admin(settings.admin_username, settings.admin_password)
-        if settings.admin_password == DEFAULT_ADMIN_PASSWORD:
-            log.warning(
-                "Tài khoản quản trị: %s / %s (mật khẩu mặc định, chỉ dùng để chạy thử trên máy cá nhân). "
-                "Khi cho người khác truy cập, hãy đặt ADMIN_PASSWORD trong .env.",
-                settings.admin_username, DEFAULT_ADMIN_PASSWORD,
-            )
+        app.state.accounts.ensure_admin(settings.admin_username, settings.admin_password, settings.storage_dir)
 
     def detail_context(request: Request, loaded, unit, **extra) -> dict:
         unit_review = loaded.reviews.get(unit.unit_id) if unit else None
@@ -170,7 +185,20 @@ def create_app(settings: Settings | None = None, catalog=None) -> FastAPI:
             "errors": [],
             "form_note": "",
             "form_content": None,
+            "reason_open": None,  # "flag" / "structure_error": mở sẵn ô lý do (lưu lỗi vì thiếu lý do)
         }
+        if unit:
+            prev_id, next_id = neighbours(tree_order(loaded.doc.legal_units), unit.unit_id)
+            base = f"/documents/{quote(loaded.doc.document_id, safe='')}/units/"
+            article = next((u for u in loaded.doc.legal_units if u.article == unit.article and u.clause is None
+                            and u.point is None), None) if unit.article is not None else None
+            context.update(
+                unit_label=full_label(unit),
+                article_title=article.title if article else None,
+                prev_id=prev_id, next_id=next_id,
+                prev_url=base + quote(prev_id, safe="") if prev_id else None,
+                next_url=base + quote(next_id, safe="") if next_id else None,
+            )
         context.update(extra)
         return context
 
@@ -240,6 +268,18 @@ def create_app(settings: Settings | None = None, catalog=None) -> FastAPI:
         return RedirectResponse(url=login_url, status_code=303)
 
     @app.middleware("http")
+    async def same_origin_writes(request: Request, call_next):
+        """Chặn yêu cầu ghi gửi từ trang web khác (CSRF), bổ sung cho cookie SameSite=Lax: trình duyệt luôn gửi Origin
+        (hoặc Referer) với POST, và nó phải trùng host của chính ứng dụng. Công cụ dòng lệnh không gửi thì cho qua."""
+        if request.method in UNSAFE_METHODS:
+            source = request.headers.get("origin") or request.headers.get("referer")
+            if source:
+                own_hosts = {(request.headers.get(h) or "").lower() for h in ("host", "x-forwarded-host")} - {""}
+                if source == "null" or urlsplit(source).netloc.lower() not in own_hosts:
+                    return JSONResponse(status_code=403, content={"detail": "Yêu cầu đến từ trang web khác"})
+        return await call_next(request)
+
+    @app.middleware("http")
     async def security_headers(request: Request, call_next):
         response = await call_next(request)
         for name, value in SECURITY_HEADERS.items():
@@ -278,10 +318,10 @@ def create_app(settings: Settings | None = None, catalog=None) -> FastAPI:
             status_code=status_code,
         )
 
-    def signed_in_redirect(request: Request, username: str, redirect_to: str) -> RedirectResponse:
+    def signed_in_redirect(request: Request, account: dict, redirect_to: str) -> RedirectResponse:
         resp = RedirectResponse(url=safe_next(redirect_to), status_code=303)
         resp.set_cookie(
-            SESSION_COOKIE, sign_session(username, app.state.secret_key), max_age=settings.session_max_age,
+            SESSION_COOKIE, session_token_for(account, app.state.secret_key), max_age=settings.session_max_age,
             httponly=True, samesite="lax", secure=request.url.scheme == "https",
         )
         resp.delete_cookie(LEGACY_REVIEWER_COOKIE)
@@ -304,7 +344,10 @@ def create_app(settings: Settings | None = None, catalog=None) -> FastAPI:
             throttle.failed(ip, clean_user)
             return login_page_response(request, redirect_to, err="Sai tên tài khoản hoặc mật khẩu!", status_code=401)
         throttle.succeeded(ip, clean_user)
-        return signed_in_redirect(request, acc["username"], redirect_to)
+        if not is_active(acc):
+            return login_page_response(request, redirect_to, status_code=403,
+                                       err="Tài khoản đang bị khóa. Liên hệ Admin để mở lại.")
+        return signed_in_redirect(request, acc, redirect_to)
 
     @app.post("/account/logout", include_in_schema=False)
     def logout_submit():
@@ -358,6 +401,58 @@ def create_app(settings: Settings | None = None, catalog=None) -> FastAPI:
             return RedirectResponse(url="/admin/users?err=Thao+tác+không+hợp+lệ", status_code=303)
         app.state.accounts.set_permission(target_user, role, active)
         return RedirectResponse(url=f"/admin/users?msg=Đã+cập+nhật+tài+khoản+{quote(target_user)}", status_code=303)
+
+    @app.post("/admin/users/{target_user}/password", include_in_schema=False)
+    def admin_reset_password(request: Request, target_user: str, new_password: str = Form(...)):
+        """Admin đặt mật khẩu mới cho người khác (mọi phiên cũ của người đó hết hiệu lực). Mật khẩu của chính mình đổi ở
+        /account/password vì phải nhập mật khẩu hiện tại."""
+        user = current_user(request)
+        if not is_admin(user):
+            raise HTTPException(status_code=403, detail="Chỉ Admin mới đặt lại được mật khẩu")
+        if target_user == user["username"]:
+            return RedirectResponse(url="/admin/users?err=Đổi+mật+khẩu+của+bạn+ở+mục+Đổi+mật+khẩu", status_code=303)
+        if app.state.accounts.get(target_user) is None:
+            return RedirectResponse(url=f"/admin/users?err=Không+có+tài+khoản+{quote(target_user)}", status_code=303)
+        problem = validate_password(new_password)
+        if problem:
+            return RedirectResponse(url=f"/admin/users?err={quote(problem)}", status_code=303)
+        app.state.accounts.set_password(target_user, new_password)
+        log.info("Admin %s đặt lại mật khẩu tài khoản %s.", user["username"], target_user)
+        return RedirectResponse(url=f"/admin/users?msg=Đã+đặt+lại+mật+khẩu+{quote(target_user)}", status_code=303)
+
+    def password_page(request: Request, err: str = "", msg: str = "", status_code: int = 200):
+        user = current_user(request)
+        # ADMIN_PASSWORD được đặt thì mỗi lần khởi động mật khẩu admin quay về giá trị đó: báo trước cho admin biết
+        env_managed = bool(user and user["username"] == settings.admin_username and settings.admin_password)
+        return templates.TemplateResponse(
+            request, "account_password.html",
+            {"current_user": user, "err": err, "msg": msg, "env_managed": env_managed},
+            status_code=status_code,
+        )
+
+    @app.get("/account/password", include_in_schema=False)
+    def account_password_page(request: Request, msg: str = ""):
+        return password_page(request, msg=msg)
+
+    @app.post("/account/password", include_in_schema=False)
+    def account_password_submit(request: Request, current_password: str = Form(""), new_password: str = Form(...),
+                                confirm_password: str = Form(...)):
+        """Tự đổi mật khẩu: phải đúng mật khẩu hiện tại. Xong thì cấp cookie mới (phiên ở máy khác hết hiệu lực)."""
+        user = current_user(request)  # middleware đã bảo đảm đã đăng nhập và đang hoạt động
+        accounts, throttle, ip = app.state.accounts, app.state.login_throttle, client_ip(request)
+        if throttle.retry_after(ip, user["username"]):
+            return password_page(request, err="Nhập sai quá nhiều lần. Vui lòng thử lại sau.", status_code=429)
+        account = accounts.get(user["username"])
+        if not verify_password(current_password, account.get("password_hash") if account else None):
+            throttle.failed(ip, user["username"])
+            return password_page(request, err="Mật khẩu hiện tại không đúng.", status_code=400)
+        if new_password != confirm_password:
+            return password_page(request, err="Hai lần nhập mật khẩu mới không khớp.", status_code=400)
+        problem = validate_password(new_password)
+        if problem:
+            return password_page(request, err=problem, status_code=400)
+        accounts.set_password(user["username"], new_password)
+        return signed_in_redirect(request, accounts.get(user["username"]), "/account/password?msg=Đã+đổi+mật+khẩu")
 
     # ---- THỐNG KÊ (Admin) ----
 
@@ -471,10 +566,10 @@ def create_app(settings: Settings | None = None, catalog=None) -> FastAPI:
     # ---- THÊM / XÓA VĂN BẢN ----
 
     def list_redirect(err: str = "", msg: str = "", folder: str = "") -> RedirectResponse:
-        """Về màn hình danh sách (về đúng thư mục `folder` nếu có) kèm thông báo."""
+        """Về kho văn bản (lọc đúng chủ đề `folder` nếu có) kèm thông báo."""
         query = f"err={quote(err)}" if err else f"msg={quote(msg)}"
         place = f"folder={quote(folder.strip())}&" if folder.strip() else ""
-        return RedirectResponse(url=f"/?{place}{query}", status_code=303)
+        return RedirectResponse(url=f"/documents?{place}{query}", status_code=303)
 
     @app.post("/documents/upload", include_in_schema=False)
     def upload_document_ui(request: Request, pdf: UploadFile = File(...), document: UploadFile | None = File(None),
@@ -546,55 +641,111 @@ def create_app(settings: Settings | None = None, catalog=None) -> FastAPI:
     # ---- CÁC TRANG CHÍNH ----
 
     @app.get("/", include_in_schema=False)
-    def document_list(request: Request, folder: str = "", msg: str = "", err: str = "", catalog=Depends(get_catalog)):
-        """Danh sách văn bản dạng cây thư mục như bộ dữ liệu: gốc là các danh mục, ?folder=I là văn bản của danh mục I."""
+    def home(request: Request, folder: str = "", msg: str = "", err: str = "", catalog=Depends(get_catalog)):
+        """Trang chủ theo vai trò: việc được giao (người chỉnh sửa), hàng đợi phê duyệt, tổng quan (Admin).
+        Địa chỉ cũ /?folder=X chuyển sang kho văn bản đã lọc theo chủ đề."""
+        if folder or not hasattr(catalog, "record_workflow"):  # chế độ thư mục file: không có phân công
+            query = "&".join(f"{k}={quote(v)}" for k, v in (("folder", folder), ("msg", msg), ("err", err)) if v)
+            return RedirectResponse(url="/documents" + (f"?{query}" if query else ""), status_code=303)
         user = current_user(request)  # luôn có: middleware require_login đã chặn người chưa đăng nhập
-        username = user["username"]
+        username, role = user["username"], user["role"]
+        items = [item for item in catalog.list_documents(viewer=user) if item.problem is None]
+        flows = [item for item in items if item.workflow is not None]
+        context = {"current_user": user, "msg": msg, "err": err, "db_error": app.state.db_error,
+                   "STATUS_LABELS": STATUS_LABELS, "role": role}
+        if role == "reviewer":
+            mine = [item for item in flows if item.workflow.is_editor(username)]
+            submitted = [item for item in mine if item.workflow.has_submitted(username)]
+            returned = [item for item in mine if item not in submitted and item.workflow.status == "returned"]
+            doing = [item for item in mine if item not in submitted and item not in returned]
+            context.update(mine=mine, returned=returned, doing=doing, submitted=submitted,
+                           resume=resume_card(user, returned + doing, catalog))
+        elif role == "approver":
+            waiting = [item for item in flows
+                       if item.workflow.status == "pending" and item.workflow.is_approver_for(username)]
+            editing = [item for item in flows if item.workflow.approver == username
+                       and item.workflow.status in ("editing", "returned")]
+            approved = [item for item in flows
+                        if item.workflow.approver == username and item.workflow.status == "approved"]
+            context.update(waiting=waiting, editing=editing, approved=approved)
+        else:
+            counts = dict.fromkeys(STATUS_LABELS, 0)
+            for item in flows:
+                counts[item.workflow.status] += 1
+            folders, _ = group_into_folders(items, catalog.list_categories())
+            context.update(
+                counts=counts, total=len(items), folders=folders,
+                waiting=[item for item in flows if item.workflow.status == "pending"],
+                returned=[item for item in flows if item.workflow.status == "returned"],
+            )
+        return templates.TemplateResponse(request, "home.html", context)
+
+    def resume_card(user: dict, candidates: list, catalog) -> dict | None:
+        """Văn bản đang làm mà tài khoản mở gần nhất, kèm đơn vị và trang đã dừng (bảng reviewer_progress)."""
+        best = None
+        for item in candidates:
+            saved = app.state.accounts.get_progress(user["username"], item.document_id)
+            if not saved:
+                continue
+            newer = best is None or (saved.get("updated_at") and best[1].get("updated_at")
+                                     and saved["updated_at"] > best[1]["updated_at"])
+            if newer:
+                best = (item, saved)
+        if best is None:
+            return None
+        item, saved = best
+        try:
+            unit = catalog.get(item.document_id, viewer=user).units_by_id.get(saved["last_unit_id"])
+        except (KeyError, ImportProblem):
+            return None
+        return {"item": item, "saved": saved, "unit_label": full_label(unit) if unit else saved["last_unit_id"]}
+
+    @app.get("/documents", include_in_schema=False)
+    def library(request: Request, folder: str = "", status: str = "", q: str = "", msg: str = "", err: str = "",
+                catalog=Depends(get_catalog)):
+        """Kho văn bản: một bảng, lọc theo chủ đề (I → X), trạng thái quy trình và chữ trong mã, số hiệu, tên."""
+        user = current_user(request)
         items = catalog.list_documents(viewer=user)  # tiến độ theo bản của người xem
         folders, loose = group_into_folders(items, catalog.list_categories())
-        my_work = queue = None
-        if hasattr(catalog, "record_workflow") and is_active(user):
-            flows = [item for item in items if item.problem is None and item.workflow is not None]
-            if user["role"] == "reviewer":
-                my_work = [item for item in flows if item.workflow.is_editor(username)]
-            else:  # người phê duyệt: văn bản đã chuyển sang và giao cho mình (hoặc chưa giao ai); Admin: mọi văn bản chờ
-                queue = [item for item in flows if item.workflow.status == "pending"
-                         and (user["role"] == "admin" or item.workflow.is_approver_for(username))]
-        current = None
-        if folder:
-            current = next((f for f in folders if f.category.code == folder), None)
-            if current is None:
-                return RedirectResponse(url=f"/?err={quote(f'Không có danh mục {folder}')}", status_code=303)
-        listed = current.documents if current else loose
-        user_progress_map = {}
-        if username:
-            for item in listed:
-                if not item.problem:
-                    saved = app.state.accounts.get_progress(username, item.document_id)
-                    if saved:
-                        user_progress_map[item.document_id] = saved
-        return templates.TemplateResponse(
-            request,
-            "list.html",
-            {
-                "items": items,
-                "folders": folders,
-                "loose": loose,
-                "current": current,
-                "listed": listed,
-                "category_names": {f.category.code: f.category.label for f in folders},
-                "current_user": user,
-                "reviewer": username,
-                "user_progress_map": user_progress_map,
-                "my_work": my_work,
-                "queue": queue,
-                "msg": msg,
-                "err": err,
-                "can_upload": app.state.importer is not None and is_admin(user),
-                "can_replace": is_admin(user),
-                "db_error": app.state.db_error,
-            },
-        )
+        current = next((f for f in folders if f.category.code == folder), None) if folder else None
+        if folder and current is None:
+            return RedirectResponse(url=f"/documents?err={quote('Không có chủ đề ' + folder)}", status_code=303)
+        if current:
+            ordered = list(current.documents)
+        else:  # theo thứ tự chủ đề I → X rồi tới văn bản chưa xếp chủ đề; văn bản ở nhiều chủ đề chỉ hiện một lần
+            seen, ordered = set(), []
+            for f in folders:
+                for item in f.documents:
+                    if item.document_id not in seen:
+                        seen.add(item.document_id)
+                        ordered.append(item)
+            ordered += loose
+        has_workflow = any(item.workflow is not None for item in items if item.problem is None)
+        status = status if status in STATUS_LABELS and has_workflow else ""
+        needle = q.strip().lower()
+
+        def state_of(item) -> str:
+            return item.workflow.status if item.problem is None and item.workflow is not None else ""
+
+        def text_hit(item) -> bool:
+            text = " ".join(filter(None, (item.document_id, item.document_no, item.title))).lower()
+            return not needle or needle in text
+
+        rows = [item for item in ordered if text_hit(item) and (not status or state_of(item) == status)]
+        topic_counts = {f.category.code: sum(1 for item in f.documents
+                                             if text_hit(item) and (not status or state_of(item) == status))
+                        for f in folders}
+        in_scope = [item for item in ordered if text_hit(item)]
+        status_counts = {code: sum(1 for item in in_scope if state_of(item) == code) for code in STATUS_LABELS}
+        unique = {item.document_id for item in items}
+        return templates.TemplateResponse(request, "library.html", {
+            "current_user": user, "rows": rows, "folders": folders, "current": current, "status": status,
+            "q": q.strip(), "all_count": len(unique), "topic_counts": topic_counts, "status_counts": status_counts,
+            "has_workflow": has_workflow, "category_names": {f.category.code: f.category.label for f in folders},
+            "STATUS_LABELS": STATUS_LABELS, "msg": msg, "err": err,
+            "can_upload": app.state.importer is not None and is_admin(user),
+            "can_replace": is_admin(user), "db_error": app.state.db_error,
+        })
 
     @app.get("/documents/{document_id}", include_in_schema=False)
     def review(request: Request, document_id: str, unit: str | None = None, page: int | None = None,
@@ -702,7 +853,8 @@ def create_app(settings: Settings | None = None, catalog=None) -> FastAPI:
     @app.post("/documents/{document_id}/units/{unit_id}/review", include_in_schema=False)
     def review_action(request: Request, document_id: str, unit_id: str, action: str = Form(...),
                       note: str = Form(""), ocr_reason: str = Form(""), content: str = Form(""),
-                      source: str = Form(""), catalog=Depends(get_catalog)):
+                      source: str = Form(""), advance: str = Form(""), catalog=Depends(get_catalog)):
+        """Một thao tác thẩm định trên đơn vị. `advance` (nút Duyệt & tiếp): duyệt xong thì trả về đơn vị chưa soát kế tiếp."""
         user = current_user(request)
         loaded = load_or_404(catalog, document_id, user)
         selected = loaded.units_by_id.get(unit_id)
@@ -726,7 +878,8 @@ def create_app(settings: Settings | None = None, catalog=None) -> FastAPI:
                 errors = exc.problems
         if errors:
             context = detail_context(request, loaded, selected, errors=errors, form_note=note,
-                                     form_content=content if action == "edit" else None, oob=False)
+                                     form_content=content if action == "edit" else None, oob=False,
+                                     reason_open=action if action in ("flag", "structure_error") else None)
             return templates.TemplateResponse(request, "partials/detail.html", context)
         loaded = catalog.get(document_id, viewer=user)
         selected = loaded.units_by_id[unit_id]
@@ -737,8 +890,18 @@ def create_app(settings: Settings | None = None, catalog=None) -> FastAPI:
             reviewer=reviewer,
             saved_unit_id=unit_id,
         ) or unit_id
+        acted = {"unit_id": unit_id, "review": loaded.reviews.get(unit_id)}  # chấm trạng thái trên cây (hx-swap-oob)
+        shown = selected
+        if advance and action == "approve":
+            following = next_unreviewed(tree_order(loaded.doc.legal_units), unit_id, loaded.reviews)
+            if following:
+                shown = loaded.units_by_id[following]
+                next_uid = following
         app.state.accounts.save_progress(reviewer, document_id, next_uid, first_page_of(loaded.units_by_id.get(next_uid)))
-        context = detail_context(request, loaded, selected, progress=progress_of(loaded))
+        extra = {"progress": progress_of(loaded), "acted": acted, "advanced": shown is not selected}
+        if shown is not selected:  # sang đơn vị khác: khung PDF nhảy tới trang của đơn vị đó
+            extra["v"] = viewer_context(loaded, first_page_of(shown), FIT, shown.unit_id)
+        context = detail_context(request, loaded, shown, **extra)
         return templates.TemplateResponse(request, "review_response.html", context)
 
     return app

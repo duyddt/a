@@ -14,7 +14,7 @@ from app.services.review import (
     fold_tracks,
     progress,
 )
-from app.services.tree import build_tree
+from app.services.tree import build_tree, full_label, neighbours, next_unreviewed, tree_order
 from app.services.views import vn_time
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
@@ -220,8 +220,8 @@ def env():
 
 def render_detail(env, doc, **extra):
     unit = next(u for u in doc.legal_units if u.unit_id == "ND254_2026_D9_K1_a")
-    context = dict(doc=doc, unit=unit, can_review=True, review=None, history=[], reviewer="", errors=[],
-                   form_note="", form_content=None)
+    context = dict(doc=doc, unit=unit, unit_label=full_label(unit), can_review=True, review=None, history=[],
+                   reviewer="", errors=[], form_note="", form_content=None)
     context.update(extra)
     return env.get_template("partials/detail.html").render(**context)
 
@@ -244,7 +244,7 @@ def test_detail_shows_status_note_history_and_edit_marker(env, doc):
     html = render_detail(env, doc, review=review, history=list(reversed(events)), reviewer="Duy")
     assert "Gắn cờ" in html and "lệch với trang 1" in html and "Đã sửa chữ (1 lần)" in html
     assert "Bỏ đánh dấu" in html and "Lịch sử thao tác (2)" in html and "Dũng" in html
-    assert "31/10/2026 07:45" in html and 'class="reviewer-name"' in html
+    assert "31/10/2026 07:45" in html and "lệch với trang 1" in html
     assert 'name="reviewer"' not in html  # người soát là tài khoản đăng nhập, không còn ô tự gõ tên
 
 
@@ -259,10 +259,11 @@ def test_detail_without_database_has_no_buttons(env, doc):
     assert "Duyệt" not in html and "PostgreSQL" in html
 
 
-def test_detail_for_a_locked_account_is_read_only(env, doc):
-    locked = {"username": "bi_khoa", "role": "reviewer", "is_approved": False}
-    html = render_detail(env, doc, can_review=False, db_ready=True, current_user=locked)
-    assert "đang bị khóa" in html and "bi_khoa" in html and 'hx-post' not in html and "PostgreSQL" not in html
+def test_detail_without_review_rights_is_read_only(env, doc):
+    """Có PostgreSQL nhưng tài khoản không thao tác được: chỉ đọc, không nút, không nhắc PostgreSQL.
+    (Tài khoản bị khóa không tới được trang này: test_security.test_locked_account_cannot_sign_in...)"""
+    html = render_detail(env, doc, can_review=False, db_ready=True)
+    assert "chỉ xem được" in html and 'hx-post' not in html and "PostgreSQL" not in html
 
 
 def test_progress_bar_and_review_response_render(env, doc):
@@ -283,7 +284,7 @@ def test_progress_bar_and_review_response_render(env, doc):
 
 def test_edit_button_opens_a_focused_editor_with_only_text_and_a_small_toolbar(env, doc):
     html = render_detail(env, doc)
-    assert 'onclick="enterFocusEdit()"' in html and "✎ Sửa chữ" in html
+    assert 'onclick="enterFocusEdit()"' in html and "Sửa chữ <kbd>E</kbd></button>" in html
     editor = html[html.index('id="focus-editor"'):]
     editor = editor[:editor.index("</section>")]
     assert 'id="focus-edit-textarea"' in editor and 'name="content"' in editor
@@ -296,9 +297,9 @@ def test_edit_button_opens_a_focused_editor_with_only_text_and_a_small_toolbar(e
 def test_review_page_hides_everything_but_the_pdf_and_the_editor_in_focus_mode():
     css = (Path(__file__).resolve().parents[1] / "app" / "static" / "style.css").read_text(encoding="utf-8")
     rules = css[css.index("/* CHẾ ĐỘ SỬA TẬP TRUNG"):]
-    rules = rules[:rules.index("/* KHUNG CHI TIẾT")]
-    for hidden in (".topbar", "#ocr-report-box", ".pane.right > .pane-title", "#explorer-tree-panel",
-                   ".detail > :not(#review-form)", "#review-form > :not(#focus-editor)"):
+    rules = rules[:rules.index("/* Quy trình trên thanh văn bản")]
+    for hidden in (".topbar", ".doc-head", ".review-flash", ".navpane", ".unit-actions",
+                   ".unit-body > :not(#review-form)", "#review-form > :not(#focus-editor)"):
         assert f"body.focus-edit {hidden}" in rules
     assert "body.focus-edit .focus-editor" in rules and "editing-single-unit" not in css
     page = (Path(__file__).resolve().parents[1] / "app" / "templates" / "review.html").read_text(encoding="utf-8")
@@ -310,3 +311,53 @@ def test_templates_have_no_byte_order_mark():
     """BOM ở đầu một partial thành một ký tự lạ trong trang (khung flex còn dành riêng một dòng cho nó)."""
     root = Path(__file__).resolve().parents[1] / "app" / "templates"
     assert [p.name for p in root.rglob("*.html") if p.read_bytes().startswith(b"\xef\xbb\xbf")] == []
+
+
+# ---- Thứ tự cây và Duyệt & tiếp ----
+
+def test_tree_order_is_depth_first_and_neighbours_follow_it(doc):
+    order = tree_order(doc.legal_units)
+    assert order == [u.unit_id for u in doc.legal_units]  # dữ liệu mẫu đã xếp cha trước con
+    assert order.index("ND254_2026_D9") < order.index("ND254_2026_D9_K1") < order.index("ND254_2026_D9_K1_a")
+    assert neighbours(order, order[0]) == (None, order[1])
+    assert neighbours(order, order[-1]) == (order[-2], None)
+    assert neighbours(order, "không có") == (None, None)
+
+
+def test_tree_order_puts_units_with_unknown_parent_at_the_root(doc):
+    orphan = doc.legal_units[-1].model_copy(update={"unit_id": "X", "parent_unit_id": "MẤT"})
+    assert tree_order([*doc.legal_units, orphan])[-1] == "X"
+
+
+def test_next_unreviewed_skips_reviewed_units_and_wraps_around(doc):
+    order = tree_order(doc.legal_units)
+    reviews = fold_events([ev(1, "approve", unit=order[1]), ev(2, "flag", unit=order[2], note="sai")])
+    assert next_unreviewed(order, order[0], reviews) == order[3]
+    everything_after = fold_events([ev(i, "approve", unit=u) for i, u in enumerate(order[4:], 1)])
+    assert next_unreviewed(order, order[3], everything_after) == order[0]  # hết cây thì quay lại từ đầu
+    done = fold_events([ev(i, "approve", unit=u) for i, u in enumerate(order, 1)])
+    assert next_unreviewed(order, order[0], done) is None
+
+
+def test_full_label_names_point_clause_and_article(doc):
+    by_id = {u.unit_id: u for u in doc.legal_units}
+    assert full_label(by_id["ND254_2026_D9_K1_a"]) == "Điểm a, Khoản 1, Điều 9"
+    assert full_label(by_id["ND254_2026_D9"]) == "Điều 9"
+
+
+def test_detail_action_bar_has_approve_and_next_with_shortcuts(env, doc):
+    order = tree_order(doc.legal_units)
+    i = order.index("ND254_2026_D9_K1_a")
+    html = render_detail(env, doc, prev_id=order[i - 1], next_id=order[i + 1],
+                         prev_url=f"/documents/ND254_2026/units/{order[i - 1]}", next_url=f"/documents/ND254_2026/units/{order[i + 1]}")
+    assert '"action": "approve", "advance": "1"' in html and 'data-key="a"' in html
+    assert 'data-go="prev"' in html and 'data-go="next"' in html
+    assert f'href="/documents/ND254_2026?unit={order[i + 1]}"' in html  # Tiếp vẫn là liên kết thường
+    reason = html[html.index('id="reason-row"'):]
+    assert reason.startswith('id="reason-row" hidden') and 'name="note"' in reason  # ô lý do chỉ mở khi Gắn cờ
+
+
+def test_detail_reopens_reason_after_missing_note(env, doc):
+    html = render_detail(env, doc, errors=["Cần ghi lý do"], reason_open="structure_error")
+    reason = html[html.index('id="reason-row"'):]
+    assert not reason.startswith('id="reason-row" hidden') and "Lỗi cấu trúc ở đâu" in reason

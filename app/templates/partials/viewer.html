@@ -1,9 +1,10 @@
-{#- Khung trái: ảnh trang PDF gốc và vùng tô vàng của đơn vị đang chọn.
-    Mặc định "Vừa trang" (zoom=0): cả trang nằm gọn trong khung, giữ đúng tỉ lệ (cỡ do script trong base.html tính). -#}
+{#- Ngăn xem trước (bên phải màn soát): ảnh trang PDF gốc và vùng tô vàng của đơn vị đang chọn.
+    Mặc định "Vừa trang" (zoom=0): cả trang nằm gọn trong khung, giữ đúng tỉ lệ (cỡ do static/viewer.js tính). -#}
+{% from "partials/icon.html" import icon %}
 <div id="viewer" class="viewer"{% if oob %} hx-swap-oob="true"{% endif %}
      data-base="{{ v.base }}" data-page="{{ v.page }}" data-zooms="{{ v.zooms|join(',') }}"{% if v.unit_id %} data-unit="{{ v.unit_id }}"{% endif %}>
   <div class="viewer-head">
-    <h2>📄 Bản gốc PDF Scan</h2>
+    <h2>{{ icon("document-pdf") }}Bản PDF gốc</h2>
     {% if v.chips %}
     <div class="unit-pages">
       <span class="muted">Trang của đơn vị:</span>
@@ -20,22 +21,22 @@
     {% endif %}
   </div>
   <div class="toolbar">
-    <button type="button" class="icon-btn" title="Trang trước" aria-label="Trang trước" {% if v.prev_url %}hx-get="{{ v.prev_url }}" hx-target="#viewer" hx-swap="outerHTML"{% else %}disabled{% endif %}>&larr;</button>
+    <button type="button" class="icon-btn" title="Trang trước" aria-label="Trang trước" {% if v.prev_url %}hx-get="{{ v.prev_url }}" hx-target="#viewer" hx-swap="outerHTML"{% else %}disabled{% endif %}>{{ icon("chevron-left") }}</button>
     <form class="goto" hx-get="{{ v.base }}" hx-target="#viewer" hx-swap="outerHTML">
       <label for="goto-page" class="wide-only">Trang</label>
       <input id="goto-page" type="number" name="page" min="1" max="{{ v.page_count }}" value="{{ v.page }}">
       <span>/ {{ v.page_count }}</span>
       <input type="hidden" name="zoom" value="{{ v.zoom }}">
       {% if v.unit_id %}<input type="hidden" name="unit" value="{{ v.unit_id }}">{% endif %}
-      <button type="submit" class="wide-only">Đi</button>
+      <button type="submit" class="btn small wide-only">Đi</button>
     </form>
-    <button type="button" class="icon-btn" title="Trang sau" aria-label="Trang sau" {% if v.next_url %}hx-get="{{ v.next_url }}" hx-target="#viewer" hx-swap="outerHTML"{% else %}disabled{% endif %}>&rarr;</button>
+    <button type="button" class="icon-btn" title="Trang sau" aria-label="Trang sau" {% if v.next_url %}hx-get="{{ v.next_url }}" hx-target="#viewer" hx-swap="outerHTML"{% else %}disabled{% endif %}>{{ icon("chevron-right") }}</button>
     <span class="spacer"></span>
-    <button type="button" class="icon-btn" title="Thu nhỏ" aria-label="Thu nhỏ" onclick="zoomViewer(-1)"{% if not v.fit and v.frame_width <= v.zooms[0] %} disabled{% endif %}>&minus;</button>
+    <button type="button" class="icon-btn" title="Thu nhỏ" aria-label="Thu nhỏ" onclick="zoomViewer(-1)"{% if not v.fit and v.frame_width <= v.zooms[0] %} disabled{% endif %}>{{ icon("zoom-out") }}</button>
     <span class="zoom-level" title="Cỡ trang so với chiều rộng khung">{{ v.frame_width }}%</span>
-    <button type="button" class="icon-btn" title="Phóng to" aria-label="Phóng to" onclick="zoomViewer(1)"{% if not v.fit and v.frame_width >= v.zooms[-1] %} disabled{% endif %}>+</button>
-    <button type="button" class="fit-btn{% if v.fit %} active{% endif %}" title="Cả trang nằm gọn trong khung" aria-pressed="{{ 'true' if v.fit else 'false' }}" hx-get="{{ v.fit_url }}" hx-target="#viewer" hx-swap="outerHTML">&#10530;<span class="btn-text"> Vừa trang</span></button>
-    <button type="button" class="fit-btn{% if not v.fit and v.frame_width == 100 %} active{% endif %}" title="Trang rộng vừa khung (cuộn để đọc tiếp)" hx-get="{{ v.fit_width_url }}" hx-target="#viewer" hx-swap="outerHTML">&harr;<span class="btn-text"> Chiều rộng</span></button>
+    <button type="button" class="icon-btn" title="Phóng to" aria-label="Phóng to" onclick="zoomViewer(1)"{% if not v.fit and v.frame_width >= v.zooms[-1] %} disabled{% endif %}>{{ icon("zoom-in") }}</button>
+    <button type="button" class="cmd fit-btn{% if v.fit %} active{% endif %}" title="Cả trang nằm gọn trong khung" aria-pressed="{{ 'true' if v.fit else 'false' }}" hx-get="{{ v.fit_url }}" hx-target="#viewer" hx-swap="outerHTML">{{ icon("fit-page") }}<span class="btn-text">Vừa trang</span></button>
+    <button type="button" class="cmd fit-btn{% if not v.fit and v.frame_width == 100 %} active{% endif %}" title="Trang rộng vừa khung (cuộn để đọc tiếp)" aria-pressed="{{ 'true' if not v.fit and v.frame_width == 100 else 'false' }}" hx-get="{{ v.fit_width_url }}" hx-target="#viewer" hx-swap="outerHTML">{{ icon("fit-width") }}<span class="btn-text">Chiều rộng</span></button>
   </div>
   <div class="page-scroll" tabindex="0" aria-label="Ảnh trang PDF">
     <div class="page-stack{% if v.fit %} fit{% endif %}"{% if v.fit %} title="Bấm vào trang để phóng to tại chỗ đó"{% endif %}>

@@ -2,7 +2,7 @@
 giới hạn số lần đăng nhập sai và kiểm tra tên tài khoản / mật khẩu.
 
 SECRET_KEY không đặt thì tự sinh một lần và lưu ở <storage_dir>/.secret_key (giữ nguyên qua các lần khởi động).
-Mật khẩu tài khoản admin lấy từ ADMIN_PASSWORD (mặc định admin123, xem app/config.py).
+Mật khẩu admin: ADMIN_PASSWORD nếu có, không thì sinh ngẫu nhiên lần đầu (AccountService.ensure_admin).
 """
 from __future__ import annotations
 
@@ -59,7 +59,7 @@ def validate_password(password: str) -> str | None:
 
 # ---- khóa ký phiên ----
 
-def _write_private(path: Path, text: str) -> None:
+def write_private(path: Path, text: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(text, encoding="utf-8")
     try:
@@ -83,32 +83,40 @@ def load_or_create_secret(configured: str | None, storage_dir: Path) -> str:
         pass
     secret = secrets.token_urlsafe(48)
     try:
-        _write_private(path, secret)
+        write_private(path, secret)
     except OSError as exc:
         log.warning("Không ghi được %s (%s). Phiên đăng nhập sẽ mất khi khởi động lại.", path, exc)
     return secret
 
 
 # ---- token phiên: "<username>|<thời điểm tạo>|<chữ ký>" ----
+# Chữ ký gồm cả `stamp` (password_hash của tài khoản), nên đổi hoặc đặt lại mật khẩu làm mọi phiên cũ hết hiệu lực.
 
-def _signature(secret: str, payload: str) -> str:
-    return hmac.new(secret.encode("utf-8"), payload.encode("utf-8"), hashlib.sha256).hexdigest()
+def _signature(secret: str, payload: str, stamp: str) -> str:
+    return hmac.new(secret.encode("utf-8"), f"{payload}|{stamp}".encode(), hashlib.sha256).hexdigest()
 
 
-def sign_session(username: str, secret: str, issued_at: int | None = None) -> str:
+def sign_session(username: str, secret: str, issued_at: int | None = None, stamp: str = "") -> str:
     issued_at = int(time.time()) if issued_at is None else issued_at
     payload = f"{username}|{issued_at}"
-    return f"{payload}|{_signature(secret, payload)}"
+    return f"{payload}|{_signature(secret, payload, stamp)}"
 
 
-def verify_session(token: str | None, secret: str, max_age: int) -> str | None:
-    """Trả về username nếu token đúng chữ ký và còn hạn; ngược lại None."""
+def session_username(token: str | None) -> str | None:
+    """Tên tài khoản ghi trong token, CHƯA kiểm chữ ký: chỉ dùng để tìm tài khoản rồi gọi verify_session."""
+    if not token or token.count("|") < 2:
+        return None
+    return token.rsplit("|", 2)[0] or None
+
+
+def verify_session(token: str | None, secret: str, max_age: int, stamp: str = "") -> str | None:
+    """Trả về username nếu token đúng chữ ký (với `stamp` hiện tại của tài khoản) và còn hạn; ngược lại None."""
     if not token or token.count("|") < 2:
         return None
     username, issued, sig = token.rsplit("|", 2)
     if not username or not issued.isdigit():
         return None
-    if not hmac.compare_digest(sig, _signature(secret, f"{username}|{issued}")):
+    if not hmac.compare_digest(sig, _signature(secret, f"{username}|{issued}", stamp)):
         return None
     age = time.time() - int(issued)
     if age > max_age or age < -300:
@@ -119,37 +127,42 @@ def verify_session(token: str | None, secret: str, max_age: int) -> str | None:
 # ---- giới hạn đăng nhập sai ----
 
 class LoginThrottle:
-    """Chặn tạm thời sau quá nhiều lần đăng nhập sai cho cùng (địa chỉ IP, tên tài khoản)."""
+    """Chặn tạm thời sau quá nhiều lần đăng nhập sai: theo (địa chỉ IP, tên tài khoản), và theo riêng địa chỉ IP để một
+    máy không dò được nhiều tên tài khoản."""
 
-    def __init__(self, max_failures: int = 10, window_seconds: int = 15 * 60):
+    def __init__(self, max_failures: int = 10, window_seconds: int = 15 * 60, max_failures_per_ip: int = 50):
         self.max_failures = max_failures
+        self.max_failures_per_ip = max_failures_per_ip
         self.window = window_seconds
-        self._failures: dict[tuple[str, str], deque[float]] = {}
+        self._failures: dict[tuple[str, str | None], deque[float]] = {}
         self._lock = threading.Lock()
 
-    def _recent(self, key: tuple[str, str], now: float) -> deque[float]:
+    def _recent(self, key: tuple[str, str | None], now: float) -> deque[float]:
         q = self._failures.setdefault(key, deque())
         while q and now - q[0] > self.window:
             q.popleft()
         return q
 
+    def _wait(self, q: deque[float], limit: int, now: float) -> int:
+        return 0 if len(q) < limit else max(1, int(self.window - (now - q[0])))
+
     def retry_after(self, ip: str, username: str) -> int:
         """Số giây còn phải chờ; 0 nếu được thử tiếp."""
-        key, now = (ip, (username or "").lower()), time.time()
+        now = time.time()
         with self._lock:
-            q = self._recent(key, now)
-            if len(q) < self.max_failures:
-                return 0
-            return max(1, int(self.window - (now - q[0])))
+            return max(self._wait(self._recent((ip, (username or "").lower()), now), self.max_failures, now),
+                       self._wait(self._recent((ip, None), now), self.max_failures_per_ip, now))
 
     def failed(self, ip: str, username: str) -> None:
-        key, now = (ip, (username or "").lower()), time.time()
+        now = time.time()
         with self._lock:
-            self._recent(key, now).append(now)
+            self._recent((ip, (username or "").lower()), now).append(now)
+            self._recent((ip, None), now).append(now)
             if len(self._failures) > 10_000:  # chặn rò rỉ bộ nhớ khi bị dò nhiều tên
                 for k in [k for k, q in self._failures.items() if not q]:
                     del self._failures[k]
 
     def succeeded(self, ip: str, username: str) -> None:
+        """Đăng nhập đúng: xóa đếm của (IP, tên). Đếm theo IP giữ nguyên tới khi hết cửa sổ thời gian."""
         with self._lock:
             self._failures.pop((ip, (username or "").lower()), None)

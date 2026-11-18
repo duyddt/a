@@ -1,34 +1,32 @@
 {% extends "base.html" %}
-{% block title %}Đăng nhập hệ thống thẩm định{% endblock %}
+{% from "partials/icon.html" import icon %}
 {% from "partials/password_input.html" import password_input %}
+{% block title %}Đăng nhập - Thẩm định văn bản pháp lý{% endblock %}
 {% block body %}
-<header class="topbar">
-  <h1>🗂 Hệ thống Thẩm định Dữ liệu Pháp lý</h1>
-  <div class="topbar-actions">
-    {% include "partials/theme_toggle.html" %}
-  </div>
-</header>
-<main class="narrow login-main">
-  {% if err %}
-    <div class="alert error" role="alert">⚠ {{ err }}</div>
-  {% endif %}
-  {% if msg %}
-    <div class="alert success" role="status">✓ {{ msg }}</div>
-  {% endif %}
-
-  <section class="pane login-card" aria-labelledby="login-title">
-    <h2 id="login-title">🔐 Đăng nhập</h2>
-    <form method="post" action="/account/login">
-      <input type="hidden" name="redirect_to" value="{{ next or '/' }}">
-      <label class="field">Tên tài khoản
-        <input type="text" name="username" required placeholder="Nhập tên tài khoản" autocomplete="username" autofocus>
-      </label>
-      <label class="field">Mật khẩu
-        {{ password_input() }}
-      </label>
-      <button type="submit" class="ribbon-btn save login-submit">Đăng nhập</button>
-    </form>
-    <p class="muted small login-note">Tài khoản do Admin cấp. Chưa có tài khoản hoặc quên mật khẩu, hãy liên hệ Admin.</p>
-  </section>
-</main>
+<div class="app">
+  <header class="topbar">
+    <span class="brand">{{ icon("app", cls="icon-lg") }}<span class="brand-name">Thẩm định văn bản pháp lý</span></span>
+    <div class="topbar-end">{% include "partials/theme_toggle.html" %}</div>
+  </header>
+  <main class="center-main" id="main">
+    <section class="login-card" aria-labelledby="login-title">
+      {{ icon("lock", cls="login-icon") }}
+      <h1 id="login-title">Đăng nhập</h1>
+      <p class="lead">Dùng tài khoản do Admin cấp.</p>
+      {% if err %}<div class="alert error" role="alert">{{ icon("error") }}<span>{{ err }}</span></div>{% endif %}
+      {% if msg %}<div class="alert success" role="status">{{ icon("check-circle") }}<span>{{ msg }}</span></div>{% endif %}
+      <form method="post" action="/account/login">
+        <input type="hidden" name="redirect_to" value="{{ next or '/' }}">
+        <label class="field">Tên tài khoản
+          <input type="text" name="username" required placeholder="Nhập tên tài khoản" autocomplete="username" autofocus>
+        </label>
+        <label class="field">Mật khẩu
+          {{ password_input() }}
+        </label>
+        <button type="submit" class="btn primary login-submit">Đăng nhập</button>
+      </form>
+      <p class="muted small login-note">Chưa có tài khoản hoặc quên mật khẩu: liên hệ Admin.</p>
+    </section>
+  </main>
+</div>
 {% endblock %}

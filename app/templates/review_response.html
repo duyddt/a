@@ -1,7 +1,13 @@
-{#- Phản hồi sau một thao tác thẩm định: cập nhật chi tiết, chấm màu, thanh tiến độ và bảng phân tích lỗi OCR -#}
+{#- Phản hồi sau một thao tác thẩm định: chi tiết vào #detail (đơn vị kế tiếp nếu bấm Duyệt & tiếp); qua hx-swap-oob
+    cập nhật chấm trạng thái của đơn vị vừa thao tác (`acted`), tiến độ trên thanh văn bản, báo cáo OCR trong hộp thoại,
+    và khung PDF khi đã sang đơn vị khác (`v`). -#}
 {% from "partials/progress.html" import bar %}
 {% include "partials/detail.html" %}
-<span id="dot-{{ unit.unit_id }}" class="dot st-{{ review.status if review else 'unreviewed' }}" title="{{ review.status_label if review else 'Chưa soát' }}" hx-swap-oob="true"></span>
-<div id="progress" hx-swap-oob="true">{{ bar(progress) }}</div>
+{% set acted_review = acted.review if acted else review %}
+{% set acted_id = acted.unit_id if acted else unit.unit_id %}
+{% set dot_label = acted_review.status_label if acted_review else 'Chưa soát' %}
+<span id="dot-{{ acted_id }}" class="dot st-{{ acted_review.status if acted_review else 'unreviewed' }}" title="{{ dot_label }}" role="img" aria-label="{{ dot_label }}" hx-swap-oob="true"></span>
+<div id="progress" hx-swap-oob="true">{{ bar(progress, compact=True) }}</div>
 {% set oob = True %}
 {% include "partials/ocr_report.html" %}
+{% if v is defined and v %}{% include "partials/viewer.html" %}{% endif %}

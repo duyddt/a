@@ -1,19 +1,20 @@
 # Web app thẩm định dữ liệu pháp lý & Phân tích lỗi OCR
 
-Hệ thống thẩm định dữ liệu pháp lý (*Human-in-the-loop*) thuộc dự án **Trợ lý AI Pháp lý Thuế – Kế toán**. Ứng dụng cho phép nhập văn bản pháp luật (**PDF gốc + JSON `LegalDocument**`), lưu cả cấu trúc lẫn PDF gốc vào PostgreSQL, dựng ảnh từng trang PDF khi có người xem, cung cấp REST API và **giao diện đối chiếu hai khung kiểu File Explorer**:
+Hệ thống thẩm định dữ liệu pháp lý (*Human-in-the-loop*) thuộc dự án **Trợ lý AI Pháp lý Thuế – Kế toán**. Ứng dụng cho phép nhập văn bản pháp luật (**PDF gốc + JSON `LegalDocument**`), lưu cả cấu trúc lẫn PDF gốc vào PostgreSQL, dựng ảnh từng trang PDF khi có người xem, cung cấp REST API và giao diện web sắp theo công việc của từng vai trò (quy tắc giao diện: [`docs/design-guidelines`](../docs/design-guidelines/README.md)):
 
-* **Khung trái (Bản gốc PDF Scan):** Hiển thị ảnh trang PDF gốc sắc nét, tự động nhảy tới trang chứa đơn vị đang chọn, hỗ trợ phóng to/thu nhỏ và chuyển trang nhanh.
-* **Tô sáng vùng nội dung trên PDF:** Bấm một Điều/Khoản/Điểm trong cây, vùng nội dung tương ứng trên ảnh trang được tô vàng. Khung PDF mặc định "⤢ Vừa trang": cả trang nằm gọn trong khung, đúng tỉ lệ, không phải cuộn; đơn vị sang trang sau thì bấm số trang ở đầu khung. Bấm vào trang để phóng vừa chiều rộng ngay tại chỗ bấm. PDF có lớp chữ (PDF số hoặc đã OCR) được tô đúng từng dòng theo toạ độ ký tự. Trang scan hoặc ảnh chụp được tô đúng từng dòng theo toạ độ từ do Tesseract trả về: toạ độ lưu sẵn lúc nhập văn bản, hoặc nạp bằng lệnh `page-words`. Ảnh chụp tay được cân bằng độ sáng nền trước khi OCR. Chỉ khi trang chưa có toạ độ và máy không có Tesseract thì mới ước lượng theo bố cục đoạn văn (khung viền nét đứt, ghi rõ "ước lượng"). Cơ chế và kết quả kiểm thử: [`docs/to-vang-ban-scan.md`](docs/to-vang-ban-scan.md).
-* **Giao diện sáng/tối:** nút mặt trời/mặt trăng ở góc phải thanh tiêu đề; lựa chọn được nhớ trên trình duyệt, chưa chọn thì theo giao diện của hệ điều hành.
-* **Khung phải (File Explorer & Đối chiếu trực tiếp):** Hiển thị cây thư mục pháp lý `Điều → Khoản → Điểm` kèm thanh đường dẫn (*Breadcrumb*) và thanh công cụ *Ribbon* phẳng.
-* **Chế độ sửa tập trung:** Bấm **✎ Sửa chữ** thì màn hình chỉ còn hai thứ:
-  - bên trái là trang PDF scan, có vùng tô của mục đang sửa;
-  - bên phải là chữ của mục đó trong một ô sửa lớn, kèm một thanh nhỏ: **Lưu**, **Hủy**, lý do OCR sai (tùy chọn) và cỡ chữ `A-` / `A+`.
+* **Bố cục:** một thanh trên cùng gồm tab chính theo vai trò (Việc của tôi / Việc phê duyệt / Tổng quan, Văn bản; Admin thêm Phân công, Thống kê, Tài khoản), ô tìm văn bản, menu tài khoản và nút sáng/tối. Trang chủ là danh sách việc của người đang đăng nhập; **Văn bản** là một bảng lọc theo chủ đề, trạng thái quy trình và chữ.
+* **Màn soát ba khung:** thanh văn bản (đường dẫn, số hiệu, trạng thái, người, tiến độ, nút của cả văn bản), rồi cây `Điều → Khoản → Điểm` | đơn vị đang soát | trang PDF gốc. Dải nút thẩm định dính ở đáy khung giữa, có **Duyệt & tiếp** (duyệt rồi sang đơn vị chưa soát kế tiếp) và phím tắt `J`/`K`/`A`/`E`/`F`. Các thanh chia kéo được bằng chuột hoặc phím ←/→ và được nhớ trên trình duyệt. Dưới 1100px cây thành lớp phủ (nút **Cấu trúc**); dưới 768px các khung xếp dọc.
+* **Khung PDF gốc:** Hiển thị ảnh trang PDF gốc sắc nét, tự động nhảy tới trang chứa đơn vị đang chọn, hỗ trợ phóng to/thu nhỏ và chuyển trang nhanh.
+* **Tô sáng vùng nội dung trên PDF:** Bấm một Điều/Khoản/Điểm trong cây, vùng nội dung tương ứng trên ảnh trang được tô vàng. Khung PDF mặc định "Vừa trang": cả trang nằm gọn trong khung, đúng tỉ lệ, không phải cuộn; đơn vị sang trang sau thì bấm số trang ở đầu khung. Bấm vào trang để phóng vừa chiều rộng ngay tại chỗ bấm. PDF có lớp chữ (PDF số hoặc đã OCR) được tô đúng từng dòng theo toạ độ ký tự. Trang scan hoặc ảnh chụp được tô đúng từng dòng theo toạ độ từ do Tesseract trả về: toạ độ lưu sẵn lúc nhập văn bản, hoặc nạp bằng lệnh `page-words`. Ảnh chụp tay được cân bằng độ sáng nền trước khi OCR. Chỉ khi trang chưa có toạ độ và máy không có Tesseract thì mới ước lượng theo bố cục đoạn văn (khung viền nét đứt, ghi rõ "ước lượng"). Cơ chế và kết quả kiểm thử: [`docs/to-vang-ban-scan.md`](docs/to-vang-ban-scan.md).
+* **Giao diện sáng/tối:** nút mặt trời/mặt trăng ở góc phải thanh trên cùng; lựa chọn được nhớ trên trình duyệt, chưa chọn thì theo giao diện của hệ điều hành.
+* **Chế độ sửa tập trung:** Bấm **Sửa chữ** thì màn hình chỉ còn hai thứ:
+  - trang PDF scan, có vùng tô của mục đang sửa;
+  - chữ của mục đó trong một ô sửa lớn, kèm một thanh nhỏ: **Lưu**, **Hủy**, lý do OCR sai (tùy chọn) và cỡ chữ `A-` / `A+`.
 
-  Thanh tiêu đề, báo cáo độ chính xác, cây cấu trúc, lịch sử và khung so sánh đều ẩn đi. Phím `Ctrl+Enter` để lưu, `Esc` để hủy. Lưu xong thì quay về giao diện thường và hiện kết quả; lưu lỗi (ví dụ chữ không đổi) thì ở lại sửa tiếp. Màn hình hẹp chia đôi theo chiều dọc: PDF ở trên, ô sửa ở dưới.
+  Thanh trên cùng, thanh văn bản, cây cấu trúc, dải nút, lịch sử và khung so sánh đều ẩn đi. Phím `Ctrl+Enter` để lưu, `Esc` để hủy. Lưu xong thì quay về giao diện thường và hiện kết quả; lưu lỗi (ví dụ chữ không đổi) thì ở lại sửa tiếp. Màn hình hẹp chia đôi theo chiều dọc: PDF ở trên, ô sửa ở dưới.
 * **Tô màu vị trí lỗi (Visual Diff) & Phân tích nguyên nhân OCR:** Tự động đối sánh văn bản (`SequenceMatcher` để tô màu, khoảng cách Levenshtein chính xác để đếm lỗi), tô đỏ gạch ngang ký tự hệ thống OCR đọc sai và tô xanh ký tự đã sửa đúng ngay trên câu; thống kê tần suất lỗi, nguyên nhân sai và đề xuất giải pháp cải tiến độ chính xác.
 * **Thang đo độ chính xác khoa học:** Đánh giá tự động trên tập nhãn chuẩn đã duyệt (*Ground Truth*) theo chuẩn quốc tế UNLV/ICDAR (**CER/CAR**, **WER/WAR**) kết hợp chỉ số chuyên biệt cho văn bản pháp luật (**UEM**, **SFI**, **Composite Score**).
-* **Quản lý Tài khoản, Phân quyền & Lưu tiến trình cá nhân:** Đăng nhập có mật khẩu (`PBKDF2-HMAC-SHA256`). Mọi trang đều cần đăng nhập, và chỉ **Admin tạo tài khoản**. Có ba vai trò: Admin, Người phê duyệt, Người chỉnh sửa. Hệ thống tự lưu vị trí đơn vị và trang đang duyệt của từng tài khoản, nên khi tắt máy mở lại sẽ nhảy thẳng đến tiến độ hiện tại.
+* **Quản lý Tài khoản, Phân quyền & Lưu tiến trình cá nhân:** Đăng nhập có mật khẩu (`PBKDF2-HMAC-SHA256`). Mọi trang (kể cả `/docs`) đều cần đăng nhập, không có trang đăng ký: chỉ **Admin tạo tài khoản**. Có ba vai trò: Admin, Người phê duyệt, Người chỉnh sửa. Hệ thống tự lưu vị trí đơn vị và trang đang duyệt của từng tài khoản, nên khi tắt máy mở lại sẽ nhảy thẳng đến tiến độ hiện tại.
 
 **Công nghệ:** Python, FastAPI, PostgreSQL (`psycopg` 3 + `psycopg_pool`), Jinja2, HTMX (tích hợp sẵn `/static/htmx.min.js` chạy offline) và `pypdfium2`.
 
@@ -30,10 +31,10 @@ docker compose up --build -d
 docker compose logs api            # xem log khởi động
 ```
 
-Mở <http://127.0.0.1:8080>. Lần đầu khởi động, ứng dụng tự chạy các file migration (`001` đến `010`), tạo tài khoản `admin` và nhập các văn bản trong thư mục `./data`. Khi khởi động lại, văn bản có cùng mã băm SHA-256 được bỏ qua để không tạo bản trùng.
+Mở <http://127.0.0.1:8080>. Lần đầu khởi động, ứng dụng tự chạy các file migration (`001` đến `010`), tạo tài khoản `admin` (xem mục Đăng nhập & bảo mật) và nhập các văn bản trong thư mục `./data`. Khi khởi động lại, văn bản có cùng mã băm SHA-256 được bỏ qua để không tạo bản trùng.
 
-* REST API và tài liệu thử trực tiếp: <http://127.0.0.1:8080/docs>.
-* Đăng nhập quản trị: **`admin` / `admin123`** (đổi bằng `ADMIN_PASSWORD` trong `.env`).
+* REST API và tài liệu thử trực tiếp: <http://127.0.0.1:8080/docs> (cần đăng nhập).
+* Đăng nhập quản trị: tài khoản `admin`, mật khẩu là `ADMIN_PASSWORD` trong `.env`; để trống thì xem mật khẩu sinh ngẫu nhiên bằng `docker compose exec api cat /storage/initial_admin_password.txt`.
 * Cổng 8080 đã bị chiếm: đặt `APP_PORT=8090` trong `.env`. Cho máy khác trong mạng LAN truy cập: `APP_BIND=0.0.0.0`.
 * Nâng cấp từ bản cũ (container từng chạy bằng root) mà gặp lỗi ghi `/storage`: `docker compose run --rm --user root api chown -R 1000:1000 /storage`.
 * Xóa sạch dữ liệu để khởi tạo lại từ đầu: `docker compose down -v`.
@@ -52,7 +53,7 @@ Copy-Item .env.example .env            # sửa POSTGRES_PASSWORD / POSTGRES_HOST
 python -m uvicorn app.main:app --port 8080
 ```
 
-Mở <http://127.0.0.1:8080> và đăng nhập **`admin` / `admin123`**.
+Mở <http://127.0.0.1:8080> và đăng nhập `admin`. Không đặt `ADMIN_PASSWORD` thì mật khẩu sinh ngẫu nhiên nằm trong `storage/initial_admin_password.txt` (đường dẫn cũng ghi ở log khởi động).
 
 ### Chế độ đầy đủ chức năng (có PostgreSQL)
 
@@ -84,31 +85,47 @@ Bỏ trống cả `DATABASE_URL` và `POSTGRES_HOST`: ứng dụng đọc trực
 | Cấp độ quyền (`role`) | Quyền hạn trên hệ thống | Cách cấp quyền |
 | --- | --- | --- |
 | **Người chỉnh sửa (`reviewer`)** | Trên văn bản **được giao**: Duyệt, Sửa chữ, Gắn cờ, Báo lỗi cấu trúc, Bỏ đánh dấu trên **bản riêng của mình**, rồi bấm **Hoàn thành**; ghi nhận nguyên nhân lỗi OCR; lưu tiến trình cá nhân. Chỉ thấy bản OCR gốc và bản của mình. | Do **Admin** tạo trong trang Quản trị. |
-| **Người phê duyệt (`approver`)** | Trên văn bản **đã chuyển sang phê duyệt**: xem mọi bản (mỗi người chỉnh sửa một màu), **Chọn bản** làm bản chốt, Duyệt / Gắn cờ kèm ghi chú / Báo lỗi cấu trúc / Bỏ đánh dấu trên **bản chốt**, rồi **Trả lại** hoặc **Hoàn tất phê duyệt**. Không sửa chữ. Xuất JSON đã duyệt. | Do **Admin** tạo hoặc đổi vai trò trong trang Quản trị. |
-| **Quản trị viên (`admin`)** | Toàn quyền: mọi việc của người phê duyệt trên mọi văn bản (không cần chờ chuyển sang), cộng thêm **sửa chữ bản chốt**; trang **Phân công (`/admin/assign`)**; trang **Quản lý tài khoản (`/admin/users`)** để tạo tài khoản, đổi vai trò, khóa / mở khóa; tải lên, ghi đè (`replace`) và xóa văn bản. | Tạo tự động lần đầu chạy (xem bên dưới). |
+| **Người phê duyệt (`approver`)** | Trên văn bản **đã chuyển sang phê duyệt**: xem mọi bản (mỗi người chỉnh sửa một màu), **Chọn bản** làm bản chốt, Duyệt / Gắn cờ kèm ghi chú / Báo lỗi cấu trúc / Bỏ đánh dấu trên **bản chốt**, rồi **Trả lại** hoặc **Hoàn tất phê duyệt**. Không sửa chữ. Xuất JSON đã duyệt và xem báo cáo OCR (`/api/documents/{id}/export`, `/ocr-report`; người chỉnh sửa gọi hai API này nhận 403 vì chúng trả bản chốt). | Do **Admin** tạo hoặc đổi vai trò trong trang Quản trị. |
+| **Quản trị viên (`admin`)** | Toàn quyền: mọi việc của người phê duyệt trên mọi văn bản (không cần chờ chuyển sang), cộng thêm **sửa chữ bản chốt**; trang **Phân công (`/admin/assign`)**; trang **Tài khoản (`/admin/users`)** để tạo tài khoản, đổi vai trò, khóa / mở khóa, đặt lại mật khẩu người khác; tải lên, ghi đè (`replace`) và xóa văn bản. | Tạo tự động lần đầu chạy (xem bên dưới). |
 
 * **Không còn tự đăng ký và chế độ khách:** chưa đăng nhập thì mọi trang chuyển về `/login`, còn `/api` trả 401.
-* **Tài khoản bị khóa** vẫn đăng nhập và đọc được văn bản, nhưng không thao tác được gì.
-* **Tài khoản `viewer` cũ** được migration `007_roles.sql` đổi thành Người chỉnh sửa và vẫn giữ trạng thái khóa. Admin mở khóa nếu muốn cho người đó làm việc.
+* **Tài khoản bị khóa không đăng nhập được** (báo "Tài khoản đang bị khóa"), cả qua HTTP Basic; phiên đang mở của người đó hết hiệu lực ngay ở yêu cầu kế tiếp. Admin không tự khóa hay tự hạ quyền chính mình được. Không có nút xóa tài khoản, để giữ nguyên lịch sử thẩm định.
+* **Tài khoản `viewer` cũ** được migration `007_roles.sql` đổi thành Người chỉnh sửa và vẫn giữ trạng thái khóa. Admin mở khóa nếu muốn cho người đó đăng nhập.
 
 ### Đăng nhập & bảo mật
 
-* **Tài khoản quản trị mặc định: `admin` / `admin123`**, để ai clone dự án về cũng chạy thử được ngay với vai trò admin. Mỗi lần khởi động, tài khoản `ADMIN_USERNAME` (mặc định `admin`) được tạo nếu chưa có, được trả lại quyền admin và đặt lại mật khẩu theo `ADMIN_PASSWORD` (để trống = `admin123`). **Khi cho người khác truy cập (server, mạng LAN) phải đặt `ADMIN_PASSWORD` riêng** trong `.env`, vì `admin123` ai cũng biết; app ghi cảnh báo vào log khi còn dùng mật khẩu mặc định. **Quên mật khẩu admin:** đặt `ADMIN_PASSWORD` mới rồi khởi động lại.
+* **Tài khoản quản trị:** mỗi lần khởi động, nếu chưa có tài khoản `ADMIN_USERNAME` (mặc định `admin`) thì tạo mới:
+  - có `ADMIN_PASSWORD` thì dùng mật khẩu đó;
+  - không có thì sinh mật khẩu ngẫu nhiên, ghi vào `<STORAGE_DIR>/initial_admin_password.txt` (chỉ chủ sở hữu đọc được); log chỉ ghi đường dẫn tệp, không ghi mật khẩu. Đăng nhập, đổi mật khẩu rồi xóa tệp này.
+
+  Tài khoản admin đã có thì được trả lại quyền admin và mở khóa; mật khẩu **chỉ bị đặt lại khi `ADMIN_PASSWORD` được đặt và khác mật khẩu hiện tại**. Vì vậy khi đặt `ADMIN_PASSWORD`, mật khẩu admin đổi trên giao diện quay về giá trị đó ở lần khởi động sau (trang Đổi mật khẩu có nhắc). **Quên mật khẩu admin:** đặt `ADMIN_PASSWORD` mới rồi khởi động lại.
+* **Đổi mật khẩu:** mọi người tự đổi ở menu tài khoản › Đổi mật khẩu (`/account/password`), phải nhập mật khẩu hiện tại. Admin đặt lại mật khẩu cho người khác ở trang Tài khoản. Đổi hoặc đặt lại mật khẩu làm mọi phiên đăng nhập cũ của tài khoản đó hết hiệu lực (chữ ký phiên gắn với mã băm mật khẩu).
 * Tên tài khoản dài 3–64 ký tự (chữ không dấu, số, `.`, `_`, `-`); mật khẩu tối thiểu 8 ký tự. Tạo tài khoản không bao giờ ghi đè tài khoản đã có. Ô mật khẩu có nút con mắt để hiện hoặc ẩn chữ đang gõ.
 * Phiên đăng nhập là cookie `HttpOnly`, ký HMAC bằng `SECRET_KEY` (để trống thì tự sinh và lưu ở `<STORAGE_DIR>/.secret_key`) và hết hạn sau `SESSION_DAYS` ngày. Đổi khóa hoặc xóa file này sẽ đăng xuất mọi người.
-* Sai mật khẩu 10 lần trong 15 phút: tạm khóa đăng nhập theo (địa chỉ IP, tài khoản).
-* Mọi thao tác thẩm định cần tài khoản đang hoạt động (không bị khóa); tải lên, ghi đè và xóa văn bản chỉ dành cho `admin`. Người soát được ghi nhận theo **tài khoản đang đăng nhập** (không còn ô tự gõ tên).
+* Sai mật khẩu 10 lần trong 15 phút: tạm khóa đăng nhập theo (địa chỉ IP, tài khoản); 50 lần sai từ một địa chỉ IP (mọi tài khoản cộng lại): tạm khóa cả địa chỉ đó.
+* Yêu cầu ghi (POST, PUT, PATCH, DELETE) có header `Origin` hoặc `Referer` trỏ sang trang khác bị từ chối 403, bổ sung cho cookie `SameSite=Lax`. Công cụ dòng lệnh không gửi các header này nên không bị ảnh hưởng.
+* Tải lên, ghi đè và xóa văn bản chỉ dành cho `admin`. Người soát được ghi nhận theo **tài khoản đang đăng nhập** (không còn ô tự gõ tên).
 * REST API dùng cookie phiên (trình duyệt) hoặc HTTP Basic cho công cụ dòng lệnh: `curl.exe -u <tài_khoản>:<mật_khẩu> ...`.
 
 * **Lưu tiến trình tự động (`reviewer_progress`):** Mỗi khi người soát chọn đơn vị hoặc thực hiện thao tác thẩm định, hệ thống tự động lưu lại `last_unit_id` và `last_page` gắn với tài khoản đó. Khi tắt máy hoặc đăng nhập lại, hàm `resume_unit_id` tự động mở đúng đơn vị đang sửa dở hoặc đơn vị *"Chưa soát"* kế tiếp.
 
 ---
 
-## 4. Thao tác Thẩm định trên Giao diện File Explorer
+## 4. Thao tác thẩm định trên giao diện
 
-**Danh sách văn bản theo thư mục chủ đề.** Màn hình đầu tiên được sắp giống thư mục `bo du lieu` của bộ dữ liệu:
+**Trang chủ theo vai trò (`/`).** Cần PostgreSQL; chế độ thư mục file chuyển thẳng sang trang Văn bản.
 
-- Thư mục gốc **Văn bản pháp luật** liệt kê 10 thư mục chủ đề theo đúng thứ tự I → X:
+- Người chỉnh sửa (**Việc của tôi**): thẻ **Tiếp tục** mở lại văn bản gần nhất đúng đơn vị và trang đã dừng (bảng
+  `reviewer_progress`), rồi các khối **Bị trả lại, cần sửa** (kèm ghi chú của người phê duyệt), **Đang làm**, **Đã nộp,
+  chờ phê duyệt**. Mỗi dòng có số hiệu, tên, trạng thái quy trình, tiến độ bản của bạn và nút mở.
+- Người phê duyệt (**Việc phê duyệt**): **Chờ tôi phê duyệt**, **Đang chỉnh sửa**, **Đã phê duyệt**, kèm chip tên người
+  chỉnh sửa (dấu ✓ là đã bấm Hoàn thành) và tiến độ trên bản chốt.
+- Admin (**Tổng quan**): số văn bản theo từng trạng thái quy trình (bấm ô số để mở trang Văn bản đã lọc), khối **Cần chú
+  ý** (chờ phê duyệt, bị trả lại, chưa phân công) và bảng tiến độ theo chủ đề.
+
+**Trang Văn bản (`/documents`).** Một bảng, bộ lọc ở cột trái:
+
+- **Chủ đề** theo đúng thứ tự của thư mục `bo du lieu`, kèm số văn bản khớp bộ lọc:
   - I. Quản lý thuế
   - II. Hóa đơn điện tử
   - III. Thuế GTGT
@@ -120,48 +137,59 @@ Bỏ trống cả `DATABASE_URL` và `POSTGRES_HOST`: ứng dụng đọc trực
   - IX. Bảo hiểm xã hội
   - X. Lao động - Tiền lương
 
-  Thứ tự là theo số La Mã, không theo bảng chữ cái, nên IX đứng sau VIII. Mỗi thư mục ghi số văn bản, số đơn vị, số trang
-  và tiến độ thẩm định cộng dồn. Văn bản chưa thuộc thư mục nào nằm ngay ở gốc.
-- Bấm vào một thư mục (`/?folder=III`) để xem văn bản bên trong:
-  - văn bản xếp theo cột STT của tệp danh mục `Danh_muc_van_ban_phap_luat.xlsx`;
-  - phần tiếp (`L59_2020_QH14_tiep`) đứng ngay sau phần chính;
-  - dòng `..` đưa về thư mục gốc;
-  - thanh địa chỉ ghi đường dẫn, ví dụ "Văn bản pháp luật › III. Thuế GTGT".
-- Một văn bản có thể nằm ở nhiều thư mục, đúng như bộ dữ liệu: ND141 ở V và VI, TT152 (= TT52) ở VI và VIII. Dòng của văn
-  bản đó ghi "Cũng nằm trong: …" kèm liên kết sang thư mục kia.
-- Cây thư mục bên trái có ô **Lọc** theo mã, số hiệu hoặc tên. Ô lọc tìm trong mọi thư mục và tự mở thư mục có văn bản khớp.
-- Mở văn bản từ một thư mục thì nút quay lại trên trang thẩm định đưa về đúng thư mục đó.
-- Khung **Thêm văn bản mới** có ô chọn thư mục, chọn sẵn thư mục đang mở.
-- Chế độ thư mục file, hoặc DB chưa có danh mục, vẫn hiện danh sách phẳng như trước.
+  Thứ tự là theo số La Mã, không theo bảng chữ cái, nên IX đứng sau VIII. Lọc một chủ đề (`/documents?folder=III`) thì
+  văn bản xếp theo cột STT của tệp danh mục `Danh_muc_van_ban_phap_luat.xlsx`, phần tiếp (`L59_2020_QH14_tiep`) đứng
+  ngay sau phần chính. Không lọc thì bảng đi lần lượt I → X, rồi tới văn bản chưa xếp chủ đề; văn bản ở nhiều chủ đề
+  chỉ hiện một lần.
+- **Trạng thái** quy trình (Chưa phân công, Đang chỉnh sửa, Trả lại, Chờ phê duyệt, Đã phê duyệt), có số đếm.
+- Ô **Tìm** lọc theo mã, số hiệu hoặc tên (`q`). Ô tìm trên thanh trên cùng cũng đưa về trang này.
 
-Khi chọn một đơn vị trong cây cấu trúc, khung trái tự động nhảy tới `source_pages[0]` của đơn vị đó và khung phải hiển thị thanh công cụ phẳng (*Explorer Ribbon*):
+Bộ lọc là tham số trên địa chỉ nên gửi link cho người khác được và chạy cả khi trình duyệt tắt JavaScript. Bộ lọc đang
+áp dụng hiện thành chip có nút bỏ. Cột **Chủ đề** ghi mã các chủ đề chứa văn bản (một văn bản có thể ở nhiều chủ đề:
+ND141 ở V và VI, TT152 (= TT52) ở VI và VIII); bấm mã để lọc theo chủ đề đó. Bấm tiêu đề cột để sắp xếp, bấm một hàng
+để mở văn bản. Admin có nút **Tải lên** (cần PostgreSQL), hộp thoại chọn sẵn chủ đề đang lọc. Địa chỉ cũ `/?folder=III`
+vẫn dùng được, tự chuyển sang `/documents?folder=III`.
 
-| Nút thao tác | Chức năng thực hiện | Trạng thái đơn vị sau thao tác |
-| --- | --- | --- |
-| **✓ Duyệt** | Xác nhận nội dung văn bản, số hiệu và cấp độ cấu trúc khớp hoàn toàn với ảnh PDF gốc. | `Đã duyệt` (Chấm xanh lá) |
-| **✎ Sửa chữ** | Mở chế độ sửa tập trung: chỉ còn trang PDF và chữ của mục đang chọn. Chọn nguyên nhân lỗi OCR (tùy chọn), `Ctrl+Enter` để lưu, `Esc` để hủy. | Nếu đang `Đã duyệt` sẽ chuyển về `Chưa soát` (để duyệt lại chữ mới); các trạng thái khác giữ nguyên. |
-| **⚑ Gắn cờ** | Đánh dấu đơn vị có điểm nghi ngờ cần kiểm tra thêm (bắt buộc nhập lý do). | `Gắn cờ` (Chấm cam) |
-| **⚠ Báo lỗi cấu trúc** | Báo lỗi tách sai cấp (Khoản thành Điểm...), nhảy số thứ tự hoặc gộp nhầm (bắt buộc nhập lý do). | `Lỗi cấu trúc` (Chấm đỏ) |
-| **↺ Bỏ đánh dấu** | Đưa trạng thái đơn vị về lại trạng thái chưa kiểm tra. | `Chưa soát` (Chấm xám) |
+**Màn soát văn bản (`/documents/{id}`).** Thanh văn bản ở trên ghi đường dẫn (Văn bản › chủ đề › số hiệu), số hiệu và
+tên, trạng thái quy trình, người được giao, tiến độ; bên phải là nút của cả văn bản (Hoàn thành, Trả lại, Hoàn tất phê
+duyệt, Mở lại) và menu **Khác** (Độ chính xác OCR, Xuất JSON đã duyệt, Xóa văn bản cho Admin). Ghi chú trả lại hiện
+thành dải cảnh báo ngay dưới.
+
+Khi chọn một đơn vị trong cây cấu trúc, khung PDF tự nhảy tới `source_pages[0]` của đơn vị đó. Cây có ô tìm và nút lọc
+**Tất cả · Chưa soát · Gắn cờ · Lỗi cấu trúc · Không chắc**, mỗi nút kèm số đơn vị. Dải nút dính ở đáy khung giữa:
+
+| Nút thao tác | Phím | Chức năng thực hiện | Trạng thái đơn vị sau thao tác |
+| --- | --- | --- | --- |
+| **Trước** / **Tiếp** | `K` / `J` | Sang đơn vị trước / kế tiếp theo thứ tự cây. | Không đổi |
+| **Duyệt & tiếp** | `A` | Xác nhận nội dung, số hiệu và cấp độ cấu trúc khớp với ảnh PDF gốc, rồi mở đơn vị chưa soát kế tiếp theo thứ tự cây (hết cây thì quay lại từ đầu). | `Đã duyệt` (chấm xanh lá) |
+| **Sửa chữ** | `E` | Mở chế độ sửa tập trung: chỉ còn trang PDF và chữ của mục đang chọn. Chọn nguyên nhân lỗi OCR (tùy chọn), `Ctrl+Enter` để lưu, `Esc` để hủy. | Nếu đang `Đã duyệt` sẽ chuyển về `Chưa soát` (để duyệt lại chữ mới); các trạng thái khác giữ nguyên. |
+| **Gắn cờ** | `F` | Mở ô lý do ngay dưới dải nút; lưu khi đã ghi lý do. Dùng cho điểm nghi ngờ cần kiểm tra thêm. | `Gắn cờ` (chấm cam) |
+| **Lỗi cấu trúc** | | Mở ô lý do như Gắn cờ. Dùng khi tách sai cấp (Khoản thành Điểm...), nhảy số thứ tự hoặc gộp nhầm. | `Lỗi cấu trúc` (chấm đỏ) |
+| **Bỏ đánh dấu** | | Đưa đơn vị về trạng thái chưa kiểm tra. Chỉ hiện khi đơn vị đã có trạng thái. | `Chưa soát` (chấm xám) |
+
+Phím tắt không có tác dụng khi đang gõ trong ô nhập hoặc khi có hộp thoại mở. Khung giữa hẹp thì các nút phụ chỉ còn
+icon, tên đầy đủ hiện khi rê chuột. Lịch sử thao tác và mã đơn vị nằm trong khối gập **Lịch sử thao tác** ở cuối khung
+giữa.
 
 ### Phân công và chuyển sang phê duyệt
 
-1. **Admin phân công** ở trang **🧑‍💼 Phân công (`/admin/assign`)**. Đánh dấu từng văn bản, hoặc bấm **Giao cả thư
-   mục**, rồi chọn một hay nhiều người chỉnh sửa và một người phê duyệt. Người đã được giao thì giữ nguyên. Bấm ✕ cạnh
-   tên để gỡ phân công.
-2. **Người chỉnh sửa** thấy khối **📋 Việc được giao cho tôi** ở trang danh sách. Chỉ văn bản được giao mới có nút thao
-   tác; văn bản khác chỉ xem. Làm xong thì bấm **✔ Hoàn thành văn bản**: hộp xác nhận báo số đơn vị còn chưa soát. Sau
+1. **Admin phân công** ở trang **Phân công (`/admin/assign`)**. Đánh dấu văn bản trong bảng (lọc theo chủ đề nếu cần), rồi
+   chọn một hay nhiều người chỉnh sửa và một người phê duyệt ở thanh giao việc dính đáy trang và bấm **Giao văn bản đã
+   đánh dấu**. Khi đang lọc một chủ đề có thêm nút **Giao cả chủ đề**. Người đã được giao thì giữ nguyên. Bấm nút gỡ
+   cạnh tên để gỡ phân công.
+2. **Người chỉnh sửa** thấy văn bản được giao ở trang **Việc của tôi**. Chỉ văn bản được giao mới có nút thao
+   tác; văn bản khác chỉ xem. Làm xong thì bấm **Hoàn thành văn bản** trên thanh văn bản: hộp xác nhận báo số đơn vị còn chưa soát. Sau
    khi bấm, bản của người đó chỉ còn xem.
 3. **Văn bản chuyển sang người phê duyệt ngay khi mọi người chỉnh sửa được giao đã bấm Hoàn thành**, không phải chờ các
-   văn bản khác. Văn bản hiện trong khối **📥 Chờ tôi phê duyệt** của người phê duyệt được giao. Nếu văn bản chưa giao
+   văn bản khác. Văn bản hiện trong khối **Chờ tôi phê duyệt** ở trang **Việc phê duyệt** của người phê duyệt được giao. Nếu văn bản chưa giao
    cho người phê duyệt nào thì mọi người phê duyệt đều thấy. Người phê duyệt chỉ thao tác được trên văn bản đã chuyển
    sang.
 4. Người phê duyệt so sánh các bản, chọn bản, duyệt hoặc gắn cờ kèm ghi chú, rồi chọn một trong hai:
-   - **↩ Trả lại** (bắt buộc ghi chú): mọi người chỉnh sửa trở về "chưa hoàn thành" và thấy ghi chú ngay trên trang văn
-     bản;
-   - **✔ Hoàn tất phê duyệt**: chỉ được khi mọi đơn vị trên bản chốt đã duyệt.
-5. Admin **mở lại** được văn bản đã phê duyệt, hoặc cho riêng một người đã bấm Hoàn thành sửa tiếp (nút ↺ ở trang
-   Phân công).
+   - **Trả lại** (bắt buộc ghi chú): mọi người chỉnh sửa trở về "chưa hoàn thành" và thấy ghi chú ở khối **Bị trả lại** trên
+     trang chủ và ở dải cảnh báo của trang văn bản;
+   - **Hoàn tất phê duyệt**: chỉ được khi mọi đơn vị trên bản chốt đã duyệt.
+5. Admin **mở lại** được văn bản đã phê duyệt, hoặc cho riêng một người đã bấm Hoàn thành sửa tiếp (nút mũi tên vòng cạnh tên ở
+   trang Phân công).
 
 | Trạng thái | Khi nào |
 | --- | --- |
@@ -178,7 +206,7 @@ thể lọt vào giữa lúc kiểm tra quyền và lúc ghi.
 
 ### Thống kê tiến độ (Admin)
 
-Trang **📊 Thống kê (`/admin/stats`)**, lọc được theo thư mục:
+Trang **Thống kê (`/admin/stats`)**, lọc được theo chủ đề:
 
 * **Tổng quan:** số văn bản theo từng trạng thái (Chưa phân công, Đang chỉnh sửa, Trả lại, Chờ phê duyệt, Đã phê duyệt).
 * **Theo người:** vai trò, số văn bản được giao, **% hoàn thành = văn bản đã xong / văn bản được giao**, số văn bản đang
@@ -203,13 +231,13 @@ Mỗi đơn vị có nhiều **bản** độc lập với nhau:
 
 * Hai người chỉnh sửa cùng một văn bản không ghi đè lên nhau: `bt1` sửa thành chữ A, `bt2` sửa thành chữ B thì cả hai bản
   đều được giữ, cùng với trạng thái (duyệt / gắn cờ / lỗi cấu trúc) riêng của mỗi người.
-* Người phê duyệt và Admin thấy khung **⇄ So sánh các bản** ở mỗi đơn vị: bản OCR gốc, rồi bản của từng người chỉnh sửa.
-  Mỗi người một màu (8 màu, có bản cho giao diện tối): chip tên, vạch màu trên cây thư mục, và phần chữ khác bản OCR gốc
+* Người phê duyệt và Admin thấy khung **So sánh các bản** ở mỗi đơn vị: bản OCR gốc, rồi bản của từng người chỉnh sửa.
+  Mỗi người một màu (8 màu, có bản cho giao diện tối): chip tên, vạch màu trên cây cấu trúc, và phần chữ khác bản OCR gốc
   tô theo màu người đó. Màu gán theo thứ tự phân công; người đã bị gỡ phân công
   nhưng có thao tác thì xếp sau, theo lần thao tác đầu tiên.
-* **⇩ Chọn bản này** chép chữ của bản được chọn vào bản chốt (sự kiện `adopt`, ghi chú "Chọn bản của bt2"). Server tự lấy
+* **Chọn bản này** chép chữ của bản được chọn vào bản chốt (sự kiện `adopt`, ghi chú "Chọn bản của bt2"). Server tự lấy
   chữ của bản nguồn, không tin chữ do trình duyệt gửi lên. Bản chốt đổi chữ thì phải Duyệt lại.
-* Tiến độ trên danh sách và thanh trên cùng tính theo bản của người đang xem: người chỉnh sửa thấy tiến độ của mình,
+* Tiến độ trên trang chủ, trang Văn bản và thanh văn bản tính theo bản của người đang xem: người chỉnh sửa thấy tiến độ của mình,
   người phê duyệt và Admin thấy tiến độ của bản chốt.
 * Thiết kế và lý do: [`docs/adr-001-ban-rieng-tung-nguoi.md`](docs/adr-001-ban-rieng-tung-nguoi.md).
 
@@ -374,7 +402,7 @@ review-app/
 │   ├── 009_review_tracks.sql      # Bản riêng của từng người (cột track) và thao tác Chọn bản (adopt)
 │   └── 010_workflow.sql           # Phân công, Hoàn thành, Trả lại, Hoàn tất phê duyệt (bảng workflow_event, chỉ ghi thêm)
 ├── app/
-│   ├── main.py                    # FastAPI app, routes giao diện File Explorer & xác thực RBAC
+│   ├── main.py                    # FastAPI app, routes giao diện (trang chủ theo vai trò, Văn bản, màn soát) & xác thực RBAC
 │   ├── web_auth.py                # Xác định người dùng (cookie phiên / HTTP Basic), chặn open redirect
 │   ├── api.py, schemas.py         # REST API JSON (/api) và Pydantic schemas (/docs)
 │   ├── config.py, db.py           # Cấu hình (.env + biến môi trường), connection pool & auto-migration
@@ -396,11 +424,12 @@ review-app/
 │   │   ├── db_catalog.py          # Nguồn dữ liệu PostgreSQL (chép PDF ra bộ đệm khi cần)
 │   │   ├── store.py               # Nguồn dữ liệu chế độ thư mục file
 │   │   └── tree.py, views.py, render_pdf.py, models.py
-│   ├── templates/                 # Giao diện Jinja2 (login, admin_users, admin_assign, admin_stats, list, review, partials/)
-│   └── static/                    # CSS File Explorer (style.css) & htmx.min.js nội bộ
+│   ├── templates/                 # Giao diện Jinja2 (login, home, library, review, admin_users, admin_assign, admin_stats, partials/)
+│   └── static/                    # style.css (bố cục, token màu), shell.js (thanh chia, bảng, lọc cây, hộp thoại), viewer.js (khung PDF), icons.svg (Fluent), fonts/ (Source Sans 3, Literata, Roboto Mono tự host, OFL), htmx.min.js
 ├── data/ND254_2026/, ND255_2026/  # Văn bản mẫu: Nghị định 254/2026/NĐ-CP và 255/2026/NĐ-CP (source.pdf, document.json, ocr_pages/)
 ├── docs/                          # Tài liệu kỹ thuật: đo độ chính xác, báo cáo kiểm thử, tô vàng bản scan, ADR
 ├── scripts/
+│   ├── build_icons.py             # Dựng lại app/static/icons.svg từ Fluent System Icons (chạy khi thêm icon)
 │   ├── build_legal_document.py    # Script dựng document.json từ ocr_pages/*.txt
 │   ├── evaluate_dataset_accuracy.py  # Đo độ chính xác luồng nhập PDF trên cả bộ dữ liệu (docs/do-chinh-xac-ocr.md, mục 7)
 │   ├── make_sample_pdf.py         # Script tạo PDF mẫu cho kiểm thử

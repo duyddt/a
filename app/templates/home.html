@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{#- Trang chủ theo vai trò (route GET /, chỉ khi có PostgreSQL):
+    người chỉnh sửa: thẻ Tiếp tục + văn bản được giao theo Bị trả lại / Đang làm / Đã nộp;
+    người phê duyệt: Chờ tôi phê duyệt / Đang chỉnh sửa / Đã phê duyệt;
+    Admin: số văn bản theo trạng thái (dẫn sang kho văn bản đã lọc), Cần chú ý, bảng theo chủ đề. -#}
+{% from "partials/icon.html" import icon %}
+{% from "partials/progress.html" import bar %}
+{% from "partials/worklist.html" import work_section %}
+{% block title %}{% if role == 'admin' %}Tổng quan{% elif role == 'approver' %}Việc phê duyệt{% else %}Việc của tôi{% endif %} - Thẩm định văn bản pháp lý{% endblock %}
+
+{% block page_header %}
+{% if role == 'admin' %}
+  <h1>Tổng quan</h1>
+  <p class="lead">{{ total }} văn bản trong hệ thống.</p>
+  <div class="page-actions"><a class="btn primary" href="/admin/assign">{{ icon("assign") }}Phân công</a></div>
+{% elif role == 'approver' %}
+  <h1>Việc phê duyệt</h1>
+  <p class="lead">{% if waiting %}{{ waiting|length }} văn bản đang chờ bạn phê duyệt.{% else %}Không có văn bản nào chờ bạn phê duyệt.{% endif %}</p>
+{% else %}
+  <h1>Việc của tôi</h1>
+  <p class="lead">{% if mine %}{{ mine|length }} văn bản được giao cho bạn{% if returned %}, {{ returned|length }} bị trả lại cần sửa{% endif %}.{% else %}Chưa có văn bản nào được giao cho bạn.{% endif %}</p>
+{% endif %}
+{% endblock %}
+
+{% block flash %}{% include "partials/flash.html" %}{% endblock %}
+
+{% block content %}
+{% if role == 'reviewer' %}
+  {% if resume %}
+  {% set item = resume.item %}
+  <section class="resume panel" aria-labelledby="resume-title">
+    <div>
+      <div class="eyebrow">Tiếp tục từ lần trước</div>
+      <h2 id="resume-title">{{ item.document_type or "Văn bản" }} {{ item.document_no or item.document_id }}</h2>
+      <p class="where">Dừng ở <strong>{{ resume.unit_label }}</strong>, trang {{ resume.saved.last_page }}{% if item.title %} · {{ item.title|truncate(90) }}{% endif %}</p>
+      {{ bar(item.progress, compact=True) }}
+    </div>
+    <a class="btn primary" href="/documents/{{ item.document_id|urlencode }}?unit={{ resume.saved.last_unit_id|urlencode }}&amp;page={{ resume.saved.last_page }}">{{ icon("forward") }}Tiếp tục</a>
+  </section>
+  {% endif %}
+  {% if returned %}{{ work_section("Bị trả lại, cần sửa", returned, "", action="Sửa tiếp", note=True, first_primary=not resume, id="returned") }}{% endif %}
+  {{ work_section("Đang làm", doing, "Không có văn bản nào đang làm.", action="Tiếp tục", first_primary=not resume and not returned, id="doing") }}
+  {% if submitted %}{{ work_section("Đã nộp, chờ phê duyệt", submitted, "", action="Xem", id="submitted") }}{% endif %}
+
+{% elif role == 'approver' %}
+  {{ work_section("Chờ tôi phê duyệt", waiting, "Không có văn bản nào chờ bạn phê duyệt.", action="Phê duyệt", people=True, first_primary=True, id="waiting") }}
+  {{ work_section("Đang chỉnh sửa", editing, "Không có văn bản nào đang chỉnh sửa.", action="Xem", people=True, note=True, id="editing") }}
+  {% if approved %}{{ work_section("Đã phê duyệt", approved, "", action="Xem", people=True, id="approved") }}{% endif %}
+
+{% else %}
+  <h2 class="sr-only">Số văn bản theo trạng thái</h2>
+  <div class="stat-row">
+    <a class="stat-tile" href="/documents"><span class="stat-value">{{ total }}</span><span class="stat-label">Tất cả văn bản</span></a>
+    {% for code, label in STATUS_LABELS.items() %}
+    <a class="stat-tile" href="/documents?status={{ code }}"><span class="stat-value">{{ counts[code] }}</span><span class="wf-status wf-{{ code }}">{{ label }}</span></a>
+    {% endfor %}
+  </div>
+
+  <div class="two-col">
+    <section class="section" aria-labelledby="attn-title">
+      <h2 class="section-title" id="attn-title">Cần chú ý <span class="chip-count">({{ waiting|length + returned|length + counts['unassigned'] }})</span></h2>
+      <div class="panel">
+        {% if waiting or returned or counts['unassigned'] %}
+        <ul class="attn">
+          {% for item in waiting %}
+          <li><div><a class="work-title" href="/documents/{{ item.document_id|urlencode }}">{{ item.document_type or "Văn bản" }} {{ item.document_no or item.document_id }}</a>
+            <div class="work-meta"><span class="wf-status wf-pending">Chờ phê duyệt</span><span>{{ item.workflow.approver or "Mọi người phê duyệt" }}</span></div></div>
+            <a class="btn" href="/documents/{{ item.document_id|urlencode }}">Mở</a></li>
+          {% endfor %}
+          {% for item in returned %}
+          <li><div><a class="work-title" href="/documents/{{ item.document_id|urlencode }}">{{ item.document_type or "Văn bản" }} {{ item.document_no or item.document_id }}</a>
+            <div class="work-meta"><span class="wf-status wf-returned">Trả lại</span>{% if item.workflow.returned_note %}<span>{{ item.workflow.returned_note|truncate(80) }}</span>{% endif %}</div></div>
+            <a class="btn" href="/documents/{{ item.document_id|urlencode }}">Mở</a></li>
+          {% endfor %}
+          {% if counts['unassigned'] %}
+          <li><div><span class="work-title">{{ counts['unassigned'] }} văn bản chưa phân công</span>
+            <div class="work-meta"><span class="wf-status wf-unassigned">Chưa phân công</span></div></div>
+            <a class="btn" href="/admin/assign">{{ icon("assign") }}Phân công</a></li>
+          {% endif %}
+        </ul>
+        {% else %}<p class="empty-line">Không có việc nào cần xử lý.</p>{% endif %}
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="topics-title">
+      <h2 class="section-title" id="topics-title">Theo chủ đề <span class="chip-count">({{ folders|length }})</span></h2>
+      <div class="panel table-scroll">
+        {% if folders %}
+        <table class="doclist">
+          <thead><tr><th scope="col">Chủ đề</th><th scope="col" class="num">Văn bản</th><th scope="col">Tiến độ</th></tr></thead>
+          <tbody>
+          {% for f in folders %}
+          <tr data-href="/documents?folder={{ f.category.code|urlencode }}">
+            <td><a class="doc-title-link" href="/documents?folder={{ f.category.code|urlencode }}">{{ f.category.label }}</a></td>
+            <td class="num">{{ f.documents|length }}</td>
+            <td>{% if f.progress %}{{ bar(f.progress, compact=True) }}{% else %}<span class="muted">Trống</span>{% endif %}</td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+        {% else %}<p class="empty-line">Chưa có chủ đề nào.</p>{% endif %}
+      </div>
+    </section>
+  </div>
+{% endif %}
+{% endblock %}

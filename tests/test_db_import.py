@@ -410,44 +410,56 @@ def test_upload_can_put_the_new_document_into_a_folder(client, dataset, sample_p
     unknown = upload(client, variant(sample_pdf, "x"), sample_json, data={"category": "XX"})
     assert unknown.status_code == 422 and "XX" in unknown.text and count("document") == 2  # không lưu gì
 
-    page = client.get("/")
+    page = client.get("/documents")
     assert '<option value="VI">VI. Hộ kinh doanh</option>' in page.text
     form = client.post("/documents/upload", data={"category": "VI"}, follow_redirects=False,
                        files={"pdf": ("ND254_2026.pdf", sample_pdf), "document": ("document.json", sample_json)})
     assert form.status_code == 303 and folders_of(client)[DOC] == ["VI"]
-    in_folder = client.get("/?folder=VI")
-    assert '<option value="VI" selected>VI. Hộ kinh doanh</option>' in in_folder.text  # tải lên ngay trong thư mục đang mở
+    in_folder = client.get("/documents?folder=VI")
+    assert '<option value="VI" selected>VI. Hộ kinh doanh</option>' in in_folder.text  # tải lên ngay trong chủ đề đang lọc
 
 
-def test_list_page_browses_documents_folder_by_folder(client, dataset):
+def test_library_filters_documents_by_topic(client, dataset):
     from app.cli import main
 
     root, _ = dataset
     main(["import-pdfs", str(root)])
 
-    home = client.get("/").text
-    # gốc: các thư mục theo thứ tự I → VIII (không theo bảng chữ cái), kèm số văn bản; văn bản lẻ nằm ở gốc
-    rows = [home.index(f'href="/?folder={code}"') for code in ("I", "II", "VI", "VIII")]
-    assert rows == sorted(rows)
-    assert 'data-count="3"' in home and "I. Quản lý thuế" in home
-    assert 'href="/documents/ND20_2026' in home.split('id="folder-table"')[1]  # văn bản không thuộc thư mục nào
-    assert 'aria-current="page"' in home.split('class="address-box"')[1].split("</nav>")[0]  # đang ở gốc
+    library = client.get("/documents").text
+    # bộ lọc chủ đề theo thứ tự I → VIII (không theo bảng chữ cái); văn bản chưa xếp chủ đề vẫn nằm trong bảng
+    facets = library.split('aria-labelledby="facet-topic"')[1].split("</nav>")[0]
+    rows = [facets.index(f'href="/documents?folder={code}"') for code in ("I", "II", "VI", "VIII")]
+    assert rows == sorted(rows) and "I. Quản lý thuế" in facets
+    assert 'href="/documents/ND20_2026"' in library.split('id="document-table"')[1]
 
-    folder = client.get("/?folder=I").text
+    folder = client.get("/documents?folder=I").text
     listing = folder.split('id="document-table"')[1]
-    order = [listing.index(f'href="/documents/{doc}?folder=I"') for doc in ("L108_2025_QH15", "ND125_2020", "TT99_2025_BTC")]
-    assert order == sorted(order) and "ND254_2026" not in listing and 'href="/?folder=' not in listing.split("<tbody>")[0]
-    crumbs = folder.split('class="address-box"')[1].split("</nav>")[0]
-    assert 'href="/"' in crumbs and "I. Quản lý thuế" in crumbs and 'aria-current="page"' in crumbs
+    order = [listing.index(f'href="/documents/{doc}"') for doc in ("L108_2025_QH15", "ND125_2020", "TT99_2025_BTC")]
+    assert order == sorted(order) and "ND254_2026" not in listing
+    current = folder.split('aria-labelledby="facet-topic"')[1].split("</nav>")[0]
+    assert 'href="/documents?folder=I" aria-current="true"' in current
 
-    shared = client.get("/?folder=VIII").text.split('id="document-table"')[1]
-    assert "TT152_2025_BTC" in shared and 'href="/?folder=VI"' in shared  # văn bản ở nhiều thư mục: chỉ ra thư mục kia
+    shared = client.get("/documents?folder=VIII").text.split('id="document-table"')[1]
+    assert "TT152_2025_BTC" in shared and 'href="/documents?folder=VI"' in shared  # văn bản ở nhiều chủ đề: thẻ chủ đề kia
 
-    unknown = client.get("/?folder=XX", follow_redirects=False)
+    unknown = client.get("/documents?folder=XX", follow_redirects=False)
     assert unknown.status_code == 303 and "err=" in unknown.headers["location"]
+    old_link = client.get("/?folder=I", follow_redirects=False)  # địa chỉ cũ vẫn dùng được
+    assert old_link.status_code == 303 and old_link.headers["location"] == "/documents?folder=I"
 
     deleted = client.post("/documents/ND125_2020/delete", data={"folder": "I"}, follow_redirects=False)
-    assert deleted.headers["location"].startswith("/?folder=I&msg=")  # xóa xong vẫn ở thư mục đang xem
+    assert deleted.headers["location"].startswith("/documents?folder=I&msg=")  # xóa xong vẫn ở chủ đề đang xem
+
+
+def test_library_filters_documents_by_workflow_status(loaded):
+    client = loaded
+    add_account(client, "bt1")
+    assign(client, "bt1")
+    editing = client.get("/documents?status=editing").text
+    assert f'href="/documents/{DOC}"' in editing and 'aria-current="true"><span>Đang chỉnh sửa' in editing
+    assert f'href="/documents/{DOC}"' not in client.get("/documents?status=approved").text
+    overview = client.get("/").text  # trang chủ Admin: ô số theo trạng thái dẫn sang kho văn bản đã lọc
+    assert "Tổng quan" in overview and 'href="/documents?status=editing"' in overview
 
 
 def test_review_page_links_back_to_the_folder_it_was_opened_from(client, dataset):
@@ -456,8 +468,10 @@ def test_review_page_links_back_to_the_folder_it_was_opened_from(client, dataset
     root, _ = dataset
     main(["import-pdfs", str(root)])
     page = client.get("/documents/TT152_2025_BTC?folder=VIII").text
-    assert 'href="/?folder=VIII"' in page and "VIII. Chế độ kế toán" in page
-    assert 'href="/?folder=' not in client.get("/documents/TT152_2025_BTC").text.split("</header>")[0]
+    crumbs = page.split('class="crumbs"')[1].split("</ol>")[0]
+    assert 'href="/documents?folder=VIII"' in crumbs and "VIII. Chế độ kế toán" in crumbs
+    plain = client.get("/documents/TT152_2025_BTC").text.split('class="crumbs"')[1].split("</ol>")[0]
+    assert 'href="/documents"' in plain and "folder=" not in plain
 
 
 # ---- thẩm định ----
@@ -672,7 +686,7 @@ def test_review_page_shows_each_version_in_its_own_colour_to_the_approver(loaded
     login(client, "bt2", USER_PW)
     mine = client.get(f"/documents/{DOC}?unit={UNIT}").text
     assert "Bản của bạn" in mine and "So sánh các bản" not in mine and "bt1" not in mine.split('id="detail"')[1]
-    assert "✎ Sửa chữ" in mine and "Xuất JSON đã duyệt" not in mine  # xuất JSON lấy bản chốt: không dành cho người chỉnh sửa
+    assert 'data-key="e"' in mine and "Xuất JSON đã duyệt" not in mine  # xuất JSON lấy bản chốt: không dành cho người chỉnh sửa
     client.cookies.clear()
     workflow(client, "submit", bt1), workflow(client, "submit", bt2)
     login(client, "pd1", USER_PW)
@@ -680,7 +694,7 @@ def test_review_page_shows_each_version_in_its_own_colour_to_the_approver(loaded
     assert "So sánh các bản" in page and "Bản OCR gốc" in page and "Bản chốt" in page
     assert 'class="person-chip person-1"' in page and ">bt1<" in page and '<ins class="diff-ins"' in page
     assert 'class="person-chip person-2"' in page and "ảnh trang mờ" in page
-    assert '"action": "adopt", "source": "bt1"' in page and "✎ Sửa chữ" not in page  # người phê duyệt không sửa chữ
+    assert '"action": "adopt", "source": "bt1"' in page and 'onclick="enterFocusEdit()"' not in page  # người phê duyệt không sửa chữ
     assert 'class="person-mark person-1"' in page  # vạch màu trên cây: bt1 đã thao tác đơn vị này
 
 
@@ -744,27 +758,31 @@ def test_list_page_shows_my_assignments_and_the_approval_queue(loaded):
     client.auth = None
     login(client, "bt1", USER_PW)
     page = client.get("/").text
-    assert "Việc được giao cho tôi" in page and "Đang chỉnh sửa" in page and f'href="/documents/{DOC}' in page
+    assert "Việc của tôi" in page and "Đang chỉnh sửa" in page and f'href="/documents/{DOC}' in page
     detail = client.get(f"/documents/{DOC}?unit={UNIT}").text
-    assert "✔ Hoàn thành văn bản" in detail
+    assert "Hoàn thành văn bản</button>" in detail
     assert client.post(f"/documents/{DOC}/workflow", data={"action": "submit"}, follow_redirects=False).status_code == 303
     detail = client.get(f"/documents/{DOC}?unit={UNIT}").text
-    assert "✔ Hoàn thành văn bản" not in detail and "✎ Sửa chữ" not in detail and "đã bấm Hoàn thành" in detail
+    assert "Hoàn thành văn bản</button>" not in detail and 'data-key="e"' not in detail and "đã bấm Hoàn thành" in detail
+    home = client.get("/").text  # đã nộp: nằm ở mục Đã nộp, không còn ở Đang làm
+    assert "Đã nộp, chờ phê duyệt" in home
 
     login(client, "bt2", USER_PW)
-    assert "Việc được giao cho tôi" in client.get("/").text and "Chưa có văn bản nào" in client.get("/").text
+    assert "Chưa có văn bản nào được giao cho bạn" in client.get("/").text
     assert "chưa được giao" in client.get(f"/documents/{DOC}?unit={UNIT}").text
 
     login(client, "pd1", USER_PW)
     queue = client.get("/").text
     assert "Chờ tôi phê duyệt" in queue and "Chờ phê duyệt" in queue
     detail = client.get(f"/documents/{DOC}?unit={UNIT}").text
-    assert "↩ Trả lại" in detail and "Hoàn tất phê duyệt" in detail
+    assert "Trả lại cho người chỉnh sửa" in detail and "Hoàn tất phê duyệt" in detail
+    assert "Phê duyệt</a>" in queue  # nút mở văn bản trong hàng đợi
     back = client.post(f"/documents/{DOC}/workflow", data={"action": "return", "note": ""}, follow_redirects=False)
     assert "err=" in back.headers["location"]  # thiếu ghi chú: không ghi gì
     client.post(f"/documents/{DOC}/workflow", data={"action": "return", "note": "Xem lại Điều 9"})
     login(client, "bt1", USER_PW)
     assert "Xem lại Điều 9" in client.get(f"/documents/{DOC}?unit={UNIT}").text
+    assert "Bị trả lại, cần sửa" in client.get("/").text and "Xem lại Điều 9" in client.get("/").text
 
 
 def test_admin_assigns_a_whole_folder_and_can_unassign(client, sample_pdf, sample_json):
@@ -819,7 +837,9 @@ def test_api_writes_require_an_active_account_and_only_admin_uploads(client, sam
     locked = add_account(client, "bi_khoa", approved=False)
     reviewer = add_account(client, "duy")
     approver = add_account(client, "pd1", role="approver")
-    for who in (locked, reviewer, approver):
+    # tài khoản bị khóa không đăng nhập được (401); người đã đăng nhập mà không phải Admin nhận 403
+    assert upload(client, sample_pdf, sample_json, auth=locked).status_code == 401
+    for who in (reviewer, approver):
         assert upload(client, sample_pdf, sample_json, auth=who).status_code == 403  # chỉ Admin thêm văn bản
     assert upload(client, sample_pdf, sample_json).status_code == 201
 
@@ -831,7 +851,7 @@ def test_api_writes_require_an_active_account_and_only_admin_uploads(client, sam
     assert client.get(f"/api/documents/{DOC}", auth=None).status_code == 401  # đọc cũng phải đăng nhập
 
     assert review(client, "approve", auth=None).status_code == 401
-    assert review(client, "approve", auth=locked).status_code == 403
+    assert review(client, "approve", auth=locked).status_code == 401
     forged = client.post(REVIEWS, json={"action": "approve", "reviewer": "admin"}, headers={"cookie": "reviewer=admin"},
                          auth=None)
     assert forged.status_code == 401 and count("review_event") == 0
@@ -881,13 +901,14 @@ def test_roles_migration_turns_old_viewers_into_locked_reviewers(client):
     assert accounts.get("pd1")["is_approved"]
 
 
-def test_admin_password_follows_setting_on_every_startup(client, tmp_path):
-    """Không đặt ADMIN_PASSWORD: admin đăng nhập bằng admin123 (kể cả khi CSDL đang lưu mật khẩu khác)."""
+def test_admin_password_is_kept_when_none_is_configured(client, tmp_path):
+    """Không đặt ADMIN_PASSWORD: tài khoản admin đã có trong CSDL giữ nguyên mật khẩu, không có mật khẩu mặc định."""
     storage = tmp_path / "storage2"
     app = create_app(Settings(data_dir=tmp_path / "none", storage_dir=storage, conninfo=URL, auto_import_dir=None))
     with TestClient(app) as second:
-        assert login(second, "admin", "admin123").status_code == 303
-        assert login(second, "admin", ADMIN_PW).status_code == 401
+        assert login(second, "admin", ADMIN_PW).status_code == 303
+        assert login(second, "admin", "admin123").status_code == 401
+    assert not (storage / "initial_admin_password.txt").exists()
 
 
 # ---- tô vàng trên bản scan: toạ độ từng từ do OCR trả về, lưu trong PostgreSQL ----

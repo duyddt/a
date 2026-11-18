@@ -1,57 +1,110 @@
 {% extends "base.html" %}
+{#- Màn soát: thanh văn bản (đường dẫn, số hiệu và tên, quy trình, tiến độ, nút của cả văn bản) rồi ba khung
+    cây | đơn vị đang soát | trang PDF gốc. Chỉ các khung cuộn; dải nút thẩm định dính ở đáy khung giữa.
+    Phím tắt (bỏ qua khi đang gõ): J/K đơn vị kế/trước, A duyệt & tiếp, E sửa chữ, F gắn cờ. -#}
+{% from "partials/icon.html" import icon %}
 {% from "partials/progress.html" import bar %}
-{% block title %}{{ doc.document_no }}{% endblock %}
+{% import "partials/workflow_bar.html" as workflow with context %}
+{% set can_delete = current_user and current_user.role == 'admin' and current_user.is_approved %}
+{% block title %}{{ doc.document_no or doc.document_id }} - Thẩm định văn bản pháp lý{% endblock %}
 {% block body_class %}review-page{% endblock %}
-{% block body %}
-<header class="topbar">
-  {% if folder %}
-  <a href="/?folder={{ folder.code|urlencode }}" class="button-link back-folder" title="Về thư mục {{ folder.label }}">&larr; 📁 {{ folder.label }}</a>
-  {% else %}
-  <a href="/" class="button-link">&larr; Danh sách văn bản</a>
-  {% endif %}
-  <h1 title="{{ doc.title }} · {{ doc.document_no }}">🗂 {{ doc.title }} <span class="muted">· {{ doc.document_no }}</span></h1>
-  <div id="progress">{{ bar(progress) }}</div>
 
-  <div class="topbar-actions">
-    {% if current_user %}
-      <span class="small">👤 <strong>{{ current_user.username }}</strong></span>
-      <span class="tag role-{{ current_user.role }}">{{ ROLE_LABELS[current_user.role] }}</span>
-      {% if not current_user.is_approved %}<span class="tag warn">🔒 Đã khóa</span>{% endif %}
-      <form method="post" action="/account/logout" style="margin:0;">
-        <button type="submit" class="button-link">Đăng xuất</button>
-      </form>
-    {% else %}
-      <a href="/login?next=/documents/{{ doc.document_id }}" class="button-link primary">🔐 Đăng nhập</a>
-    {% endif %}
-    {% if can_export %}<a class="button-link" href="/api/documents/{{ doc.document_id }}/export" download title="Các đơn vị đã duyệt trên bản chốt">⬇ Xuất JSON đã duyệt</a>{% endif %}
-    {% include "partials/theme_toggle.html" %}
-  </div>
-</header>
-{% include "partials/workflow_bar.html" %}
-{% include "partials/ocr_report.html" %}
-
-<div class="split">
-  <section class="pane left" aria-label="Trang PDF gốc">
-    {% include "partials/viewer.html" %}
-  </section>
-  <section class="pane right">
-    <h2 class="pane-title">
-      <span>🗂 File Explorer: Cấu trúc Điều &rarr; Khoản &rarr; Điểm</span>
-    </h2>
-    {% include "partials/tree.html" %}
-    <div id="detail" class="detail" aria-live="polite">
-      {% include "partials/detail.html" %}
+{% block main %}
+<div class="review-shell">
+  <header class="doc-head">
+    <ol class="crumbs" aria-label="Đường dẫn">
+      <li><a href="/documents">Văn bản</a></li>
+      {% if folder %}<li><a href="/documents?folder={{ folder.code|urlencode }}">{{ folder.label }}</a></li>{% endif %}
+      <li><span aria-current="page">{{ doc.document_no or doc.document_id }}</span></li>
+    </ol>
+    <div class="doc-title">
+      <button type="button" class="btn outline-toggle" data-nav-toggle aria-controls="navpane">{{ icon("panel-left") }}Cấu trúc</button>
+      <h1 title="{{ doc.title }}">{{ doc.document_type or "Văn bản" }} {{ doc.document_no or doc.document_id }}{% if doc.title %} <span class="doc-long">{{ doc.title }}</span>{% endif %}</h1>
+      {{ workflow.people() }}
+      <div id="progress">{{ bar(progress, compact=True) }}</div>
     </div>
-  </section>
+    <div class="doc-actions">
+      {{ workflow.actions() }}
+      {% if can_review or can_export or can_delete %}
+      <details class="menu">
+        <summary class="btn" aria-label="Thao tác khác với văn bản">{{ icon("more") }}Khác</summary>
+        <div class="menu-panel">
+          {% if can_review %}<button type="button" class="menu-item" data-open-dialog="ocr-dialog">{{ icon("gauge") }}Độ chính xác OCR</button>{% endif %}
+          {% if can_export %}<a class="menu-item" href="/api/documents/{{ doc.document_id|urlencode }}/export" download title="Các đơn vị đã duyệt trên bản chốt">{{ icon("download") }}Xuất JSON đã duyệt</a>{% endif %}
+          {% if can_delete %}
+          <div class="menu-sep" role="separator"></div>
+          <form method="post" action="/documents/{{ doc.document_id|urlencode }}/delete" data-confirm="Xóa văn bản {{ doc.document_id }} khỏi hệ thống (khỏi mọi chủ đề)? Không hoàn tác được." onsubmit="return confirm(this.dataset.confirm);">
+            <button type="submit" class="menu-item danger">{{ icon("delete") }}Xóa văn bản</button>
+          </form>
+          {% endif %}
+        </div>
+      </details>
+      {% endif %}
+    </div>
+  </header>
+
+  {% if (wf and wf.returned_note) or err or msg or db_error %}
+  <div class="review-flash">
+    {% if wf and wf.returned_note %}<div class="alert warn" role="status">{{ icon("undo") }}<span><strong>{{ wf.returned_by }}</strong> trả lại: {{ wf.returned_note }}</span></div>{% endif %}
+    {% if err %}<div class="alert error" role="alert">{{ icon("error") }}<span>{{ err }}</span></div>{% endif %}
+    {% if msg %}<div class="alert success" role="status">{{ icon("check-circle") }}<span>{{ msg }}</span></div>{% endif %}
+    {% if db_error %}<div class="alert warn" role="status">{{ icon("warning") }}<span>Chưa kết nối được PostgreSQL: đang ở chế độ chỉ xem.</span></div>{% endif %}
+  </div>
+  {% endif %}
+
+  <div class="workspace" data-layout="review">
+    <nav class="navpane" id="navpane" aria-label="Cấu trúc văn bản">
+      {% include "partials/tree.html" %}
+    </nav>
+    <div class="splitter" data-split="nav" role="separator" tabindex="0" aria-orientation="vertical"
+         aria-valuemin="180" aria-valuemax="480" aria-label="Độ rộng khung cấu trúc (phím mũi tên trái/phải)"></div>
+    <main class="mainpane" id="main">
+      <div id="detail" class="detail" aria-live="polite">
+        {% include "partials/detail.html" %}
+      </div>
+    </main>
+    <div class="splitter" data-split="side" role="separator" tabindex="0" aria-orientation="vertical"
+         aria-valuemin="240" aria-valuemax="1400" aria-label="Độ rộng khung trang PDF (phím mũi tên trái/phải)"></div>
+    <section class="sidepane" aria-label="Trang PDF gốc">
+      {% include "partials/viewer.html" %}
+    </section>
+  </div>
 </div>
 
+{% if can_review %}
+<dialog class="modal wide" id="ocr-dialog" aria-labelledby="ocr-title">
+  <div class="modal-body">
+    <h2 id="ocr-title">Độ chính xác OCR</h2>
+    {% include "partials/ocr_report.html" %}
+  </div>
+  <div class="modal-foot"><button type="button" class="btn" data-close-dialog>Đóng</button></div>
+</dialog>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
 <script>
   function changeCompareFont(delta) {
     var root = document.documentElement;
     var current = parseInt(getComputedStyle(root).getPropertyValue("--compare-font-size")) || 18;
     var next = Math.min(Math.max(current + delta, 14), 26);
     root.style.setProperty("--compare-font-size", next + "px");
-    localStorage.setItem("compareFontSize", next);
+    try { localStorage.setItem("compareFontSize", next); } catch (e) {}
+  }
+  /* Ô lý do của Gắn cờ / Lỗi cấu trúc: chỉ hiện khi bấm một trong hai nút, kèm đúng nút xác nhận */
+  function openReason(kind) {
+    var row = document.getElementById("reason-row");
+    if (!row) return;
+    row.hidden = false;
+    row.querySelectorAll("[data-reason]").forEach(function (b) { b.hidden = b.getAttribute("data-reason") !== kind; });
+    var label = row.querySelector("[data-reason-label]");
+    if (label) label.textContent = kind === "flag" ? "Lý do gắn cờ" : "Lỗi cấu trúc ở đâu";
+    var input = document.getElementById("reason-input");
+    if (input) input.focus();
+  }
+  function closeReason() {
+    var row = document.getElementById("reason-row");
+    if (row) row.hidden = true;
   }
   /* CHẾ ĐỘ SỬA TẬP TRUNG: chỉ còn trang PDF và ô sửa chữ của đơn vị. Esc: hủy; Ctrl+Enter: lưu. */
   var focusReturn = null;
@@ -61,47 +114,93 @@
     if (!document.body.classList.contains("focus-edit")) focusReturn = document.activeElement;
     document.body.classList.add("focus-edit");
     window.scrollTo(0, 0);
+    window.dispatchEvent(new Event("resize"));  /* khung PDF đổi cỡ: tính lại "Vừa trang" */
     var ta = document.getElementById("focus-edit-textarea");
     if (ta) { ta.focus(); ta.setSelectionRange(0, 0); ta.scrollTop = 0; }
   }
   function exitFocusEdit(cancel) {
     if (!document.body.classList.contains("focus-edit")) return;
     document.body.classList.remove("focus-edit");
+    window.dispatchEvent(new Event("resize"));
     var ta = document.getElementById("focus-edit-textarea");
     if (cancel && ta) ta.value = ta.defaultValue;
-    var back = focusReturn && document.body.contains(focusReturn) ? focusReturn : document.querySelector("#review-form .edit-toggle");
+    var back = focusReturn && document.body.contains(focusReturn) ? focusReturn : document.querySelector("#detail .edit-toggle");
     focusReturn = null;
     if (back) back.focus();
   }
+  function typing(el) {
+    return el && (el.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName));
+  }
+  function press(selector) {
+    var btn = document.querySelector(selector);
+    if (btn && !btn.disabled && !btn.hidden) btn.click();
+  }
   document.addEventListener("keydown", function (e) {
-    if (!document.body.classList.contains("focus-edit")) return;
-    if (e.key === "Escape" && !e.defaultPrevented) {
-      e.preventDefault();
-      exitFocusEdit(true);
-    } else if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
-      e.preventDefault();
-      var save = document.querySelector("#focus-editor .save");
-      if (save) save.click();
+    if (document.body.classList.contains("focus-edit")) {
+      if (e.key === "Escape" && !e.defaultPrevented) {
+        e.preventDefault();
+        exitFocusEdit(true);
+      } else if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        press("#focus-editor .save");
+      }
+      return;
     }
+    if (e.key === "Escape" && document.activeElement && document.activeElement.id === "reason-input") {
+      closeReason();
+      return;
+    }
+    if (e.ctrlKey || e.metaKey || e.altKey || typing(e.target) || document.querySelector("dialog[open]")) return;
+    var keys = { j: "#detail [data-go=next]", k: "#detail [data-go=prev]", a: "#detail [data-key=a]",
+                 e: "#detail [data-key=e]", f: "#detail [data-key=f]" };
+    var target = keys[e.key.toLowerCase()];
+    if (target) { e.preventDefault(); press(target); }
   });
-  /* chọn đơn vị khác trong cây: khung chi tiết quay về đầu */
+  /* Đổi đơn vị (bấm cây, nút Trước/Tiếp, phím J/K/A): đánh dấu hàng trên cây, mở nhánh cha, khung giữa về đầu */
+  function syncTree() {
+    var body = document.querySelector("#detail [data-unit-id]");
+    if (!body) return;
+    var id = body.getAttribute("data-unit-id");
+    var current = null;
+    document.querySelectorAll("#tree .row").forEach(function (row) {
+      var on = row.getAttribute("data-unit") === id;
+      row.classList.toggle("selected", on);
+      if (on) { row.setAttribute("aria-current", "true"); current = row; } else row.removeAttribute("aria-current");
+    });
+    if (!current) return;
+    var node = current.closest(".node");
+    node = node && node.parentElement && node.parentElement.closest("details.node");
+    while (node) { node.open = true; node = node.parentElement && node.parentElement.closest("details.node"); }
+    return current;
+  }
   document.addEventListener("htmx:afterSwap", function (e) {
     if (!e.target || e.target.id !== "detail") return;
-    var source = e.detail && e.detail.requestConfig && e.detail.requestConfig.elt;
-    if (source && source.closest && source.closest("#tree")) e.target.scrollTop = 0;
+    var before = document.querySelector("#tree .row.selected");
+    var row = syncTree();
+    if (row !== before) {
+      var main = document.getElementById("main");
+      if (main) main.scrollTop = 0;
+      if (row && row.scrollIntoView) row.scrollIntoView({ block: "nearest" });
+      document.body.classList.remove("nav-open");
+    }
     /* lưu xong: thoát chế độ sửa tập trung và hiện kết quả; lưu lỗi (data-reopen): ở lại sửa tiếp */
     if (document.querySelector("#focus-editor[data-reopen]")) enterFocusEdit();
     else exitFocusEdit(false);
-  });
-  window.addEventListener("DOMContentLoaded", function () {
-    var savedSize = localStorage.getItem("compareFontSize");
-    if (savedSize) {
-      document.documentElement.style.setProperty("--compare-font-size", savedSize + "px");
+    if (document.querySelector("#reason-row:not([hidden])")) {
+      var input = document.getElementById("reason-input");
+      if (input) input.focus();
     }
+  });
+  /* đếm lại nút lọc sau khi mọi phần hx-swap-oob (chấm trạng thái trên cây) đã được thay */
+  document.addEventListener("htmx:afterSettle", function () {
+    if (window.refreshTree) window.refreshTree();
+  });
+  (function () {
+    var savedSize = null;
+    try { savedSize = localStorage.getItem("compareFontSize"); } catch (e) {}
+    if (savedSize) document.documentElement.style.setProperty("--compare-font-size", savedSize + "px");
     var selectedRow = document.querySelector("#tree .row.selected");
-    if (selectedRow && selectedRow.scrollIntoView) {
-      selectedRow.scrollIntoView({ block: "center" });
-    }
-  });
+    if (selectedRow && selectedRow.scrollIntoView) selectedRow.scrollIntoView({ block: "center" });
+  })();
 </script>
 {% endblock %}

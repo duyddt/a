@@ -1,154 +1,160 @@
+{#- Khung giữa của màn soát (nằm trong #detail): đơn vị đang soát rồi dải nút dính ở đáy khung.
+    Mọi nút gửi htmx về #detail nên dải nút đi theo partial này khi đổi đơn vị.
+    Phím tắt (review.html) bấm các nút có data-key / data-go: A duyệt & tiếp, E sửa chữ, F gắn cờ, J/K tiếp/trước.
+    Cần thêm từ detail_context: unit_label, article_title, prev_id/next_id, prev_url/next_url, reason_open. -#}
+{% from "partials/icon.html" import icon %}
+{#- Chữ OCR chia theo dòng để CSS đánh số ở lề trái (.content.numbered); không thêm ký tự xuống dòng giữa các span -#}
+{% macro numbered(text) %}{% for line in (text or "").split("\n") %}<span class="ln">{{ line }}</span>{% endfor %}{% endmacro %}
 {% if unit %}
 {% set status = review.status if review else 'unreviewed' %}
 {% set status_label = review.status_label if review else 'Chưa soát' %}
-{% set unit_label %}{% if unit.point is not none %}Điểm {{ unit.point }}, {% endif %}{% if unit.clause is not none %}Khoản {{ unit.clause }}, {% endif %}{% if unit.article is not none %}Điều {{ unit.article }}{% else %}{{ unit.unit_id }}{% endif %}{% endset %}
+{% set url = "/documents/" ~ (doc.document_id|urlencode) ~ "/units/" ~ (unit.unit_id|urlencode) ~ "/review" %}
+{% set page_url = "/documents/" ~ (doc.document_id|urlencode) ~ "?unit=" %}
+{% set can_edit_text = can_edit_text if can_edit_text is defined else True %}
+{% set acting = can_review and not blocked %}
 
-<!-- Thanh đường dẫn File Explorer Breadcrumb -->
-<div class="detail-head">
-  <div>
-    <span class="muted small">📁 {{ doc.document_id }} {% if unit.chapter %}&rsaquo; Chương {{ unit.chapter }}{% endif %} &rsaquo;</span>
-    <strong>{{ unit_label }}</strong>
+<div class="unit-body" data-unit-id="{{ unit.unit_id }}">
+  <div class="unit-eyebrow">
+    {% if unit.chapter %}<span>Chương {{ unit.chapter }}</span><span aria-hidden="true">›</span>{% endif %}
+    {% if article_title and unit.clause is not none %}<span>Điều {{ unit.article }}. {{ article_title }}</span><span aria-hidden="true">›</span>{% endif %}
+    <span>Trang {{ unit.source_pages|join(", ") }}</span>
+    <span class="font-tools" role="group" aria-label="Cỡ chữ">
+      <button type="button" class="icon-btn" onclick="changeCompareFont(-2)" title="Chữ nhỏ hơn" aria-label="Chữ nhỏ hơn">A-</button>
+      <button type="button" class="icon-btn" onclick="changeCompareFont(2)" title="Chữ lớn hơn" aria-label="Chữ lớn hơn">A+</button>
+    </span>
   </div>
-  <div style="display:flex; align-items:center; gap:8px;">
-    <span class="muted small">Trang {{ unit.source_pages|join(", ") }}</span>
-    <button type="button" class="ribbon-btn" style="min-height:28px; padding:0 8px; font-size:12px;" onclick="changeCompareFont(-2)">A-</button>
-    <button type="button" class="ribbon-btn" style="min-height:28px; padding:0 8px; font-size:12px;" onclick="changeCompareFont(2)">A+</button>
+  <h2 class="unit-heading">{{ unit_label }}</h2>
+  {% if unit.title %}<p class="unit-title">{{ unit.title }}</p>{% endif %}
+
+  <div class="status-line">
+    <span class="state"><span class="dot st-{{ status }}" aria-hidden="true"></span>{{ status_label }}</span>
+    {% if version_label %}<span class="tag version-tag{% if version_label == 'Bản của bạn' %} mine{% endif %}" title="{% if version_label == 'Bản của bạn' %}Bản riêng của bạn: người khác không thấy và không sửa được{% else %}Bản chốt chung của người phê duyệt và Admin; xuất JSON lấy bản này{% endif %}">{{ version_label }}</span>{% endif %}
+    {% if review and review.edit_count %}<span class="tag edited">Đã sửa chữ ({{ review.edit_count }} lần)</span>{% endif %}
+    {% if not unit.is_confident %}<span class="tag warn">{{ icon("warning") }}Parser đánh dấu không chắc chắn</span>{% endif %}
+    {% if review and review.last %}<span class="muted small">{{ review.last.action_label }} bởi <strong>{{ review.last.reviewer }}</strong>, {{ review.last.created_at|vn_time }}</span>{% endif %}
   </div>
-</div>
+  {% if review and review.note %}<p class="note st-note-{{ status }}">{{ icon("flag" if status == 'flagged' else "info") }}<span>Ghi chú / lý do sai: {{ review.note }}</span></p>{% endif %}
 
-{% if unit.title %}<div class="muted" style="font-weight:600; margin-bottom:6px;">{{ unit.title }}</div>{% endif %}
+  {% if can_review %}
+  <form id="review-form" class="review-form" onsubmit="return false;">
+    {% if errors %}<ul class="err" role="alert">{% for e in errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+    {% if blocked %}<p class="blocked-note" role="status">{{ icon("lock") }}<span>{{ blocked }}. Bạn vẫn xem được nội dung.</span></p>{% endif %}
 
-<div class="status-line">
-  {% if version_label %}<span class="tag version-tag{% if version_label == 'Bản của bạn' %} mine{% endif %}" title="{% if version_label == 'Bản của bạn' %}Bản riêng của bạn: người khác không thấy và không sửa được{% else %}Bản chốt chung của người phê duyệt và Admin; xuất JSON lấy bản này{% endif %}">{{ version_label }}</span>{% endif %}
-  <span class="dot st-{{ status }}" aria-hidden="true"></span><strong>{{ status_label }}</strong>
-  {% if review and review.edit_count %}<span class="tag edited">Đã sửa chữ ({{ review.edit_count }} lần)</span>{% endif %}
-  {% if not unit.is_confident %}<span class="tag warn">Parser đánh dấu không chắc chắn</span>{% endif %}
-  {% if review and review.last %}<span class="muted small">· {{ review.last.action_label }} bởi <strong>{{ review.last.reviewer }}</strong>, {{ review.last.created_at|vn_time }}</span>{% endif %}
-</div>
-{% if review and review.note %}<p class="note">Ghi chú / Lý do sai: {{ review.note }}</p>{% endif %}
-
-{% if can_review %}
-<form id="review-form" class="review-form" style="margin-top:8px; padding-top:0; border:0;" onsubmit="return false;">
-  {% if errors %}<ul class="err" role="alert">{% for e in errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
-  {% set url = "/documents/" ~ doc.document_id ~ "/units/" ~ (unit.unit_id|urlencode) ~ "/review" %}
-  {% if blocked %}<p class="blocked-note" role="status">🔒 {{ blocked }}. Bạn vẫn xem được nội dung.</p>{% endif %}
-
-  {% if not blocked %}
-  <!-- Thanh công cụ phẳng kiểu File Explorer Ribbon (Không dùng pop-up) -->
-  <div class="explorer-ribbon">
-    <button type="button" class="ribbon-btn approve" hx-post="{{ url }}" hx-vals='{"action": "approve"}' hx-include="#review-form" hx-target="#detail" hx-swap="innerHTML">✓ Duyệt</button>
-    {% if can_edit_text is not defined or can_edit_text %}<button type="button" class="ribbon-btn edit-toggle" onclick="enterFocusEdit()" title="Chỉ hiện trang PDF và chữ của mục này để sửa">✎ Sửa chữ</button>{% endif %}
-    <button type="button" class="ribbon-btn flag" hx-post="{{ url }}" hx-vals='{"action": "flag"}' hx-include="#review-form" hx-target="#detail" hx-swap="innerHTML">⚑ Gắn cờ</button>
-    <button type="button" class="ribbon-btn structure" hx-post="{{ url }}" hx-vals='{"action": "structure_error"}' hx-include="#review-form" hx-target="#detail" hx-swap="innerHTML">⚠ Báo lỗi cấu trúc</button>
-    {% if status != 'unreviewed' %}
-    <button type="button" class="ribbon-btn" hx-post="{{ url }}" hx-vals='{"action": "reset"}' hx-include="#review-form" hx-target="#detail" hx-swap="innerHTML">↺ Bỏ đánh dấu</button>
+    {% if versions %}
+    {#- So sánh các bản (người phê duyệt / Admin): bản OCR gốc và bản của từng người chỉnh sửa, mỗi người một màu -#}
+    <section class="versions" aria-label="So sánh các bản">
+      <h3 class="versions-title">{{ icon("compare") }}So sánh các bản <span class="muted small">Chọn một bản làm bản chốt rồi Duyệt. Phần khác bản OCR gốc tô theo màu của từng người.</span></h3>
+      {% for v in versions %}
+      <article class="version{% if v.color %} person-{{ v.color }}{% endif %}{% if v.same_as_final %} is-current{% endif %}">
+        <div class="version-head">
+          {% if v.color %}<span class="person-chip person-{{ v.color }}">{{ v.label }}</span>{% else %}<strong class="small">{{ v.label }}</strong>{% endif %}
+          {% if v.status_label %}<span class="dot st-{{ v.status }}" aria-hidden="true"></span><span class="small">{{ v.status_label }}</span>{% endif %}
+          {% if v.edit_count %}<span class="tag edited">Sửa {{ v.edit_count }} lần</span>{% endif %}
+          {% if v.same_as_final %}<span class="tag ok version-current">{{ icon("check") }}Đang là bản chốt</span>
+          {% elif not blocked %}<button type="button" class="ribbon-btn small-btn adopt" hx-post="{{ url }}" hx-vals='{"action": "adopt", "source": {{ v.version|tojson }}}' hx-include="#review-form" hx-target="#detail" hx-swap="innerHTML">Chọn bản này</button>{% endif %}
+        </div>
+        {% if v.note %}<p class="version-note small">Ghi chú: {{ v.note }}</p>{% endif %}
+        <div class="version-text{% if v.color %} person-diff{% endif %}">{% if v.diff_html %}{{ v.diff_html|safe }}{% else %}{{ v.content }}{% endif %}</div>
+      </article>
+      {% endfor %}
+    </section>
     {% endif %}
-  </div>
 
-  <!-- Hàng thuộc tính phẳng (Tài khoản người soát + Lý do lỗi) -->
-  <div class="ribbon-inputs">
-    <div class="field">👤 Tài khoản người soát
-      <span class="reviewer-name" title="Thao tác được ghi nhận theo tài khoản đang đăng nhập"><strong>{{ reviewer }}</strong></span>
-    </div>
-    <label class="field">📝 Ghi chú / Lý do chi tiết <span class="muted">(bắt buộc khi Gắn cờ / Lỗi cấu trúc)</span>
-      <input type="text" name="note" value="{{ form_note }}" maxlength="2000" placeholder="Ghi lý do sai hoặc vị trí lỗi...">
-    </label>
-  </div>
-  {% endif %}
+    <pre class="content numbered" id="read-only-view">{{ numbered(unit.content) }}</pre>
 
-  {% if versions %}
-  <!-- So sánh các bản (người phê duyệt / Admin): bản OCR gốc và bản của từng người chỉnh sửa, mỗi người một màu -->
-  <section class="versions" aria-label="So sánh các bản">
-    <h3 class="versions-title">⇄ So sánh các bản <span class="muted small">· chọn một bản làm bản chốt rồi Duyệt; phần khác bản OCR gốc tô theo màu của từng người</span></h3>
-    {% for v in versions %}
-    <article class="version{% if v.color %} person-{{ v.color }}{% endif %}{% if v.same_as_final %} is-current{% endif %}">
-      <div class="version-head">
-        {% if v.color %}<span class="person-chip person-{{ v.color }}">{{ v.label }}</span>{% else %}<strong class="small">{{ v.label }}</strong>{% endif %}
-        {% if v.status_label %}<span class="dot st-{{ v.status }}" aria-hidden="true"></span><span class="small">{{ v.status_label }}</span>{% endif %}
-        {% if v.edit_count %}<span class="tag edited">Sửa {{ v.edit_count }} lần</span>{% endif %}
-        {% if v.same_as_final %}<span class="tag ok version-current">✓ Đang là bản chốt</span>
-        {% elif not blocked %}<button type="button" class="ribbon-btn small-btn adopt" hx-post="{{ url }}" hx-vals='{"action": "adopt", "source": {{ v.version|tojson }}}' hx-include="#review-form" hx-target="#detail" hx-swap="innerHTML">⇩ Chọn bản này</button>{% endif %}
+    {% if can_edit_text and not blocked %}
+    {#- Chế độ sửa tập trung: chỉ còn trang PDF (khung phải) và chữ của mục này (review.html: enterFocusEdit) -#}
+    <section id="focus-editor" class="focus-editor" aria-label="Sửa chữ {{ unit_label }}"{% if form_content is not none %} data-reopen{% endif %}>
+      <div class="focus-bar">
+        <label for="focus-edit-textarea" class="focus-title">{{ icon("edit") }}Sửa chữ: <strong>{{ unit_label }}</strong> <span class="muted small">đối chiếu trang {{ unit.source_pages|join(", ") }}</span></label>
+        <select name="ocr_reason" aria-label="Phân loại nguyên nhân OCR sai (tùy chọn)" title="Phân loại nguyên nhân OCR sai (tùy chọn)">
+          <option value="">Lý do OCR sai (tùy chọn)</option>
+          {% for r in OCR_REASONS or [
+            "Mờ/nhòe bản scan",
+            "Sai dấu tiếng Việt",
+            "Nhầm ký tự giống nhau (d/đ, 0/O, 1/l...)",
+            "Mất chữ / dính chữ",
+            "Lỗi công thức / ký hiệu / bảng biểu"
+          ] %}
+          <option value="{{ r }}">{{ r }}</option>
+          {% endfor %}
+        </select>
+        <span class="focus-font" role="group" aria-label="Cỡ chữ">
+          <button type="button" class="ribbon-btn small-btn" onclick="changeCompareFont(-2)" aria-label="Chữ nhỏ hơn">A-</button>
+          <button type="button" class="ribbon-btn small-btn" onclick="changeCompareFont(2)" aria-label="Chữ lớn hơn">A+</button>
+        </span>
+        <button type="button" class="ribbon-btn save" title="Lưu (Ctrl+Enter)" hx-post="{{ url }}" hx-vals='{"action": "edit"}' hx-include="#review-form" hx-target="#detail" hx-swap="innerHTML">{{ icon("save") }}Lưu bản sửa <kbd>Ctrl+Enter</kbd></button>
+        <button type="button" class="ribbon-btn" title="Hủy, bỏ phần đang sửa (Esc)" onclick="exitFocusEdit(true)">{{ icon("dismiss") }}Hủy <kbd>Esc</kbd></button>
       </div>
-      {% if v.note %}<p class="version-note small">Ghi chú: {{ v.note }}</p>{% endif %}
-      <div class="version-text{% if v.color %} person-diff{% endif %}">{% if v.diff_html %}{{ v.diff_html|safe }}{% else %}{{ v.content }}{% endif %}</div>
-    </article>
-    {% endfor %}
-  </section>
+      <textarea id="focus-edit-textarea" name="content" spellcheck="false">{{ form_content if form_content is not none else unit.content }}</textarea>
+      <p class="muted small focus-hint">Bản gốc vẫn được giữ trong lịch sử; sửa một đơn vị đã duyệt thì phải duyệt lại.</p>
+    </section>
+    {% endif %}
+  </form>
+  {% else %}
+  <pre class="content numbered">{{ numbered(unit.content) }}</pre>
+  {% if db_ready is not defined or not db_ready %}
+  <p class="blocked-note">{{ icon("info") }}<span>Chế độ xem thư mục file: chưa lưu được thao tác thẩm định (cần PostgreSQL, xem README).</span></p>
+  {% else %}
+  <p class="blocked-note">{{ icon("lock") }}<span>Tài khoản này chỉ xem được văn bản.</span></p>
+  {% endif %}
   {% endif %}
 
-  <!-- Chế độ xem chuẩn -->
-  <div id="read-only-view">
-    <pre class="content" title="Bấm 'Sửa chữ' trên thanh công cụ để sửa trực tiếp mục này">{{ unit.content }}</pre>
+  {% if inline_diff %}
+  <div class="diff-box">
+    <div class="diff-title">{{ icon("compare") }}Chỗ OCR đọc sai (gạch đỏ: chữ OCR sai, chữ đỏ: chữ đã sửa)</div>
+    <div class="diff-render">{{ inline_diff|safe }}</div>
   </div>
-
-  {% if (can_edit_text is not defined or can_edit_text) and not blocked %}
-  <!-- Chế độ sửa tập trung: chỉ còn trang PDF (khung trái) và chữ của mục này (review.html: enterFocusEdit) -->
-  <section id="focus-editor" class="focus-editor" aria-label="Sửa chữ {{ unit_label }}"{% if form_content is not none %} data-reopen{% endif %}>
-    <div class="focus-bar">
-      <label for="focus-edit-textarea" class="focus-title">✎ Sửa chữ: <strong>{{ unit_label }}</strong> <span class="muted small">· đối chiếu Trang {{ unit.source_pages|join(", ") }}</span></label>
-      <select name="ocr_reason" aria-label="Phân loại nguyên nhân OCR sai (tùy chọn)" title="Phân loại nguyên nhân OCR sai (tùy chọn)">
-        <option value="">Lý do OCR sai (tùy chọn)</option>
-        {% for r in OCR_REASONS or [
-          "Mờ/nhòe bản scan",
-          "Sai dấu tiếng Việt",
-          "Nhầm ký tự giống nhau (d/đ, 0/O, 1/l...)",
-          "Mất chữ / dính chữ",
-          "Lỗi công thức / ký hiệu / bảng biểu"
-        ] %}
-        <option value="{{ r }}">{{ r }}</option>
-        {% endfor %}
-      </select>
-      <span class="focus-font" role="group" aria-label="Cỡ chữ">
-        <button type="button" class="ribbon-btn small-btn" onclick="changeCompareFont(-2)" aria-label="Chữ nhỏ hơn">A-</button>
-        <button type="button" class="ribbon-btn small-btn" onclick="changeCompareFont(2)" aria-label="Chữ lớn hơn">A+</button>
-      </span>
-      <button type="button" class="ribbon-btn save" title="Lưu (Ctrl+Enter)" hx-post="{{ url }}" hx-vals='{"action": "edit"}' hx-include="#review-form" hx-target="#detail" hx-swap="innerHTML">💾 Lưu bản sửa <kbd>Ctrl+Enter</kbd></button>
-      <button type="button" class="ribbon-btn" title="Hủy, bỏ phần đang sửa (Esc)" onclick="exitFocusEdit(true)">✕ Hủy <kbd>Esc</kbd></button>
-    </div>
-    <textarea id="focus-edit-textarea" name="content" spellcheck="false">{{ form_content if form_content is not none else unit.content }}</textarea>
-    <p class="muted small focus-hint">Bản gốc vẫn được giữ trong lịch sử; sửa một đơn vị đã duyệt thì phải duyệt lại.</p>
-  </section>
   {% endif %}
-</form>
 
-{% if inline_diff %}
-<div class="diff-box">
-  <div class="diff-title">🔍 Chỗ hệ thống OCR đọc sai (Đỏ = Bản gốc sai, Xanh = Bản đã sửa):</div>
-  <div class="diff-render">{{ inline_diff|safe }}</div>
+  <details class="history">
+    <summary>{{ icon("history") }}Lịch sử thao tác ({{ history|length }})</summary>
+    {% if not history %}<p class="muted small">Chưa có thao tác nào.</p>{% endif %}
+    <ol class="history-list">
+      {% for e in history %}
+      <li>
+        <span class="small"><strong>{{ e.action_label }}</strong> · {{ e.reviewer }} · {{ e.created_at|vn_time }}</span>
+        {% if e.note %}<div class="small">Ghi chú: {{ e.note }}</div>{% endif %}
+        {% if e.action == 'edit' %}
+        <details class="small"><summary>Xem chữ trước và sau khi sửa</summary>
+          <div class="muted">Trước:</div><pre class="content small">{{ e.content_before }}</pre>
+          <div class="muted">Sau:</div><pre class="content small">{{ e.content_after }}</pre>
+        </details>
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ol>
+    <p class="muted small unit-id">Mã đơn vị: <code>{{ unit.unit_id }}</code></p>
+  </details>
 </div>
-{% endif %}
 
-<div class="muted small" style="margin-top:4px;">ID: {{ unit.unit_id }}</div>
-
-<details class="history">
-  <summary>🕒 Lịch sử thao tác ({{ history|length }})</summary>
-  {% if not history %}<p class="muted small">Chưa có thao tác nào.</p>{% endif %}
-  <ol class="history-list">
-    {% for e in history %}
-    <li>
-      <span class="small"><strong>{{ e.action_label }}</strong> · {{ e.reviewer }} · {{ e.created_at|vn_time }}</span>
-      {% if e.note %}<div class="small">Ghi chú: {{ e.note }}</div>{% endif %}
-      {% if e.action == 'edit' %}
-      <details class="small"><summary>Xem chữ trước và sau khi sửa</summary>
-        <div class="muted">Trước:</div><pre class="content small">{{ e.content_before }}</pre>
-        <div class="muted">Sau:</div><pre class="content small">{{ e.content_after }}</pre>
-      </details>
-      {% endif %}
-    </li>
-    {% endfor %}
-  </ol>
-</details>
+<div class="unit-actions">
+  <div class="action-row" role="toolbar" aria-label="Thẩm định đơn vị">
+    {% if prev_id %}<a class="btn" data-go="prev" href="{{ page_url }}{{ prev_id|urlencode }}" hx-get="{{ prev_url }}" hx-target="#detail" hx-swap="innerHTML" title="Đơn vị trước (K)">{{ icon("chevron-left") }}<span class="act-text">Trước</span></a>
+    {% else %}<button type="button" class="btn" disabled>{{ icon("chevron-left") }}<span class="act-text">Trước</span></button>{% endif %}
+    {% if acting %}
+    <button type="button" class="ribbon-btn approve approve-next" data-key="a" hx-post="{{ url }}" hx-vals='{"action": "approve", "advance": "1"}' hx-include="#review-form, #reason-row" hx-target="#detail" hx-swap="innerHTML" title="Duyệt đơn vị này rồi sang đơn vị chưa soát kế tiếp (A)">{{ icon("check") }}Duyệt &amp; tiếp <kbd>A</kbd></button>
+    {% if can_edit_text %}<button type="button" class="ribbon-btn edit-toggle" data-key="e" onclick="enterFocusEdit()" title="Chỉ hiện trang PDF và chữ của mục này để sửa (E)">{{ icon("edit") }}Sửa chữ <kbd>E</kbd></button>{% endif %}
+    <button type="button" class="ribbon-btn flag{% if status == 'flagged' %} current{% endif %}" data-key="f" onclick="openReason('flag')" aria-controls="reason-row" title="{% if status == 'flagged' %}Đơn vị đang gắn cờ; bấm để ghi lại lý do (F){% else %}Gắn cờ, cần ghi lý do (F){% endif %}">{{ icon("flag") }}Gắn cờ <kbd>F</kbd></button>
+    <button type="button" class="ribbon-btn structure{% if status == 'structure_error' %} current{% endif %}" onclick="openReason('structure_error')" aria-controls="reason-row" title="{% if status == 'structure_error' %}Đơn vị đang báo lỗi cấu trúc; bấm để ghi lại chỗ sai{% else %}Báo đơn vị tách sai cấu trúc, cần ghi chỗ sai{% endif %}">{{ icon("warning") }}<span class="act-text">Lỗi cấu trúc</span></button>
+    {% if status != 'unreviewed' %}
+    <button type="button" class="ribbon-btn reset" hx-post="{{ url }}" hx-vals='{"action": "reset"}' hx-include="#review-form" hx-target="#detail" hx-swap="innerHTML" title="Bỏ đánh dấu, đưa về Chưa soát">{{ icon("undo") }}<span class="act-text">Bỏ đánh dấu</span></button>
+    {% endif %}
+    {% endif %}
+    <span class="spacer"></span>
+    {% if next_id %}<a class="btn" data-go="next" href="{{ page_url }}{{ next_id|urlencode }}" hx-get="{{ next_url }}" hx-target="#detail" hx-swap="innerHTML" title="Đơn vị kế tiếp (J)"><span class="act-text">Tiếp</span>{{ icon("chevron-right") }}</a>
+    {% else %}<button type="button" class="btn" disabled><span class="act-text">Tiếp</span>{{ icon("chevron-right") }}</button>{% endif %}
+  </div>
+  {% if acting %}
+  <div class="reason-row" id="reason-row"{% if not reason_open %} hidden{% endif %}>
+    <label for="reason-input" data-reason-label>{% if reason_open == 'structure_error' %}Lỗi cấu trúc ở đâu{% else %}Lý do gắn cờ{% endif %}</label>
+    <input type="text" class="input" id="reason-input" name="note" value="{{ form_note }}" maxlength="2000" placeholder="Bắt buộc: lý do sai hoặc vị trí lỗi">
+    <button type="button" class="ribbon-btn flag" data-reason="flag" hx-post="{{ url }}" hx-vals='{"action": "flag"}' hx-include="#review-form, #reason-row" hx-target="#detail" hx-swap="innerHTML"{% if reason_open == 'structure_error' %} hidden{% endif %}>{{ icon("flag") }}Gắn cờ</button>
+    <button type="button" class="ribbon-btn structure" data-reason="structure_error" hx-post="{{ url }}" hx-vals='{"action": "structure_error"}' hx-include="#review-form, #reason-row" hx-target="#detail" hx-swap="innerHTML"{% if reason_open != 'structure_error' %} hidden{% endif %}>{{ icon("warning") }}Báo lỗi cấu trúc</button>
+    <button type="button" class="btn" onclick="closeReason()">Hủy</button>
+  </div>
+  {% endif %}
+</div>
 {% else %}
-<pre class="content">{{ unit.content }}</pre>
-<div class="muted small">{{ unit.unit_id }}</div>
-{% if db_ready is not defined or not db_ready %}
-<p class="muted small">Chế độ xem thư mục file: chưa lưu được thao tác thẩm định (cần PostgreSQL, xem README).</p>
-{% else %}
-<p class="note">🔒 <strong>Tài khoản đang bị khóa:</strong> <code>{{ current_user.username if current_user else '' }}</code> vẫn đọc được văn bản nhưng không thao tác được. Hãy liên hệ Admin để mở khóa.</p>
+<div class="empty-state">{{ icon("document") }}<p>Văn bản chưa có đơn vị nào.</p></div>
 {% endif %}
-{% endif %}
-{% else %}
-<p class="muted">Văn bản chưa có đơn vị nào.</p>
-{% endif %}
-
-

@@ -159,11 +159,12 @@ def client_factory(data_dir, tmp_path):
     clients = []
 
     def make():
-        settings = Settings(data_dir=data_dir, storage_dir=tmp_path / "storage", conninfo=None, auto_import_dir=None)
+        settings = Settings(data_dir=data_dir, storage_dir=tmp_path / "storage", conninfo=None, auto_import_dir=None,
+                            admin_password="admin-pass-for-tests")
         client = TestClient(create_app(settings, catalog=DocumentStore(data_dir)))
         client.__enter__()  # chạy lifespan: tạo tài khoản admin
         clients.append(client)
-        client.post("/account/login", data={"username": "admin", "password": "admin123"})
+        client.post("/account/login", data={"username": "admin", "password": "admin-pass-for-tests"})
         return client
 
     yield make

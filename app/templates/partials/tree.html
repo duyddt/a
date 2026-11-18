@@ -1,12 +1,13 @@
-{#- Cây thư mục kiểu Windows File Explorer -#}
+{#- Khung trái của màn soát: cây Chương / Điều / Khoản / Điểm, ô tìm và nút lọc theo trạng thái.
+    Bấm một hàng: chi tiết vào #detail, trang PDF đổi qua hx-swap-oob (unit_response.html).
+    Lọc chạy phía trình duyệt (static/shell.js: filterTree, countTree) theo lớp st-* của chấm và data-uncertain. -#}
+{% from "partials/icon.html" import icon %}
 {% macro row(n) -%}
 <button type="button" class="row{% if n.selected %} selected{% endif %}"{% if n.selected %} aria-current="true"{% endif %}
-        hx-get="{{ n.url }}" hx-target="#detail" hx-swap="innerHTML"
-        hx-on:click="document.querySelectorAll('#tree .row.selected').forEach(function (e) { e.classList.remove('selected'); e.removeAttribute('aria-current'); }); this.classList.add('selected'); this.setAttribute('aria-current', 'true');">
+        data-unit="{{ n.unit_id }}" data-search="{{ n.snippet }}" title="{{ n.label }} · {{ n.snippet }}"{% if not n.is_confident %} data-uncertain{% endif %}
+        hx-get="{{ n.url }}" hx-target="#detail" hx-swap="innerHTML">
   <span id="dot-{{ n.unit_id }}" class="dot st-{{ n.review_status }}" title="{{ n.review_status_label }}" role="img" aria-label="{{ n.review_status_label }}"></span>
-  <span aria-hidden="true">{% if n.children %}📁{% else %}📄{% endif %}</span>
   <span class="label">{{ n.label }}</span>
-  <span class="snippet">{{ n.snippet }}</span>
   {% if n.marks %}<span class="person-marks" title="Đã có bản của: {{ n.marks|map(attribute='name')|join(', ') }}">{% for m in n.marks %}<span class="person-mark person-{{ m.color }}" aria-hidden="true"></span>{% endfor %}<span class="sr-only">Đã có bản của: {{ n.marks|map(attribute='name')|join(', ') }}</span></span>{% endif %}
   {% if not n.is_confident %}<span class="tag warn">Không chắc</span>{% endif %}
 </button>
@@ -23,19 +24,32 @@
 {% endif %}
 {%- endmacro %}
 
-<div id="explorer-tree-panel">
-  <div class="tree-actions">
-    <strong class="small" style="margin-right:auto;">📂 Cây thư mục pháp lý:</strong>
-    <button type="button" onclick="document.querySelectorAll('#tree details').forEach(function (d) { d.open = true; })">⊞ Mở hết</button>
-    <button type="button" onclick="document.querySelectorAll('#tree details').forEach(function (d) { d.open = false; })">⊟ Thu hết</button>
+<div class="tree-head">
+  <div class="tree-tools">
+    <strong id="tree-title">Cấu trúc văn bản</strong>
+    <button type="button" class="icon-btn" title="Mở hết" aria-label="Mở hết các nhánh" onclick="document.querySelectorAll('#tree details').forEach(function (d) { d.open = true; })">{{ icon("expand-all") }}</button>
+    <button type="button" class="icon-btn" title="Thu hết" aria-label="Thu hết các nhánh" onclick="document.querySelectorAll('#tree details').forEach(function (d) { d.open = false; })">{{ icon("collapse-all") }}</button>
   </div>
-  <div id="tree" class="tree">
-    {% for root in tree %}{{ node(root) }}{% endfor %}
+  <div class="search-box" role="search">
+    {{ icon("search") }}
+    <input type="search" id="tree-filter" data-filter-scope="#tree" autocomplete="off"
+           placeholder="Tìm Điều, Khoản, nội dung" aria-label="Lọc cây Điều, Khoản theo nhãn hoặc nội dung">
   </div>
-  <div class="legend">
-    <span><span class="dot st-unreviewed"></span>Chưa soát</span>
-    <span><span class="dot st-approved"></span>Đã duyệt</span>
-    <span><span class="dot st-flagged"></span>Gắn cờ</span>
-    <span><span class="dot st-structure_error"></span>Lỗi cấu trúc</span>
+  <div class="tree-filters" role="group" aria-label="Lọc theo trạng thái">
+    <button type="button" class="tree-filter" data-state="all" aria-pressed="true">Tất cả <span class="num"></span></button>
+    <button type="button" class="tree-filter" data-state="unreviewed" aria-pressed="false">Chưa soát <span class="num"></span></button>
+    <button type="button" class="tree-filter" data-state="flagged" aria-pressed="false">Gắn cờ <span class="num"></span></button>
+    <button type="button" class="tree-filter" data-state="structure_error" aria-pressed="false">Lỗi cấu trúc <span class="num"></span></button>
+    <button type="button" class="tree-filter" data-state="uncertain" aria-pressed="false">Không chắc <span class="num"></span></button>
   </div>
+</div>
+<div id="tree" class="tree" aria-labelledby="tree-title">
+  {% for root in tree %}{{ node(root) }}{% endfor %}
+</div>
+<p id="tree-empty" class="tree-empty muted small" role="status" hidden>Không có đơn vị nào khớp bộ lọc.</p>
+<div class="legend" aria-label="Chú thích trạng thái">
+  <span><span class="dot st-unreviewed"></span>Chưa soát</span>
+  <span><span class="dot st-approved"></span>Đã duyệt</span>
+  <span><span class="dot st-flagged"></span>Gắn cờ</span>
+  <span><span class="dot st-structure_error"></span>Lỗi cấu trúc</span>
 </div>

@@ -15,9 +15,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 ENV_FILE = BASE_DIR / ".env"
 
 
-DEFAULT_ADMIN_PASSWORD = "admin123"  # chỉ để chạy thử trên máy cá nhân; triển khai thật phải đặt ADMIN_PASSWORD
-
-
 @dataclass(frozen=True)
 class Settings:
     data_dir: Path  # chế độ thư mục file: data/<document_id>/{source.pdf,document.json}
@@ -26,7 +23,9 @@ class Settings:
     auto_import_dir: Path | None  # nếu có, mỗi lần khởi động nhập mọi thư mục con của nó (nhập lại không tạo trùng)
     secret_key: str | None = None  # None: tự sinh một lần và lưu ở storage_dir/.secret_key
     admin_username: str = "admin"
-    admin_password: str = DEFAULT_ADMIN_PASSWORD  # ADMIN_PASSWORD; mặc định admin123 để ai clone về cũng chạy thử được ngay
+    # ADMIN_PASSWORD. None: lần đầu tạo admin với mật khẩu ngẫu nhiên ghi vào storage_dir/initial_admin_password.txt,
+    # sau đó không bao giờ tự đặt lại. Có giá trị: mỗi lần khởi động mật khẩu admin được đặt theo giá trị này.
+    admin_password: str | None = None
     db_connect_timeout: float = 10.0  # giây chờ PostgreSQL khi khởi động trước khi chuyển sang chế độ chỉ xem
     session_max_age: int = 14 * 24 * 3600  # thời hạn phiên đăng nhập (giây)
 
@@ -94,7 +93,7 @@ def load_settings(environ: Mapping[str, str] | None = None, env_file: Path | Non
         auto_import_dir=_resolve(auto, BASE_DIR) if auto else None,
         secret_key=get("SECRET_KEY"),
         admin_username=get("ADMIN_USERNAME") or "admin",
-        admin_password=get("ADMIN_PASSWORD") or DEFAULT_ADMIN_PASSWORD,
+        admin_password=get("ADMIN_PASSWORD"),
         db_connect_timeout=max(1.0, timeout),
         session_max_age=max(3600, int(session_days * 24 * 3600)),
     )

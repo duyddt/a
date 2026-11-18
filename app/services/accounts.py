@@ -6,15 +6,18 @@ Chế độ thư mục file: lưu trong bộ nhớ của tiến trình (mất kh
 from __future__ import annotations
 
 import logging
+import secrets
 import threading
+from pathlib import Path
 
-from .auth import hash_password, verify_password
+from .auth import hash_password, verify_password, write_private
 
 log = logging.getLogger("review-app")
 
 ROLES = ("admin", "approver", "reviewer")
 ROLE_LABELS = {"admin": "Admin", "approver": "Người phê duyệt", "reviewer": "Người chỉnh sửa"}
 DEFAULT_ROLE = "reviewer"
+INITIAL_ADMIN_PASSWORD_FILE = "initial_admin_password.txt"
 
 
 def normalize_role(role: str | None) -> str:
@@ -23,7 +26,7 @@ def normalize_role(role: str | None) -> str:
 
 
 def is_active(user: dict | None) -> bool:
-    """Tài khoản đang hoạt động (Admin chưa khóa). Tài khoản bị khóa vẫn đăng nhập và xem được, không thao tác được."""
+    """Tài khoản đang hoạt động (Admin chưa khóa). Tài khoản bị khóa không đăng nhập được và mọi phiên của nó hết hiệu lực."""
     return bool(user) and bool(user.get("is_approved"))
 
 
@@ -143,20 +146,42 @@ class AccountService:
 
     # ---- admin mặc định (chạy một lần khi khởi động) ----
 
-    def ensure_admin(self, username: str, password: str) -> None:
-        """Bảo đảm có tài khoản admin, đúng quyền admin và đăng nhập được bằng `password` (ADMIN_PASSWORD).
+    def ensure_admin(self, username: str, password: str | None, storage_dir: Path | None = None) -> None:
+        """Bảo đảm có tài khoản admin đang hoạt động.
 
-        Gọi mỗi lần khởi động: mật khẩu bị đổi ở chỗ khác sẽ được đặt lại theo ADMIN_PASSWORD, nên đổi ADMIN_PASSWORD
-        rồi khởi động lại cũng là cách lấy lại quyền admin khi quên mật khẩu."""
+        - Chưa có: tạo với `password` (ADMIN_PASSWORD); không cấu hình thì sinh mật khẩu ngẫu nhiên và ghi vào
+          <storage_dir>/initial_admin_password.txt (chỉ chủ tệp đọc được). Log chỉ ghi đường dẫn, không ghi mật khẩu.
+        - Đã có: trả lại quyền admin và mở khóa; đặt lại mật khẩu CHỈ khi ADMIN_PASSWORD được cấu hình và khác mật khẩu
+          hiện tại (cách lấy lại quyền khi quên mật khẩu). Không cấu hình thì mật khẩu admin không bao giờ bị đổi ngầm."""
         acc = self.get(username)
         if acc is None:
+            generated = not password
+            password = password or secrets.token_urlsafe(12)
             self.create(username, "Quản trị viên (Admin)", password, role="admin", is_approved=True)
+            if generated:
+                self._announce_generated_password(username, password, storage_dir)
             return
         if acc.get("role") != "admin" or not acc.get("is_approved"):
             self.set_permission(username, "admin", True)
-        if not verify_password(password, acc.get("password_hash") or ""):
+        if password and not verify_password(password, acc.get("password_hash") or ""):
             self.set_password(username, password)
             log.warning("Đã đặt lại mật khẩu tài khoản %s theo ADMIN_PASSWORD.", username)
+
+    @staticmethod
+    def _announce_generated_password(username: str, password: str, storage_dir: Path | None) -> None:
+        if storage_dir is None:
+            log.warning("Đã tạo tài khoản %s với mật khẩu ngẫu nhiên nhưng không có STORAGE_DIR để ghi ra; "
+                        "đặt ADMIN_PASSWORD rồi khởi động lại để đăng nhập.", username)
+            return
+        path = Path(storage_dir) / INITIAL_ADMIN_PASSWORD_FILE
+        try:
+            write_private(path, f"{username}\n{password}\n")
+        except OSError as exc:
+            log.warning("Đã tạo tài khoản %s nhưng không ghi được %s (%s); đặt ADMIN_PASSWORD rồi khởi động lại.",
+                        username, path, exc)
+            return
+        log.warning("Đã tạo tài khoản %s với mật khẩu ngẫu nhiên, xem trong %s. Đăng nhập, đổi mật khẩu rồi xóa tệp này.",
+                    username, path)
 
     # ---- vị trí đang soát ----
 

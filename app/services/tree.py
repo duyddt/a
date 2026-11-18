@@ -20,6 +20,47 @@ def unit_label(unit: LegalUnit) -> str:
     return unit.title or unit.unit_id  # phụ lục, biểu mẫu
 
 
+def full_label(unit: LegalUnit) -> str:
+    """Tên đầy đủ để hiện ở tiêu đề: "Điểm a, Khoản 1, Điều 2"; phụ lục, biểu mẫu thì lấy tên hoặc mã."""
+    parts = [f"Điểm {unit.point}" if unit.point is not None else "",
+             f"Khoản {unit.clause}" if unit.clause is not None else "",
+             f"Điều {unit.article}" if unit.article is not None else ""]
+    return ", ".join(part for part in parts if part) or unit.title or unit.unit_id
+
+
+def tree_order(units: list[LegalUnit]) -> list[str]:
+    """Mã đơn vị theo đúng thứ tự hiện trên cây (duyệt sâu, cha trước con) để đi tới đơn vị trước / kế tiếp."""
+    known = {unit.unit_id for unit in units}
+    children: dict[str | None, list[str]] = {}
+    for unit in units:
+        parent = unit.parent_unit_id if unit.parent_unit_id in known else None
+        children.setdefault(parent, []).append(unit.unit_id)
+    order: list[str] = []
+    stack = list(reversed(children.get(None, [])))
+    while stack:
+        unit_id = stack.pop()
+        order.append(unit_id)
+        stack.extend(reversed(children.get(unit_id, [])))
+    return order
+
+
+def neighbours(order: list[str], unit_id: str) -> tuple[str | None, str | None]:
+    """(đơn vị trước, đơn vị kế) của `unit_id` theo thứ tự cây; đầu hoặc cuối cây thì là None."""
+    if unit_id not in order:
+        return None, None
+    i = order.index(unit_id)
+    return (order[i - 1] if i > 0 else None), (order[i + 1] if i + 1 < len(order) else None)
+
+
+def next_unreviewed(order: list[str], unit_id: str, reviews: dict) -> str | None:
+    """Đơn vị chưa soát đầu tiên sau `unit_id` theo thứ tự cây, hết cây thì quay lại từ đầu; không còn thì None."""
+    start = order.index(unit_id) + 1 if unit_id in order else 0
+    for candidate in order[start:] + order[:start]:
+        if candidate != unit_id and (candidate not in reviews or reviews[candidate].status == "unreviewed"):
+            return candidate
+    return None
+
+
 def unit_snippet(unit: LegalUnit) -> str:
     """Điều: tên Điều (nội dung Điều chỉ lặp lại các Khoản con). Khoản/Điểm/phụ lục: đầu nội dung."""
     if unit.article is not None and unit.clause is None and unit.title:

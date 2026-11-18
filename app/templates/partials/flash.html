@@ -1,0 +1,11 @@
+{#- Thông báo đầu trang: mất kết nối PostgreSQL, lỗi (`err`), kết quả thao tác (`msg`). Mỗi trang gọi trong block flash. -#}
+{% from "partials/icon.html" import icon %}
+{% if db_error %}
+<div class="alert warn" role="status">{{ icon("warning") }}<div>
+  <strong>Chưa kết nối được PostgreSQL.</strong> Hệ thống đang ở chế độ chỉ xem: không thêm văn bản, không lưu thẩm định.
+  Bật PostgreSQL, kiểm tra <code>DATABASE_URL</code> hoặc <code>POSTGRES_*</code> trong <code>.env</code> rồi khởi động lại ứng dụng.
+  <div class="muted small">{{ db_error }}</div>
+</div></div>
+{% endif %}
+{% if err %}<div class="alert error" role="alert">{{ icon("error") }}<span>{{ err }}</span></div>{% endif %}
+{% if msg %}<div class="alert success" role="status">{{ icon("check-circle") }}<span>{{ msg }}</span></div>{% endif %}

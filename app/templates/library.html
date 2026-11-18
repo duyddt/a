@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{#- Kho văn bản (GET /documents): một bảng, lọc bằng tham số URL nên chạy cả khi không có JS.
+    folder = mã chủ đề (I → X), status = trạng thái quy trình, q = chữ trong mã, số hiệu, tên.
+    Bấm một hàng là mở văn bản (shell.js đọc data-href; liên kết ở ô tên vẫn dùng được khi không có JS). -#}
+{% from "partials/icon.html" import icon %}
+{% from "partials/progress.html" import bar %}
+{#- Địa chỉ kho văn bản giữ các bộ lọc đang áp dụng, chỉ thay bộ lọc được truyền vào ("" = bỏ bộ lọc đó). -#}
+{% macro url(folder=none, state=none, text=none) -%}
+{%- set f = folder if folder is not none else (current.category.code if current else "") -%}
+{%- set s = state if state is not none else status -%}
+{%- set t = text if text is not none else q -%}
+{%- set parts = [("folder", f), ("status", s), ("q", t)]|selectattr(1)|list -%}
+/documents{% if parts %}?{% for key, value in parts %}{{ key }}={{ value|urlencode }}{% if not loop.last %}&amp;{% endif %}{% endfor %}{% endif %}
+{%- endmacro %}
+{% set filtered = current or status or q %}
+{% block title %}{{ current.category.label if current else "Văn bản" }} - Thẩm định văn bản pháp lý{% endblock %}
+
+{% block page_header %}
+<h1>{{ current.category.label if current else "Văn bản" }}</h1>
+<p class="lead">{% if filtered %}{{ rows|length }} / {{ all_count }} văn bản khớp bộ lọc{% else %}{{ all_count }} văn bản{% endif %}</p>
+{% if can_upload %}
+<div class="page-actions"><button type="button" class="btn primary" data-open-dialog="upload-dialog">{{ icon("upload") }}Tải lên</button></div>
+{% endif %}
+{% endblock %}
+
+{% block flash %}{% include "partials/flash.html" %}{% endblock %}
+
+{% block content %}
+<div class="library">
+  <aside class="facets" aria-label="Bộ lọc">
+    <form class="search-box" role="search" method="get" action="/documents">
+      {{ icon("search") }}
+      <input type="search" name="q" value="{{ q }}" autocomplete="off" placeholder="Mã, số hiệu, tên" aria-label="Tìm văn bản theo mã, số hiệu, tên">
+      {% if current %}<input type="hidden" name="folder" value="{{ current.category.code }}">{% endif %}
+      {% if status %}<input type="hidden" name="status" value="{{ status }}">{% endif %}
+    </form>
+    {% if folders %}
+    <nav class="facet" aria-labelledby="facet-topic">
+      <h2 id="facet-topic">Chủ đề</h2>
+      <ul>
+        <li><a class="facet-item" href="{{ url(folder='') }}"{% if not current %} aria-current="true"{% endif %}><span>Tất cả chủ đề</span></a></li>
+        {% for f in folders %}
+        <li><a class="facet-item" href="{{ url(folder=f.category.code) }}"{% if current and current.category.code == f.category.code %} aria-current="true"{% endif %}><span>{{ f.category.label }}</span><span class="count">{{ topic_counts[f.category.code] }}</span></a></li>
+        {% endfor %}
+      </ul>
+    </nav>
+    {% endif %}
+    {% if has_workflow %}
+    <nav class="facet" aria-labelledby="facet-status">
+      <h2 id="facet-status">Trạng thái</h2>
+      <ul>
+        <li><a class="facet-item" href="{{ url(state='') }}"{% if not status %} aria-current="true"{% endif %}><span>Mọi trạng thái</span></a></li>
+        {% for code, label in STATUS_LABELS.items() %}
+        <li><a class="facet-item" href="{{ url(state=code) }}"{% if status == code %} aria-current="true"{% endif %}><span>{{ label }}</span><span class="count">{{ status_counts[code] }}</span></a></li>
+        {% endfor %}
+      </ul>
+    </nav>
+    {% endif %}
+  </aside>
+
+  <div>
+    {% if filtered %}
+    <div class="filter-chips" aria-label="Bộ lọc đang áp dụng">
+      {% if current %}<a class="filter-chip" href="{{ url(folder='') }}" title="Bỏ lọc chủ đề">{{ current.category.label }} {{ icon("dismiss", "Bỏ lọc") }}</a>{% endif %}
+      {% if status %}<a class="filter-chip" href="{{ url(state='') }}" title="Bỏ lọc trạng thái">{{ STATUS_LABELS[status] }} {{ icon("dismiss", "Bỏ lọc") }}</a>{% endif %}
+      {% if q %}<a class="filter-chip" href="{{ url(text='') }}" title="Bỏ chữ tìm">“{{ q }}” {{ icon("dismiss", "Bỏ lọc") }}</a>{% endif %}
+      <a class="filter-chip" href="/documents">Xóa bộ lọc</a>
+    </div>
+    {% endif %}
+
+    {% if rows %}
+    <div class="panel table-scroll">
+    <table class="doclist" id="document-table">
+      <thead>
+        <tr>
+          <th scope="col" class="sortable"><button type="button" class="sort">Văn bản</button></th>
+          {% if folders %}<th scope="col">Chủ đề</th>{% endif %}
+          {% if has_workflow %}<th scope="col" class="sortable"><button type="button" class="sort">Trạng thái</button></th>
+          <th scope="col">Người chỉnh sửa</th>{% endif %}
+          <th scope="col" class="sortable"><button type="button" class="sort">Tiến độ</button></th>
+          <th scope="col" class="sortable num"><button type="button" class="sort">Đơn vị</button></th>
+          <th scope="col" class="sortable num"><button type="button" class="sort">Trang</button></th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for item in rows %}
+        {% set link = "/documents/" ~ (item.document_id|urlencode) %}
+        {% if not item.problem %}
+        {% set wf = item.workflow %}
+        <tr data-href="{{ link }}">
+          <td data-sort-value="{{ item.document_no or item.document_id }}">
+            <a class="doc-title-link" href="{{ link }}">{{ item.document_type or "Văn bản" }} {{ item.document_no or item.document_id }}</a>
+            {% if item.title %}<div class="doc-sub">{{ item.title }}</div>{% endif %}
+            <code class="doc-code">{{ item.document_id }}</code>
+          </td>
+          {% if folders %}<td>{% for code in item.categories|sort %}{% if code in category_names %}<a class="topic-tag" href="{{ url(folder=code) }}" title="{{ category_names[code] }}">{{ code }}</a>{% endif %}{% endfor %}</td>{% endif %}
+          {% if has_workflow %}
+          <td data-sort-value="{{ wf.status if wf else '' }}">{% if wf %}<span class="wf-status wf-{{ wf.status }}">{{ wf.status_label }}</span>{% endif %}</td>
+          <td>{% if wf and wf.editors %}<span class="wf-people">{% for name, done in wf.editors.items() %}<span class="person-chip person-{{ loop.index0 % 8 + 1 }}" title="{{ 'Đã bấm Hoàn thành' if done else 'Đang làm' }}">{{ name }}{% if done %} ✓{% endif %}</span>{% endfor %}</span>{% else %}<span class="muted">Chưa giao</span>{% endif %}</td>
+          {% endif %}
+          <td data-sort-value="{{ item.progress.percent_approved if item.progress else -1 }}">{{ bar(item.progress, compact=True) }}</td>
+          <td class="num">{{ item.unit_count or 0 }}</td>
+          <td class="num">{{ item.page_count or 0 }}</td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="7"><span class="err">{{ icon("error") }} <strong>{{ item.document_id }}</strong>: không nhập được</span> (<a href="{{ link }}">xem lỗi</a>)</td>
+        </tr>
+        {% endif %}
+      {% endfor %}
+      </tbody>
+    </table>
+    </div>
+    {% elif filtered %}
+    <div class="panel empty-state" role="status">
+      {{ icon("search") }}
+      <p><strong>Không có văn bản nào khớp bộ lọc.</strong></p>
+      <p class="small"><a href="/documents">Xóa bộ lọc</a></p>
+    </div>
+    {% else %}
+    <div class="panel empty-state" role="status">
+      {{ icon("inbox") }}
+      <p><strong>Hệ thống chưa có văn bản nào.</strong></p>
+      {% if can_upload %}
+      <p class="small">Bấm <strong>Tải lên</strong>, chọn <code>source.pdf</code> và (nếu có) <code>document.json</code>, ví dụ trong <code>data/ND254_2026/</code>.</p>
+      {% else %}
+      <p class="small">Nhờ Admin thêm văn bản vào hệ thống.</p>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+{% if can_upload %}
+<dialog class="modal" id="upload-dialog" aria-labelledby="upload-title">
+  <form method="post" action="/documents/upload" enctype="multipart/form-data">
+    <div class="modal-body">
+      <h2 id="upload-title">Tải văn bản lên</h2>
+      <label class="field">Tệp PDF gốc (<code>source.pdf</code>)
+        <input type="file" name="pdf" accept=".pdf,application/pdf" required>
+      </label>
+      <label class="field">Tệp JSON có sẵn <span class="muted">(không bắt buộc; bỏ trống thì tự tách từ PDF)</span>
+        <input type="file" name="document" accept=".json,application/json">
+      </label>
+      {% if folders %}
+      <label class="field">Chủ đề
+        <select name="category">
+          <option value="">Chưa xếp chủ đề</option>
+          {% for f in folders %}
+          <option value="{{ f.category.code }}"{% if current and current.category.code == f.category.code %} selected{% endif %}>{{ f.category.label }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      {% endif %}
+      {% if can_replace %}
+      <label class="check"><input type="checkbox" name="replace" value="true"> Ghi đè nếu văn bản đã có</label>
+      {% endif %}
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn" data-close-dialog>Hủy</button>
+      <button type="submit" class="btn primary">{{ icon("upload") }}Tải lên và mở</button>
+    </div>
+  </form>
+</dialog>
+{% endif %}
+{% endblock %}

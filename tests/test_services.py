@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 from app.services.models import ImportProblem
 from app.services.store import DocumentStore
-from app.services.tree import build_tree, decorate_for_page
+from app.services.tree import build_tree, decorate_for_page, full_label
 from app.services.views import FIT, first_page_of, nearest_zoom, viewer_context, vn_time
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
@@ -128,7 +128,7 @@ def test_click_unit_jumps_left_pane_to_its_page(data_dir):
     selected = loaded.units_by_id["ND254_2026_D10_K1"]
     html = render(
         "unit_response.html",
-        doc=loaded.doc, unit=selected, oob=True,
+        doc=loaded.doc, unit=selected, unit_label=full_label(selected), oob=True,
         v=viewer_context(loaded, first_page_of(selected), 100, selected.unit_id),
     )
     assert 'src="/documents/ND254_2026/pages/3"' in html
@@ -153,7 +153,7 @@ def test_review_page_renders_nested_tree_and_escapes_content(data_dir):
     loaded = DocumentStore(data_dir).get(DOC)
     html = review_html(loaded, "ND254_2026_D9", content_override="<script>alert(1)</script>")
     assert "Điều 9" in html and "Điểm a" in html and "Không chắc" in html
-    assert html.count("<details") == 3  # Điều 9, Khoản 1 (có Điểm), Điều 10 (có Khoản)
+    assert html.count('<details class="node"') == 3  # Điều 9, Khoản 1 (có Điểm), Điều 10 (có Khoản)
     assert "<script>alert(1)</script>" not in html
     assert "&lt;script&gt;" in html
     for label in ("Chưa soát", "Đã duyệt", "Gắn cờ", "Lỗi cấu trúc"):

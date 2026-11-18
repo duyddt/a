@@ -1,0 +1,34 @@
+{#- Một dòng việc ở trang chủ: số hiệu, tên, trạng thái quy trình, người, tiến độ, nút mở.
+    `item`: DocumentSummary có workflow. `people`: hiện chip người chỉnh sửa. `note`: hiện ghi chú trả lại.
+    `action`: nhãn nút; `primary`: nút chính duy nhất của khối. -#}
+{% from "partials/icon.html" import icon %}
+{% from "partials/progress.html" import bar %}
+{% macro work_row(item, action="Mở", primary=False, people=False, note=False) -%}
+{% set wf = item.workflow %}
+{% set link = "/documents/" ~ (item.document_id|urlencode) %}
+<li class="work">
+  <div>
+    <a class="work-title" href="{{ link }}">{{ item.document_type or "Văn bản" }} {{ item.document_no or item.document_id }}</a>
+    {% if item.title %}<div class="doc-sub">{{ item.title|truncate(110) }}</div>{% endif %}
+    <div class="work-meta">
+      <span class="wf-status wf-{{ wf.status }}">{{ wf.status_label }}</span>
+      {% if people and wf.editors %}<span class="wf-people">{% for name, done in wf.editors.items() %}<span class="person-chip person-{{ loop.index0 % 8 + 1 }}" title="{{ 'Đã bấm Hoàn thành' if done else 'Đang làm' }}">{{ name }}{% if done %} ✓{% endif %}</span>{% endfor %}</span>{% endif %}
+      <code class="doc-code">{{ item.document_id }}</code>
+    </div>
+  </div>
+  <div>{{ bar(item.progress, compact=True) }}</div>
+  <a class="btn{% if primary %} primary{% endif %}" href="{{ link }}">{% if primary %}{{ icon("forward") }}{% endif %}{{ action }}</a>
+  {% if note and wf.returned_note %}<p class="work-note">{{ icon("undo") }}<span><strong>{{ wf.returned_by }}</strong> trả lại: {{ wf.returned_note }}</span></p>{% endif %}
+</li>
+{%- endmacro %}
+
+{% macro work_section(title, rows, empty, action="Mở", people=False, note=False, first_primary=False, id="") -%}
+<section class="section" aria-labelledby="{{ id }}-title">
+  <h2 class="section-title" id="{{ id }}-title">{{ title }} <span class="chip-count">({{ rows|length }})</span></h2>
+  <div class="panel">
+    {% if rows %}
+    <ul class="worklist">{% for item in rows %}{{ work_row(item, action, first_primary and loop.first, people, note) }}{% endfor %}</ul>
+    {% else %}<p class="empty-line">{{ empty }}</p>{% endif %}
+  </div>
+</section>
+{%- endmacro %}

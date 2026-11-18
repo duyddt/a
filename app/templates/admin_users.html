@@ -1,105 +1,123 @@
 {% extends "base.html" %}
-{% block title %}Quản trị tài khoản & Phân quyền{% endblock %}
+{% from "partials/icon.html" import icon %}
 {% from "partials/password_input.html" import password_input %}
-{% block body %}
-<header class="topbar">
-  <a href="/" class="button-link">&larr; Về Danh sách văn bản</a>
-  <h1>🛡 Quản lý tài khoản</h1>
-  <div class="topbar-actions">
-    <a href="/admin/stats" class="button-link">📊 Thống kê</a>
-    <a href="/admin/assign" class="button-link">🧑‍💼 Phân công</a>
-    <span class="tag edited">Admin: <strong>{{ current_user.username }}</strong></span>
-    <form method="post" action="/account/logout" style="margin:0;">
-      <button type="submit" class="button-link">Đăng xuất</button>
-    </form>
-    {% include "partials/theme_toggle.html" %}
+{% block title %}Tài khoản - Thẩm định văn bản pháp lý{% endblock %}
+
+{% block page_header %}
+<h1>Tài khoản</h1>
+<p class="lead">{{ accounts|length }} tài khoản. Chỉ Admin tạo tài khoản; tài khoản bị khóa không đăng nhập được và phiên đang mở của họ hết hiệu lực ngay.</p>
+<div class="page-actions">
+  <div class="search-box" role="search">
+    {{ icon("search") }}
+    <input type="search" data-filter-scope="#accounts-table" autocomplete="off" placeholder="Tìm tài khoản" aria-label="Lọc tài khoản theo tên">
   </div>
-</header>
+  <button type="button" class="btn primary" data-open-dialog="create-dialog">{{ icon("person-add") }}Tạo tài khoản</button>
+</div>
+{% endblock %}
 
-<main class="narrow">
-  {% if err %}
-    <div class="alert error">⚠ {{ err }}</div>
-  {% endif %}
-  {% if msg %}
-    <div class="alert success">✓ {{ msg }}</div>
-  {% endif %}
+{% block flash %}
+{% if err %}<div class="alert error" role="alert">{{ icon("error") }}<span>{{ err }}</span></div>{% endif %}
+{% if msg %}<div class="alert success" role="status">{{ icon("check-circle") }}<span>{{ msg }}</span></div>{% endif %}
+{% endblock %}
 
-  <!-- Khung Admin tạo trực tiếp tài khoản cho người soát -->
-  <section class="pane" style="padding:16px; margin-bottom:20px;">
-    <h2 style="margin:0 0 12px; font-size:16px;">➕ Tạo tài khoản mới</h2>
-    <form method="post" action="/admin/users/create" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:10px; align-items:end;">
-      <label class="field">Tên đăng nhập
-        <input type="text" name="username" required minlength="3" maxlength="64" pattern="[A-Za-z0-9_.\-]{3,64}" title="3–64 ký tự: chữ không dấu, số, dấu chấm, gạch dưới, gạch ngang" placeholder="Ví dụ: duy_reviewer">
-      </label>
-      <label class="field">Tên hiển thị
-        <input type="text" name="display_name" placeholder="Ví dụ: Nguyễn Đức Duy">
-      </label>
+{% block content %}
+
+<div class="panel table-scroll">
+<table class="doclist" id="accounts-table">
+  <thead>
+    <tr>
+      <th scope="col" class="sortable"><button type="button" class="sort">Tên tài khoản</button></th>
+      <th scope="col" class="sortable"><button type="button" class="sort">Tên hiển thị</button></th>
+      <th scope="col" class="sortable"><button type="button" class="sort">Vai trò</button></th>
+      <th scope="col" class="sortable"><button type="button" class="sort">Trạng thái</button></th>
+      <th scope="col">Thao tác</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for acc in accounts %}
+    {% set is_me = acc.username == current_user.username %}
+    <tr data-filter="{{ (acc.username ~ ' ' ~ (acc.display_name or ''))|lower }}">
+      <td><div class="doc-name">{{ icon("person") }}<div><strong><code>{{ acc.username }}</code></strong>{% if is_me %} <span class="muted small">(bạn)</span>{% endif %}</div></div></td>
+      <td>{{ acc.display_name }}</td>
+      <td data-sort-value="{{ acc.role }}"><span class="tag role-{{ acc.role }}">{{ ROLE_LABELS[acc.role] }}</span></td>
+      <td>
+        {% if acc.is_approved %}<span class="tag ok">Đang hoạt động</span>
+        {% else %}<span class="tag warn">{{ icon("lock") }}Đã khóa</span>{% endif %}
+      </td>
+      <td>
+        {% if is_me %}
+          <a class="btn small" href="/account/password">{{ icon("key") }}Đổi mật khẩu</a>
+        {% else %}
+        <div class="account-actions">
+          <form method="post" action="/admin/users/{{ acc.username|urlencode }}/permission">
+            <label class="sr-only" for="role-{{ loop.index }}">Vai trò của {{ acc.username }}</label>
+            <select id="role-{{ loop.index }}" name="grant">
+              {% for r in ("reviewer", "approver", "admin") %}
+              <option value="{{ r }}"{% if acc.role == r %} selected{% endif %}>{{ ROLE_LABELS[r] }}</option>
+              {% endfor %}
+            </select>
+            <button type="submit" class="btn small">Đổi vai trò</button>
+          </form>
+          <form method="post" action="/admin/users/{{ acc.username|urlencode }}/permission">
+            {% if acc.is_approved %}
+            <button type="submit" name="grant" value="lock" class="btn small">{{ icon("lock") }}Khóa</button>
+            {% else %}
+            <button type="submit" name="grant" value="unlock" class="btn small">{{ icon("unlock") }}Mở khóa</button>
+            {% endif %}
+          </form>
+          <button type="button" class="btn small" data-open-dialog="reset-{{ loop.index }}">{{ icon("key") }}Đặt lại mật khẩu</button>
+        </div>
+        <dialog class="modal" id="reset-{{ loop.index }}" aria-labelledby="reset-title-{{ loop.index }}">
+          <form method="post" action="/admin/users/{{ acc.username|urlencode }}/password">
+            <div class="modal-body">
+              <h2 id="reset-title-{{ loop.index }}">Đặt lại mật khẩu cho {{ acc.username }}</h2>
+              <p class="muted small">Gửi mật khẩu mới cho người dùng qua kênh riêng. Mọi phiên đăng nhập hiện có của họ hết hiệu lực.</p>
+              <label class="field">Mật khẩu mới
+                {{ password_input("new_password", "new-password", "Ít nhất 8 ký tự", 8) }}
+              </label>
+            </div>
+            <div class="modal-foot">
+              <button type="button" class="btn" data-close-dialog>Hủy</button>
+              <button type="submit" class="btn primary">Đặt mật khẩu</button>
+            </div>
+          </form>
+        </dialog>
+        {% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+
+<dialog class="modal" id="create-dialog" aria-labelledby="create-title">
+  <form method="post" action="/admin/users/create">
+    <div class="modal-body">
+      <h2 id="create-title">Tạo tài khoản</h2>
+      <div class="form-grid">
+        <label class="field">Tên đăng nhập
+          <input type="text" name="username" required minlength="3" maxlength="64" pattern="[A-Za-z0-9_.\-]{3,64}" title="3 đến 64 ký tự: chữ không dấu, số, dấu chấm, gạch dưới, gạch ngang" placeholder="Ví dụ: duy_reviewer" autocomplete="off">
+        </label>
+        <label class="field">Tên hiển thị
+          <input type="text" name="display_name" placeholder="Ví dụ: Nguyễn Đức Duy" autocomplete="off">
+        </label>
+      </div>
       <label class="field">Mật khẩu
-        {{ password_input(autocomplete="new-password", placeholder="Mật khẩu (>= 8 ký tự)", minlength=8) }}
+        {{ password_input(autocomplete="new-password", placeholder="Ít nhất 8 ký tự", minlength=8) }}
       </label>
       <label class="field">Vai trò
         <select name="role">
-          <option value="reviewer" selected>Người chỉnh sửa (Reviewer)</option>
-          <option value="approver">Người phê duyệt (Approver)</option>
-          <option value="admin">Quản trị viên (Admin)</option>
+          <option value="reviewer" selected>{{ ROLE_LABELS["reviewer"] }}</option>
+          <option value="approver">{{ ROLE_LABELS["approver"] }}</option>
+          <option value="admin">{{ ROLE_LABELS["admin"] }}</option>
         </select>
       </label>
-      <button type="submit" class="ribbon-btn save" style="height:35px; justify-content:center;">+ Tạo tài khoản</button>
-    </form>
-  </section>
-
-  <!-- Danh sách tài khoản & Cấp/Thu hồi quyền -->
-  <section class="pane" style="padding:16px;">
-    <h2 style="margin:0 0 12px; font-size:16px;">👥 Danh sách tài khoản ({{ accounts|length }})</h2>
-    <table class="doclist">
-      <thead>
-        <tr>
-          <th>Tên tài khoản</th>
-          <th>Tên hiển thị</th>
-          <th>Vai trò</th>
-          <th>Trạng thái</th>
-          <th>Thao tác của Admin</th>
-        </tr>
-      </thead>
-      <tbody>
-      {% for acc in accounts %}
-        {% set is_me = acc.username == current_user.username %}
-        <tr>
-          <td><strong><code>{{ acc.username }}</code></strong>{% if is_me %} <span class="muted small">(bạn)</span>{% endif %}</td>
-          <td>{{ acc.display_name }}</td>
-          <td><span class="tag role-{{ acc.role }}">{{ ROLE_LABELS[acc.role] }}</span></td>
-          <td>
-            {% if acc.is_approved %}<span class="tag ok">● Đang hoạt động</span>
-            {% else %}<span class="tag warn">🔒 Đã khóa</span>{% endif %}
-          </td>
-          <td>
-            {% if is_me %}
-              <span class="muted small">Không tự đổi vai trò hoặc khóa chính mình</span>
-            {% else %}
-            <div class="account-actions">
-              <form method="post" action="/admin/users/{{ acc.username|urlencode }}/permission">
-                <label class="sr-only" for="role-{{ loop.index }}">Vai trò của {{ acc.username }}</label>
-                <select id="role-{{ loop.index }}" name="grant">
-                  {% for r in ("reviewer", "approver", "admin") %}
-                  <option value="{{ r }}"{% if acc.role == r %} selected{% endif %}>{{ ROLE_LABELS[r] }}</option>
-                  {% endfor %}
-                </select>
-                <button type="submit" class="ribbon-btn">Đổi vai trò</button>
-              </form>
-              <form method="post" action="/admin/users/{{ acc.username|urlencode }}/permission">
-                {% if acc.is_approved %}
-                <button type="submit" name="grant" value="lock" class="ribbon-btn flag">🔒 Khóa</button>
-                {% else %}
-                <button type="submit" name="grant" value="unlock" class="ribbon-btn approve">🔓 Mở khóa</button>
-                {% endif %}
-              </form>
-            </div>
-            {% endif %}
-          </td>
-        </tr>
-      {% endfor %}
-      </tbody>
-    </table>
-  </section>
-</main>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn" data-close-dialog>Hủy</button>
+      <button type="submit" class="btn primary">{{ icon("person-add") }}Tạo tài khoản</button>
+    </div>
+  </form>
+</dialog>
 {% endblock %}
+

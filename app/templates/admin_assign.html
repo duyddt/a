@@ -1,118 +1,147 @@
 {% extends "base.html" %}
-{% block title %}Phân công văn bản{% endblock %}
-{% block body %}
-<header class="topbar">
-  <a href="/" class="button-link">&larr; Về Danh sách văn bản</a>
-  <h1>🧑‍💼 Phân công văn bản</h1>
-  <div class="topbar-actions">
-    <a href="/admin/stats" class="button-link">📊 Thống kê</a>
-    <a href="/admin/users" class="button-link">⚙ Tài khoản</a>
-    <form method="post" action="/account/logout" style="margin:0;">
-      <button type="submit" class="button-link">Đăng xuất</button>
-    </form>
-    {% include "partials/theme_toggle.html" %}
+{#- Phân công (Admin): bảng văn bản có ô đánh dấu, lọc theo chủ đề; thanh giao việc dính ở đáy trang
+    (người chỉnh sửa, người phê duyệt, Giao). Các ô đánh dấu thuộc form qua thuộc tính form="assign-form". -#}
+{% from "partials/icon.html" import icon %}
+{% set folder_code = current.category.code if current else '' %}
+{% block title %}Phân công - Thẩm định văn bản pháp lý{% endblock %}
+
+{% block page_header %}
+<h1>Phân công{% if current %} <span class="muted">· {{ current.category.label }}</span>{% endif %}</h1>
+<p class="lead">Đánh dấu văn bản rồi chọn người ở thanh dưới cùng. Người chỉnh sửa làm trên bản riêng; văn bản chuyển sang
+  người phê duyệt khi mọi người chỉnh sửa được giao đã bấm Hoàn thành. Người đã được giao thì giữ nguyên.</p>
+<div class="page-actions">
+  <div class="search-box" role="search">
+    {{ icon("search") }}
+    <input type="search" data-filter-scope=".assign-table" data-filter-status="assign-filter-status" autocomplete="off" placeholder="Lọc theo mã, tên" aria-label="Lọc văn bản theo mã hoặc tên">
   </div>
-</header>
+  <span id="assign-filter-status" class="muted small" role="status"></span>
+</div>
+{% endblock %}
 
-<main class="narrow">
-  {% if err %}<div class="alert error" role="alert">⚠ {{ err }}</div>{% endif %}
-  {% if msg %}<div class="alert success" role="status">✓ {{ msg }}</div>{% endif %}
+{% block flash %}
+{% if err %}<div class="alert error" role="alert">{{ icon("error") }}<span>{{ err }}</span></div>{% endif %}
+{% if msg %}<div class="alert success" role="status">{{ icon("check-circle") }}<span>{{ msg }}</span></div>{% endif %}
+{% endblock %}
 
-  <section class="pane assign-form" aria-labelledby="assign-title">
-    <h2 id="assign-title">Giao việc</h2>
-    <p class="muted small">Đánh dấu văn bản ở bảng bên dưới rồi chọn người, hoặc giao cả thư mục. Người chỉnh sửa làm trên bản
-      riêng của mình; văn bản chuyển sang người phê duyệt ngay khi mọi người chỉnh sửa được giao đã bấm Hoàn thành.
-      Người đã được giao thì giữ nguyên.</p>
-    <form id="assign-form" method="post" action="/admin/assign">
-      <input type="hidden" name="folder" value="{{ current.category.code if current else '' }}">
-      <fieldset class="assign-people">
-        <legend>Người chỉnh sửa</legend>
-        {% for a in editors %}
-        <label class="check"><input type="checkbox" name="editors" value="{{ a.username }}"> {{ a.display_name or a.username }}{% if a.display_name and a.display_name != a.username %} <code>{{ a.username }}</code>{% endif %}</label>
-        {% else %}
-        <p class="muted small">Chưa có tài khoản người chỉnh sửa nào đang hoạt động. <a href="/admin/users">Tạo tài khoản</a>.</p>
-        {% endfor %}
-      </fieldset>
-      <label class="field assign-approver">Người phê duyệt
-        <select name="approver">
-          <option value="">(giữ nguyên)</option>
-          {% for a in approvers %}<option value="{{ a.username }}">{{ a.display_name or a.username }}{% if a.display_name and a.display_name != a.username %} ({{ a.username }}){% endif %}</option>{% endfor %}
-        </select>
-      </label>
-      <div class="assign-buttons">
-        <button type="submit" class="ribbon-btn approve">Giao các văn bản đã đánh dấu</button>
-        {% if current %}
-        <button type="submit" name="whole_folder" value="1" class="ribbon-btn" data-confirm="Giao mọi văn bản trong thư mục {{ current.category.label }}?" onclick="return confirm(this.dataset.confirm);">Giao cả thư mục {{ current.category.label }}</button>
+{% block content %}
+{% if folders %}
+<nav class="filter-chips" aria-label="Lọc theo chủ đề">
+  <a class="filter-chip" href="/admin/assign"{% if not current %} aria-current="page"{% endif %}>Tất cả</a>
+  {% for f in folders %}<a class="filter-chip" href="/admin/assign?folder={{ f.category.code|urlencode }}"{% if current and current.category.code == f.category.code %} aria-current="page"{% endif %}>{{ f.category.label }} <span class="chip-count">{{ f.documents|length }}</span></a>{% endfor %}
+</nav>
+{% endif %}
+
+<div class="panel table-scroll">
+<table class="doclist assign-table">
+  <caption class="sr-only">Văn bản và người được giao</caption>
+  <thead>
+    <tr>
+      <th scope="col"><input type="checkbox" id="assign-all" aria-label="Đánh dấu tất cả văn bản đang hiện"></th>
+      <th scope="col">Văn bản</th>
+      <th scope="col">Trạng thái</th>
+      <th scope="col">Người chỉnh sửa</th>
+      <th scope="col">Người phê duyệt</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for d in documents %}
+    {% set wf = d.workflow %}
+    <tr data-filter="{{ (d.document_id ~ ' ' ~ (d.document_no or '') ~ ' ' ~ (d.title or ''))|lower }}">
+      <td><input type="checkbox" name="documents" value="{{ d.document_id }}" form="assign-form" aria-label="Chọn {{ d.document_no or d.document_id }}"></td>
+      <td>
+        <a class="doc-title-link" href="/documents/{{ d.document_id|urlencode }}">{{ d.document_type or "Văn bản" }} {{ d.document_no or d.document_id }}</a>
+        {% if d.title %}<div class="doc-sub">{{ d.title }}</div>{% endif %}
+        <code class="doc-code">{{ d.document_id }}</code>
+      </td>
+      <td>
+        <span class="wf-status wf-{{ wf.status }}">{{ wf.status_label }}</span>
+        {% if wf.status == 'approved' %}
+        <form method="post" action="/admin/assign/reopen" class="inline-form">
+          <input type="hidden" name="document_id" value="{{ d.document_id }}">
+          <input type="hidden" name="folder" value="{{ folder_code }}">
+          <button type="submit" class="link-btn">{{ icon("reset") }}Mở lại</button>
+        </form>
         {% endif %}
-      </div>
-    </form>
-  </section>
-
-  <nav class="assign-folders" aria-label="Lọc theo thư mục">
-    <a href="/admin/assign"{% if not current %} aria-current="page"{% endif %}>Tất cả</a>
-    {% for f in folders %}<a href="/admin/assign?folder={{ f.category.code|urlencode }}"{% if current and current.category.code == f.category.code %} aria-current="page"{% endif %}>{{ f.category.label }}</a>{% endfor %}
-  </nav>
-
-  <table class="doclist assign-table">
-    <caption class="sr-only">Văn bản và người được giao</caption>
-    <thead>
-      <tr>
-        <th scope="col"><input type="checkbox" aria-label="Đánh dấu tất cả văn bản" onclick="document.querySelectorAll('.assign-table input[name=documents]').forEach(function (c) { c.checked = this.checked; }, this);"></th>
-        <th scope="col">Văn bản</th>
-        <th scope="col">Trạng thái</th>
-        <th scope="col">Người chỉnh sửa</th>
-        <th scope="col">Người phê duyệt</th>
-      </tr>
-    </thead>
-    <tbody>
-    {% for d in documents %}
-      {% set wf = d.workflow %}
-      <tr>
-        <td><input type="checkbox" name="documents" value="{{ d.document_id }}" form="assign-form" aria-label="Chọn {{ d.document_id }}"></td>
-        <td><a href="/documents/{{ d.document_id|urlencode }}">{{ d.document_id }}</a><br><span class="muted small">{{ d.title }}</span></td>
-        <td>
-          <span class="wf-status wf-{{ wf.status }}">{{ wf.status_label }}</span>
-          {% if wf.status == 'approved' %}
+      </td>
+      <td>
+        {% for name, done in wf.editors.items() %}
+        <span class="person-chip person-{{ loop.index0 % 8 + 1 }}">{{ name }}{% if done %} ✓{% endif %}
+          <form method="post" action="/admin/assign/remove" class="inline-form">
+            <input type="hidden" name="document_id" value="{{ d.document_id }}"><input type="hidden" name="username" value="{{ name }}">
+            <input type="hidden" name="role" value="editor"><input type="hidden" name="folder" value="{{ folder_code }}">
+            <button type="submit" class="chip-x" aria-label="Gỡ {{ name }} khỏi {{ d.document_id }}" title="Gỡ phân công">{{ icon("dismiss") }}</button>
+          </form>
+          {% if done and wf.status != 'approved' %}
           <form method="post" action="/admin/assign/reopen" class="inline-form">
-            <input type="hidden" name="document_id" value="{{ d.document_id }}">
-            <input type="hidden" name="folder" value="{{ current.category.code if current else '' }}">
-            <button type="submit" class="link-btn">↺ Mở lại</button>
+            <input type="hidden" name="document_id" value="{{ d.document_id }}"><input type="hidden" name="username" value="{{ name }}">
+            <input type="hidden" name="folder" value="{{ folder_code }}">
+            <button type="submit" class="chip-x" aria-label="Cho {{ name }} sửa tiếp {{ d.document_id }}" title="Cho sửa tiếp">{{ icon("reset") }}</button>
           </form>
           {% endif %}
-        </td>
-        <td>
-          {% for name, done in wf.editors.items() %}
-          <span class="person-chip person-{{ loop.index0 % 8 + 1 }}">{{ name }}{% if done %} ✓{% endif %}
-            <form method="post" action="/admin/assign/remove" class="inline-form">
-              <input type="hidden" name="document_id" value="{{ d.document_id }}"><input type="hidden" name="username" value="{{ name }}">
-              <input type="hidden" name="role" value="editor"><input type="hidden" name="folder" value="{{ current.category.code if current else '' }}">
-              <button type="submit" class="chip-x" aria-label="Gỡ {{ name }} khỏi {{ d.document_id }}" title="Gỡ phân công">✕</button>
-            </form>
-            {% if done and wf.status != 'approved' %}
-            <form method="post" action="/admin/assign/reopen" class="inline-form">
-              <input type="hidden" name="document_id" value="{{ d.document_id }}"><input type="hidden" name="username" value="{{ name }}">
-              <input type="hidden" name="folder" value="{{ current.category.code if current else '' }}">
-              <button type="submit" class="chip-x" aria-label="Cho {{ name }} sửa tiếp {{ d.document_id }}" title="Cho sửa tiếp">↺</button>
-            </form>
-            {% endif %}
-          </span>
-          {% else %}<span class="muted small">Chưa giao</span>{% endfor %}
-        </td>
-        <td>
-          {% if wf.approver %}
-          <span class="small"><strong>{{ wf.approver }}</strong></span>
-          <form method="post" action="/admin/assign/remove" class="inline-form">
-            <input type="hidden" name="document_id" value="{{ d.document_id }}"><input type="hidden" name="username" value="{{ wf.approver }}">
-            <input type="hidden" name="role" value="approver"><input type="hidden" name="folder" value="{{ current.category.code if current else '' }}">
-            <button type="submit" class="chip-x" aria-label="Gỡ {{ wf.approver }} khỏi {{ d.document_id }}" title="Gỡ phân công">✕</button>
-          </form>
-          {% else %}<span class="muted small">Mọi người phê duyệt</span>{% endif %}
-        </td>
-      </tr>
+        </span>
+        {% else %}<span class="muted small">Chưa giao</span>{% endfor %}
+      </td>
+      <td>
+        {% if wf.approver %}
+        <span class="small"><strong>{{ wf.approver }}</strong></span>
+        <form method="post" action="/admin/assign/remove" class="inline-form">
+          <input type="hidden" name="document_id" value="{{ d.document_id }}"><input type="hidden" name="username" value="{{ wf.approver }}">
+          <input type="hidden" name="role" value="approver"><input type="hidden" name="folder" value="{{ folder_code }}">
+          <button type="submit" class="chip-x" aria-label="Gỡ {{ wf.approver }} khỏi {{ d.document_id }}" title="Gỡ phân công">{{ icon("dismiss") }}</button>
+        </form>
+        {% else %}<span class="muted small">Mọi người phê duyệt</span>{% endif %}
+      </td>
+    </tr>
+  {% else %}
+    <tr><td colspan="5" class="muted">Không có văn bản nào.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+
+<form id="assign-form" class="bulk-bar" method="post" action="/admin/assign" aria-label="Giao việc">
+  <input type="hidden" name="folder" value="{{ folder_code }}">
+  <span class="bulk-count" id="bulk-count" role="status">Đánh dấu văn bản trong bảng</span>
+  <fieldset>
+    <legend>Người chỉnh sửa</legend>
+    {% for a in editors %}
+    <label class="check"><input type="checkbox" name="editors" value="{{ a.username }}"> {{ a.display_name or a.username }}</label>
     {% else %}
-      <tr><td colspan="5" class="muted">Không có văn bản nào.</td></tr>
+    <span class="muted small">Chưa có người chỉnh sửa nào đang hoạt động. <a href="/admin/users">Tạo tài khoản</a></span>
     {% endfor %}
-    </tbody>
-  </table>
-</main>
+  </fieldset>
+  <label class="field">Người phê duyệt
+    <select name="approver">
+      <option value="">(giữ nguyên)</option>
+      {% for a in approvers %}<option value="{{ a.username }}">{{ a.display_name or a.username }}{% if a.display_name and a.display_name != a.username %} ({{ a.username }}){% endif %}</option>{% endfor %}
+    </select>
+  </label>
+  <span class="spacer"></span>
+  {% if current %}
+  <button type="submit" name="whole_folder" value="1" class="btn" data-confirm="Giao mọi văn bản trong chủ đề {{ current.category.label }}?" onclick="return confirm(this.dataset.confirm);">Giao cả chủ đề</button>
+  {% endif %}
+  <button type="submit" class="btn primary">{{ icon("assign") }}Giao văn bản đã đánh dấu</button>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  /* Đếm văn bản đã đánh dấu; ô đầu bảng đánh dấu mọi hàng đang hiện (sau khi lọc) */
+  (function () {
+    var count = document.getElementById("bulk-count");
+    function boxes() { return document.querySelectorAll(".assign-table input[name=documents]"); }
+    function update() {
+      var n = 0;
+      boxes().forEach(function (c) { if (c.checked) n += 1; });
+      if (count) count.textContent = n ? "Đã chọn " + n + " văn bản" : "Đánh dấu văn bản trong bảng";
+    }
+    var all = document.getElementById("assign-all");
+    if (all) all.addEventListener("change", function () {
+      boxes().forEach(function (c) { if (!c.closest("tr").hidden) c.checked = all.checked; });
+      update();
+    });
+    document.addEventListener("change", function (e) { if (e.target.name === "documents") update(); });
+    update();
+  })();
+</script>
 {% endblock %}

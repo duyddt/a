@@ -1,0 +1,7 @@
+{#- Icon Fluent từ sprite /static/icons.svg (dựng bằng scripts/build_icons.py).
+    icon("folder")                 -> icon trang trí, trình đọc màn hình bỏ qua
+    icon("delete", "Xóa văn bản")  -> icon mang nghĩa, có tên cho trình đọc màn hình
+    Tên hợp lệ: các khóa của ICONS trong scripts/build_icons.py. -#}
+{% macro icon(name, label=None, cls="") -%}
+<svg class="icon icon-{{ name }}{% if cls %} {{ cls }}{% endif %}" focusable="false"{% if label %} role="img" aria-label="{{ label }}"{% else %} aria-hidden="true"{% endif %}><use href="/static/icons.svg?v=1#{{ name }}"></use></svg>
+{%- endmacro %}

@@ -8,8 +8,8 @@ import pytest
 pytest.importorskip("fastapi")
 pytest.importorskip("httpx")
 
-from app.config import DEFAULT_ADMIN_PASSWORD, Settings, load_settings  # noqa: E402
-from app.services.accounts import AccountService  # noqa: E402
+from app.config import Settings, load_settings  # noqa: E402
+from app.services.accounts import INITIAL_ADMIN_PASSWORD_FILE, AccountService  # noqa: E402
 from app.services.auth import (  # noqa: E402
     LoginThrottle,
     load_or_create_secret,
@@ -60,23 +60,35 @@ def assert_sent_to_login(response):
     assert response.status_code == 303 and response.headers["location"].startswith("/login")
 
 
-# ---- mật khẩu admin (ADMIN_PASSWORD, mặc định admin123) & khóa ký phiên ----
+# ---- mật khẩu admin (ADMIN_PASSWORD hoặc sinh ngẫu nhiên) & khóa ký phiên ----
 
-def test_admin_logs_in_with_default_password_when_none_configured(data_dir, storage):
-    assert DEFAULT_ADMIN_PASSWORD == "admin123"
-    assert load_settings({}, env_file=storage / "khong_co.env").admin_password == DEFAULT_ADMIN_PASSWORD
-    assert load_settings({"ADMIN_PASSWORD": ""}, env_file=storage / "khong_co.env").admin_password == "admin123"
+def test_admin_gets_a_random_password_when_none_is_configured(data_dir, storage):
+    assert load_settings({}, env_file=storage / "khong_co.env").admin_password is None
+    assert load_settings({"ADMIN_PASSWORD": ""}, env_file=storage / "khong_co.env").admin_password is None
     app = create_app(make_settings(data_dir, storage), catalog=DocumentStore(data_dir))
     with TestClient(app) as client:
-        response = login(client, "admin", "admin123")
+        assert login(client, "admin", "admin123").status_code == 401
+        name, password = (storage / INITIAL_ADMIN_PASSWORD_FILE).read_text(encoding="utf-8").split()
+        assert name == "admin" and len(password) >= 16
+        response = login(client, "admin", password)
         assert response.status_code == 303 and "session_token=" in response.headers["set-cookie"]
 
 
-def test_configured_admin_password_replaces_default(data_dir, storage):
+def test_existing_admin_password_is_never_reset_without_setting(tmp_path):
+    accounts = AccountService(DocumentStore(tmp_path))
+    accounts.create("admin", "Admin", "mat-khau-rieng-1", role="reviewer", is_approved=False)
+    accounts.ensure_admin("admin", None, tmp_path)
+    account = accounts.authenticate("admin", "mat-khau-rieng-1")
+    assert account and account["role"] == "admin" and account["is_approved"]
+    assert not (tmp_path / INITIAL_ADMIN_PASSWORD_FILE).exists()
+
+
+def test_configured_admin_password_is_used(data_dir, storage):
     app = create_app(make_settings(data_dir, storage, admin_password=ADMIN_PW), catalog=DocumentStore(data_dir))
     with TestClient(app) as client:
         assert login(client, "admin", "admin123").status_code == 401
         assert login(client, "admin", ADMIN_PW).status_code == 303
+    assert not (storage / INITIAL_ADMIN_PASSWORD_FILE).exists()
 
 
 def test_admin_password_setting_resets_password_and_restores_role(tmp_path):
@@ -105,6 +117,9 @@ def test_session_tokens_are_signed_and_expire():
     assert verify_session(sign_session("duy", secret, issued_at=int(time.time()) - 7200), secret, 3600) is None
     assert verify_session("admin|" + "0" * 64, secret, 3600) is None
     assert verify_session(None, secret, 3600) is None and verify_session("", secret, 3600) is None
+    stamped = sign_session("duy", secret, stamp="hash-cu")
+    assert verify_session(stamped, secret, 3600, stamp="hash-cu") == "duy"
+    assert verify_session(stamped, secret, 3600, stamp="hash-moi") is None  # đổi mật khẩu: phiên cũ hết hiệu lực
 
 
 def test_forged_identity_cookies_and_user_agent_grant_nothing(client):
@@ -248,11 +263,11 @@ def test_only_admin_can_delete(client, data_dir):
     assert not (data_dir / DOC).exists()
 
 
-@pytest.mark.parametrize(("role", "approved"), [("reviewer", True), ("approver", True), ("reviewer", False)])
-def test_only_admin_uploads_documents(client, sample_pdf, sample_json, role, approved):
+@pytest.mark.parametrize("role", ["reviewer", "approver"])
+def test_only_admin_uploads_documents(client, sample_pdf, sample_json, role):
     files = {"pdf": ("source.pdf", sample_pdf), "document": ("document.json", sample_json)}
     assert_sent_to_login(client.post("/documents/upload", files=files, follow_redirects=False))
-    add_account(client, "nhan_vien", role=role, approved=approved)
+    add_account(client, "nhan_vien", role=role)
     assert login(client, "nhan_vien", USER_PW).status_code == 303
     denied = client.post("/documents/upload", files=files, follow_redirects=False)
     assert denied.status_code == 303 and "err=" in denied.headers["location"]
@@ -266,10 +281,85 @@ def test_list_page_hides_upload_and_delete_from_non_admins(client, role):
     assert page.status_code == 200 and 'action="/documents/upload"' not in page.text and "/delete" not in page.text
 
 
-def test_locked_account_can_sign_in_but_sees_that_it_is_locked(client):
+def test_locked_account_cannot_sign_in_and_loses_open_sessions(client):
     add_account(client, "bi_khoa", approved=False)
-    assert login(client, "bi_khoa", USER_PW).status_code == 303
-    assert "đang bị khóa" in client.get("/").text
+    refused = login(client, "bi_khoa", USER_PW)
+    assert refused.status_code == 403 and "bị khóa" in refused.text
+    assert "session_token=" not in refused.headers.get("set-cookie", "")
+    assert client.get("/api/documents", auth=("bi_khoa", USER_PW)).status_code == 401
+
+    add_account(client, "sap_khoa")
+    assert login(client, "sap_khoa", USER_PW).status_code == 303
+    assert client.get("/").status_code == 200
+    client.app.state.accounts.set_permission("sap_khoa", "reviewer", False)
+    assert_sent_to_login(client.get("/", follow_redirects=False))
+
+
+# ---- quản lý mật khẩu ----
+
+def test_admin_resets_another_users_password_and_old_sessions_end(client):
+    add_account(client, "nv1")
+    other = TestClient(client.app)
+    assert login(other, "nv1", USER_PW).status_code == 303 and other.get("/").status_code == 200
+    assert login(client, "admin", ADMIN_PW).status_code == 303
+    too_short = client.post("/admin/users/nv1/password", data={"new_password": "123"}, follow_redirects=False)
+    assert "err=" in too_short.headers["location"]
+    done = client.post("/admin/users/nv1/password", data={"new_password": "mat-khau-moi-1"}, follow_redirects=False)
+    assert "msg=" in done.headers["location"]
+    assert_sent_to_login(other.get("/", follow_redirects=False))  # phiên cũ của nv1 hết hiệu lực
+    assert login(other, "nv1", "mat-khau-moi-1").status_code == 303
+    own = client.post("/admin/users/admin/password", data={"new_password": "mat-khau-moi-2"}, follow_redirects=False)
+    assert "err=" in own.headers["location"] and login(client, "admin", ADMIN_PW).status_code == 303
+
+
+def test_non_admin_cannot_reset_passwords(client):
+    add_account(client, "nv1")
+    add_account(client, "nv2")
+    assert login(client, "nv1", USER_PW).status_code == 303
+    assert client.post("/admin/users/nv2/password", data={"new_password": "mat-khau-moi-1"}).status_code == 403
+    assert login(client, "nv2", USER_PW).status_code == 303
+
+
+def test_users_change_their_own_password_with_the_current_one(client):
+    add_account(client, "nv1")
+    assert login(client, "nv1", USER_PW).status_code == 303
+    assert client.get("/account/password").status_code == 200
+    form = {"current_password": "sai-mat-khau", "new_password": "mat-khau-moi-1", "confirm_password": "mat-khau-moi-1"}
+    assert client.post("/account/password", data=form).status_code == 400
+    form["current_password"] = USER_PW
+    assert client.post("/account/password", data={**form, "confirm_password": "khac-nhau-1"}).status_code == 400
+    changed = client.post("/account/password", data=form, follow_redirects=False)
+    assert changed.status_code == 303 and "session_token=" in changed.headers["set-cookie"]
+    assert client.get("/").status_code == 200  # cookie mới vẫn dùng được
+    assert login(client, "nv1", USER_PW).status_code == 401
+    assert login(client, "nv1", "mat-khau-moi-1").status_code == 303
+
+
+# ---- quyền xem bản chốt, chống CSRF, throttle theo IP ----
+
+def test_reviewers_cannot_read_the_final_version_through_the_api(client):
+    add_account(client, "nv1")
+    for url in (f"/api/documents/{DOC}/export", f"/api/documents/{DOC}/ocr-report"):
+        assert client.get(url, auth=("nv1", USER_PW)).status_code == 403, url
+        assert client.get(url, auth=("admin", ADMIN_PW)).status_code != 403, url
+
+
+def test_writes_from_another_site_are_rejected(client):
+    assert login(client, "admin", ADMIN_PW).status_code == 303
+    form = {"username": "tu_ngoai", "password": "matkhau-12345", "role": "admin"}
+    for header in ({"origin": "https://evil.example"}, {"origin": "null"}, {"referer": "https://evil.example/x"}):
+        response = client.post("/admin/users/create", data=form, headers=header, follow_redirects=False)
+        assert response.status_code == 403, header
+    assert client.app.state.accounts.get("tu_ngoai") is None
+    same = client.post("/admin/users/create", data=form, headers={"origin": "http://testserver"}, follow_redirects=False)
+    assert same.status_code == 303 and client.app.state.accounts.get("tu_ngoai") is not None
+
+
+def test_one_address_cannot_try_many_usernames():
+    throttle = LoginThrottle(max_failures=10, window_seconds=60, max_failures_per_ip=3)
+    for name in ("a1", "a2", "a3"):
+        throttle.failed("1.2.3.4", name)
+    assert throttle.retry_after("1.2.3.4", "a4") > 0 and throttle.retry_after("5.6.7.8", "a4") == 0
 
 
 # ---- ổn định / triển khai ----
