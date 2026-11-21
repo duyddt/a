@@ -1,4 +1,4 @@
-﻿__pycache__/
+__pycache__/
 *.py[cod]
 .pytest_cache/
 .venv/
@@ -10,3 +10,7 @@ storage/
 initial_admin_password.txt
 *.zip
 *.rar
+# toạ độ từ OCR do app lưu ở chế độ thư mục file (services/page_words.py)
+data/*/words/
+# cấu hình trợ lý AI trên máy cá nhân
+.claude/
